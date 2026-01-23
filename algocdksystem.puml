@@ -1,0 +1,113 @@
+@startuml AlgoCDKSystemArchitecture
+!theme cerulean
+
+title AlgoCDK System Architecture
+
+left to right direction
+
+skinparam shadowing false
+skinparam component {
+  BackgroundColor LightBlue
+  BorderColor DarkBlue
+  ArrowColor DarkBlue
+  FontStyle bold
+}
+skinparam actor {
+  BackgroundColor LightYellow
+  BorderColor OrangeRed
+}
+skinparam database {
+  BackgroundColor LightGreen
+  BorderColor Green
+}
+skinparam package {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam arrow {
+  Color DarkBlue
+}
+skinparam title {
+  FontColor OrangeRed
+  BorderColor OrangeRed
+}
+skinparam note {
+  BackgroundColor Yellow
+  BorderColor OrangeRed
+}
+
+actor User
+actor Admin
+actor SuperAdmin
+actor Paystack
+
+package "Gin API Server" {
+
+    component "Auth Module" as Auth
+    component "User Module" as UserModule
+    component "Admin Module" as AdminModule
+    component "SuperAdmin Module" as SuperAdminModule
+    component "Payment Module" as PaymentModule
+    component "Marketplace Module" as MarketplaceModule
+    component "Uploads Module" as UploadsModule
+
+}
+
+package "Database" {
+
+    database "Users Table" as UserDB
+    database "Admins Table" as AdminDB
+    database "Bots Table" as BotDB
+    database "BotUsers Table" as BotUserDB
+    database "Transactions Table" as TransactionsDB
+
+}
+
+' Actor interactions with API modules
+User --> Auth : POST /api/auth/signup, /api/auth/login, /api/auth/forgot_password/
+SuperAdmin --> Auth : POST /api/superadmin/auth/signup, /api/superadmin/auth/login
+
+User --> UserModule : GET /api/user/profile/:id, POST /api/user/updateprofile/:id
+User --> UserModule : DELETE /api/user/delete_account/:id
+User --> UserModule : POST /api/user/reset_password/:id
+User --> UserModule : GET /api/user/togole_favorite/:id, GET /api/user/favorite/me
+
+Admin --> AdminModule : GET /api/admin/dashboard, POST /api/admin/create-bot
+Admin --> AdminModule : PUT /api/admin/update-bot/:id, DELETE /api/admin/delete-bot/:id
+Admin --> AdminModule : GET /api/admin/bots, GET /api/admin/profile
+Admin --> AdminModule : PUT /api/admin/bank-details
+Admin --> AdminModule : GET /api/admin/transactions, POST /api/admin/transactions
+Admin --> AdminModule : GET /api/admin/bots/:id/users, DELETE /api/admin/bots/:bot_id/users/:user_id
+
+SuperAdmin --> SuperAdminModule : GET /api/superadmin/profile/:id, GET /api/superadmin/superadmindashboard/:id
+SuperAdmin --> SuperAdminModule : POST /api/superadmin/create_user, POST /api/superadmin/update_user/:id
+SuperAdmin --> SuperAdminModule : DELETE /api/superadmin/delete_user/:id, GET /api/superadmin/users
+SuperAdmin --> SuperAdminModule : GET /api/superadmin/user/:id
+SuperAdmin --> SuperAdminModule : POST /api/superadmin/create_admin, GET /api/superadmin/get_all_admins
+SuperAdmin --> SuperAdminModule : GET /api/superadmin/toggle_admin_status, POST /api/superadmin/update_admin/:id
+SuperAdmin --> SuperAdminModule : DELETE /api/superadmin/delete_admin, POST /api/superadmin/update_admin_password
+SuperAdmin --> SuperAdminModule : GET /api/superadmin/bots, GET /api/superadmin/scan_bots
+
+User --> PaymentModule : POST /api/payment/initialize, GET /api/payment/verify
+User --> PaymentModule : POST /api/payment/callback, POST /api/payment/update-transaction
+User --> PaymentModule : GET /api/paystack/callback
+Paystack --> PaymentModule : POST /api/payment/webhook
+
+User --> MarketplaceModule : GET /api/marketplace
+
+User --> UploadsModule : GET /uploads/*filepath
+
+' Database relationships
+UserModule --> UserDB
+SuperAdminModule --> UserDB
+AdminModule --> AdminDB
+SuperAdminModule --> AdminDB
+AdminModule --> BotDB
+SuperAdminModule --> BotDB
+AdminModule --> BotUserDB
+BotUserDB --> UserDB
+BotUserDB --> BotDB
+AdminModule --> TransactionsDB
+PaymentModule --> TransactionsDB
+
+@enduml

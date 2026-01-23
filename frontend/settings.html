@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <link rel="stylesheet" href="output.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoCDK - Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-item.active {
+            background: rgba(255, 69, 0, 0.1);
+            border-left: 3px solid #ff4500;
+            color: #ff4500;
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: #ff4500;
+            box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.1);
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: rgba(255, 69, 0, 0.1);
+            color: #ff4500;
+            border-color: #ff4500;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .select2-container--default .select2-selection--single {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0.5rem !important;
+            height: 42px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: white !important;
+            line-height: 42px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 42px !important;
+        }
+
+        .select2-dropdown {
+            background-color: #1a1a1a !important;
+            border: 1px solid #333333 !important;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #ff4500 !important;
+        }
+
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: #333333 !important;
+            color: white !important;
+            border: 1px solid #4d4d4d !important;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white min-h-screen">
+    <!-- Top Navigation Bar -->
+    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center">
+        <div class="flex items-center">
+            <a href="index.html" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                Algocdk
+            </a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-2 bg-dark-700 px-3 py-1 rounded-lg border border-dark-600">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-sm">Live</span>
+            </div>
+
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <div id="userAvatar"
+                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="userName" class="hidden md:block">Loading...</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                </button>
+
+                <!-- User Dropdown -->
+                <div id="userDropdown"
+                    class="absolute right-0 mt-2 w-56 bg-dark-800 rounded-lg shadow-xl border border-dark-700 hidden z-10">
+                    <div class="p-4 border-b border-dark-700">
+                        <div class="flex items-center space-x-3">
+                            <div id="dropdownAvatar"
+                                class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h3 id="dropdownName" class="font-medium text-white">Loading...</h3>
+                                <p id="dropdownEmail" class="text-xs text-gray-400 truncate max-w-[150px]">Loading...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <a href="./profile"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
+                            <i class="fas fa-user-circle mr-3 text-primary-500"></i>
+                            Profile
+                        </a>
+                        <a href="./settings"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
+                            <i class="fas fa-cog mr-3 text-gray-400"></i>
+                            Settings
+                        </a>
+                        <a href="billing.html"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
+                            <i class="fas fa-credit-card mr-3 text-gray-400"></i>
+                            Billing
+                        </a>
+                        <div class="border-t border-dark-700 my-1"></div>
+                        <a href="#" id="logoutButton"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-red-500 hover:bg-dark-700 transition-colors flex items-center">
+                            <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <div class="hidden md:flex md:w-64 md:flex-col">
+            <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-dark-800 border-r border-dark-700">
+                <div class="flex-grow flex flex-col">
+                    <nav class="flex-1 px-4 space-y-2 py-4">
+                        <a href="./app"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
+                            <i class="fas fa-tachometer-alt mr-3"></i>
+                            Dashboard
+                        </a>
+                        <a href="./my-bots"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
+                            <i class="fas fa-robot mr-3"></i>
+                            My Bots
+                        </a>
+                        <a href="./marketplace"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
+                            <i class="fas fa-store mr-3"></i>
+                            AI Bots Marketplace
+                        </a>
+                        <a href="trade-history.html"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
+                            <i class="fas fa-history mr-3"></i>
+                            Trade History
+                        </a>
+                        <div class="border-t border-dark-700 my-2"></div>
+                        <a href="./profile"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
+                            <i class="fas fa-user-circle mr-3 text-primary-500"></i>
+                            Profile
+                        </a>
+                        <a href="./settings"
+                            class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg group">
+                            <i class="fas fa-cog mr-3"></i>
+                            Settings
+                        </a>
+                        <a href="./support"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
+                            <i class="fas fa-question-circle mr-3"></i>
+                            
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-x-hidden">
+            <main class="p-6 fade-in">
+                <!-- Settings Header -->
+                <div class="mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                        <div>
+                            <h1 class="text-3xl font-bold text-white mb-2">Settings</h1>
+                            <p class="text-gray-400">Customize your account preferences and trading options</p>
+                        </div>
+                        <div class="flex space-x-3 mt-4 md:mt-0">
+                            <button id="editSettingsBtn"
+                                class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                <i class="fas fa-edit mr-2"></i> Edit Settings
+                            </button>
+                            <button id="saveSettingsBtn" style="display: none;"
+                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                <i class="fas fa-save mr-2"></i> Save Changes
+                            </button>
+                            <button id="cancelEditBtn" style="display: none;"
+                                class="bg-dark-700 hover:bg-dark-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center border border-dark-600">
+                                <i class="fas fa-times mr-2"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="flex border-b border-dark-700 mb-8">
+                        <button
+                            class="tab-button active px-4 py-3 font-medium text-sm border-b-2 border-primary-500 text-primary-500">
+                            <i class="fas fa-cog mr-2"></i> General
+                        </button>
+                        <button id="notificationsTab"
+                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
+                            <i class="fas fa-bell mr-2"></i> Notifications
+                        </button>
+                        <button id="tradingTab"
+                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
+                            <i class="fas fa-chart-line mr-2"></i> Trading
+                        </button>
+                        <button id="securityTab"
+                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
+                            <i class="fas fa-shield-alt mr-2"></i> Security
+                        </button>
+                    </div>
+                </div>
+
+                <!-- General Settings Section -->
+                <div id="generalSection" class="fade-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h2 class="text-xl font-bold text-white mb-6">Account Preferences</h2>
+                            <form id="generalForm">
+                                <div class="space-y-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400 mb-2">Theme</label>
+                                        <select id="themeSelect"
+                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
+                                            disabled>
+                                            <option value="dark">Dark (Default)</option>
+                                            <option value="light">Light</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400 mb-2">Currency</label>
+                                        <select id="currencySelect"
+                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
+                                            disabled>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                            <option value="GBP">GBP</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400 mb-2">Date Format</label>
+                                        <select id="dateFormatSelect"
+                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
+                                            disabled>
+                                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h2 class="text-xl font-bold text-white mb-6">Privacy Settings</h2>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-white">Data Sharing</h3>
+                                        <p class="text-gray-400 text-sm">Share trading data with partners</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="dataSharingToggle" class="sr-only peer" disabled>
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-white">Public Profile</h3>
+                                        <p class="text-gray-400 text-sm">Make profile visible to others</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="publicProfileToggle" class="sr-only peer" disabled>
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               support
+
+                <!-- Notifications Section -->
+                <div id="notificationsSection" class="hidden fade-in">
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                        <h2 class="text-xl font-bold text-white mb-6">Notification Preferences</h2>
+                        <form id="notificationsForm">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 border border-dark-700 rounded-lg">
+                                    <div>
+                                        <h3 class="font-medium text-white">Email Notifications</h3>
+                                        <p class="text-gray-400 text-sm">Receive emails for trade alerts</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="emailNotifications" class="sr-only peer" disabled
+                                            checked>
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between p-4 border border-dark-700 rounded-lg">
+                                    <div>
+                                        <h3 class="font-medium text-white">Push Notifications</h3>
+                                        <p class="text-gray-400 text-sm">Receive mobile push notifications</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="pushNotifications" class="sr-only peer" disabled>
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="flex items-center justify-between p-4 border border-dark-700 rounded-lg">
+                                    <div>
+                                        <h3 class="font-medium text-white">SMS Alerts</h3>
+                                        <p class="text-gray-400 text-sm">Receive SMS for critical events</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="smsAlerts" class="sr-only peer" disabled>
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Trading Settings Section -->
+                <div id="tradingSection" class="hidden fade-in">
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                        <h2 class="text-xl font-bold text-white mb-6">Trading Preferences</h2>
+                        <form id="tradingForm">
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Risk Level</label>
+                                    <select id="riskLevel"
+                                        class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
+                                        disabled>
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Max Daily Trades</label>
+                                    <input type="number" id="maxTrades"
+                                        class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
+                                        value="10" disabled>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Auto Trade</label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="autoTrade" class="sr-only peer" disabled checked>
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                        </div>
+                                        <span class="ml-3 text-sm font-medium text-gray-400">Enable Auto Trading</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Security Settings Section -->
+                <div id="securitySection" class="hidden fade-in">
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                        <h2 class="text-xl font-bold text-white mb-6">Security Settings</h2>
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
+                                <div>
+                                    <h3 class="font-medium text-white">Two-Factor Authentication</h3>
+                                    <p class="text-gray-400 text-sm">Add an extra layer of security</p>
+                                </div>
+                                <button id="enable2faBtn"
+                                    class="bg-dark-700 hover:bg-dark-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-dark-600">
+                                    Enable 2FA
+                                </button>
+                            </div>
+                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
+                                <div>
+                                    <h3 class="font-medium text-white">Login Alerts</h3>
+                                    <p class="text-gray-400 text-sm">Notify on new logins</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="loginAlerts" class="sr-only peer" disabled checked>
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
+                                <div>
+                                    <h3 class="font-medium text-white">Active Sessions</h3>
+                                    <p class="text-gray-400 text-sm"><span id="activeSessions">1</span> device connected
+                                    </p>
+                                </div>
+                                <button id="viewSessionsBtn"
+                                    class="text-primary-500 hover:text-primary-400 text-sm font-medium">
+                                    View All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-dark-800 border-t border-dark-700 py-6 px-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <p class="text-gray-400 text-sm">&copy; <span id="currentYear"></span> AlgoCDK. All rights
+                            reserved.</p>
+                    </div>
+                    <div class="flex space-x-6">
+                        <a href="terms.html" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
+                        <a href="privacy.html"
+                            class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
+                        <a href="support.html"
+                            class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-dark-800 rounded-xl p-6 flex flex-col items-center border border-dark-600">
+            <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
+            </div>
+            <p class="text-white">Loading settings...</p>
+        </div>
+    </div>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Authentication check
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/';
+        }
+
+        // Utility function for authenticated fetch requests
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            };
+
+            const response = await fetch(url, { ...defaultOptions, ...options });
+
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = '/';
+                throw new Error('Session expired. Please login again.');
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.message || `Request failed: ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // Function to get user initials
+        function getUserInitials(name) {
+            if (!name || name === 'Loading...') return 'U';
+            const nameParts = name.split(' ');
+            if (nameParts.length === 1) {
+                return nameParts[0].charAt(0).toUpperCase();
+            }
+            return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // Load user data for nav
+        async function loadUserData() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.classList.remove('hidden');
+
+            try {
+                const response = await authFetch('/api/user/profile');
+                const userData = response.data || response.user || response;
+
+                const userName = userData.full_name || userData.name || userData.username || 'User';
+                const userEmail = userData.email || 'Not provided';
+                const userInitials = getUserInitials(userName);
+
+                // Update navigation
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userAvatar').textContent = userInitials;
+                document.getElementById('dropdownName').textContent = userName;
+                document.getElementById('dropdownEmail').textContent = userEmail;
+                document.getElementById('dropdownAvatar').textContent = userInitials;
+
+                // Load settings-specific data (simulated or from API)
+                loadSettingsUI(userData);
+
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                showNotification('Failed to load data: ' + error.message, 'error');
+            } finally {
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // Load settings UI (placeholder - fetch from API if separate endpoint exists)
+        function loadSettingsUI(userData) {
+            // General
+            document.getElementById('themeSelect').value = userData.theme || 'dark';
+            document.getElementById('currencySelect').value = userData.currency || 'USD';
+            document.getElementById('dateFormatSelect').value = userData.date_format || 'MM/DD/YYYY';
+
+            // Privacy
+            document.getElementById('dataSharingToggle').checked = userData.data_sharing || false;
+            document.getElementById('publicProfileToggle').checked = userData.public_profile || false;
+
+            // Notifications
+            document.getElementById('emailNotifications').checked = userData.email_notifications || true;
+            document.getElementById('pushNotifications').checked = userData.push_notifications || false;
+            document.getElementById('smsAlerts').checked = userData.sms_alerts || false;
+
+            // Trading
+            document.getElementById('riskLevel').value = userData.risk_level || 'medium';
+            document.getElementById('maxTrades').value = userData.max_daily_trades || 10;
+            document.getElementById('autoTrade').checked = userData.auto_trade || true;
+        }
+
+        // Enable/disable form fields for editing
+        function setEditMode(enabled) {
+            const formFields = document.querySelectorAll('select, input[type="number"], input[type="checkbox"]');
+            formFields.forEach(field => {
+                field.disabled = !enabled;
+            });
+
+            // Show/hide buttons
+            document.getElementById('editSettingsBtn').style.display = enabled ? 'none' : 'flex';
+            document.getElementById('saveSettingsBtn').style.display = enabled ? 'flex' : 'none';
+            document.getElementById('cancelEditBtn').style.display = enabled ? 'flex' : 'none';
+        }
+
+        // Save settings
+        async function saveSettings() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.classList.remove('hidden');
+
+            try {
+                const formData = {
+                    theme: document.getElementById('themeSelect').value,
+                    currency: document.getElementById('currencySelect').value,
+                    date_format: document.getElementById('dateFormatSelect').value,
+                    data_sharing: document.getElementById('dataSharingToggle').checked,
+                    public_profile: document.getElementById('publicProfileToggle').checked,
+                    email_notifications: document.getElementById('emailNotifications').checked,
+                    push_notifications: document.getElementById('pushNotifications').checked,
+                    sms_alerts: document.getElementById('smsAlerts').checked,
+                    risk_level: document.getElementById('riskLevel').value,
+                    max_daily_trades: parseInt(document.getElementById('maxTrades').value),
+                    auto_trade: document.getElementById('autoTrade').checked
+                };
+
+                const response = await authFetch('/api/user/profile', { // Reuse profile endpoint or create /settings if needed
+                    method: 'PUT',
+                    body: JSON.stringify(formData)
+                });
+
+                showNotification('Settings updated successfully', 'success');
+                setEditMode(false);
+
+            } catch (error) {
+                console.error('Failed to save settings:', error);
+                showNotification('Failed to update settings: ' + error.message, 'error');
+            } finally {
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // Tab switching functionality
+        const tabs = {
+            general: document.getElementById('generalSection'),
+            notifications: document.getElementById('notificationsSection'),
+            trading: document.getElementById('tradingSection'),
+            security: document.getElementById('securitySection')
+        };
+
+        const tabButtons = document.querySelectorAll('.tab-button');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active', 'border-primary-500', 'text-primary-500');
+                    btn.classList.add('text-gray-400');
+                });
+
+                Object.values(tabs).forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+                this.classList.remove('text-gray-400');
+                this.classList.add('active', 'border-primary-500', 'text-primary-500');
+
+                const tabText = this.textContent.toLowerCase();
+                if (tabText.includes('general')) {
+                    tabs.general.classList.remove('hidden');
+                } else if (tabText.includes('notifications')) {
+                    tabs.notifications.classList.remove('hidden');
+                } else if (tabText.includes('trading')) {
+                    tabs.trading.classList.remove('hidden');
+                } else if (tabText.includes('security')) {
+                    tabs.security.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+
+            // Edit settings button
+            document.getElementById('editSettingsBtn').addEventListener('click', () => {
+                setEditMode(true);
+            });
+
+            // Save settings button
+            document.getElementById('saveSettingsBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                saveSettings();
+            });
+
+            // Cancel edit button
+            document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                setEditMode(false);
+                // Reload data
+                loadUserData();
+            });
+
+            // Logout functionality
+            document.getElementById('logoutButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = '/';
+            });
+
+            // Placeholder for 2FA and sessions
+            document.getElementById('enable2faBtn').addEventListener('click', () => {
+                showNotification('2FA setup coming soon', 'info');
+            });
+            document.getElementById('viewSessionsBtn').addEventListener('click', () => {
+                showNotification('Active sessions view coming soon', 'info');
+            });
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.notification-toast');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `notification-toast fixed top-4 right-4 p-4 rounded-lg shadow-lg border z-50 transform transition-all duration-300 fade-in`;
+
+            let bgColor = 'bg-dark-800';
+            let borderColor = 'border-dark-700';
+            let icon = 'fas fa-info-circle';
+
+            if (type === 'success') {
+                bgColor = 'bg-green-500/20';
+                borderColor = 'border-green-500/30';
+                icon = 'fas fa-check-circle text-green-500';
+            } else if (type === 'error') {
+                bgColor = 'bg-red-500/20';
+                borderColor = 'border-red-500/30';
+                icon = 'fas fa-exclamation-circle text-red-500';
+            } else if (type === 'warning') {
+                bgColor = 'bg-yellow-500/20';
+                borderColor = 'border-yellow-500/30';
+                icon = 'fas fa-exclamation-triangle text-yellow-500';
+            } else if (type === 'info') {
+                bgColor = 'bg-blue-500/20';
+                borderColor = 'border-blue-500/30';
+                icon = 'fas fa-info-circle text-blue-500';
+            }
+
+            notification.className += ` ${bgColor} ${borderColor}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="${icon} mr-3"></i>
+                    <p class="text-white">${message}</p>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

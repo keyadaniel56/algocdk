@@ -1,0 +1,564 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/keyadaniel56/algocdk/internal/database"
+	"github.com/keyadaniel56/algocdk/internal/models"
+	"github.com/keyadaniel56/algocdk/internal/utils"
+	"gorm.io/gorm"
+)
+
+// SignupHandler godoc
+// @Summary User signup
+// @Description Registers a new user with name, email, and password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param body body object true "User signup details"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/auth/signup [post]
+func SignupHandler(ctx *gin.Context) {
+	var payload struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "invalid request body",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	payload.Email = strings.TrimSpace(strings.ToLower(payload.Email))
+	payload.Password = strings.TrimSpace(payload.Password)
+	payload.Name = strings.TrimSpace(payload.Name)
+
+	if payload.Name == "" || payload.Email == "" || payload.Password == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "all fields must be provided",
+		})
+		return
+	}
+
+	if !utils.IsValidEmail(payload.Email) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
+		return
+	}
+
+	if !utils.IsValidPassword(payload.Password) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "password must contain a-z, A-Z, 0-9 and a special character",
+		})
+		return
+	}
+
+	// ✅ Get real client IP
+	clientIP := ctx.ClientIP()
+
+	// ✅ Cached country detection
+	country, err := utils.DetectCountryCached(clientIP)
+	if err != nil || country == "" {
+		country = "Unknown"
+	}
+
+	hashed, err := utils.HashPassword(payload.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "password hashing failed"})
+		return
+	}
+
+	user := models.User{
+		Name:      payload.Name,
+		Email:     payload.Email,
+		Password:  hashed,
+		Country:   country,
+		CreatedAt: utils.FormattedTime(time.Now()),
+		UpdatedAt: utils.FormattedTime(time.Now()),
+	}
+
+	if err := database.DB.Create(&user).Error; err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "could not create user",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	token, err := utils.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "could not generate token",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Signup successful",
+		"token":   token,
+		"country": country,
+	})
+}
+
+// LoginHandler godoc
+// @Summary User login
+// @Description Logs in a user with email and password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param body body object true "User login details"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /api/auth/login [post]
+func LoginHandler(ctx *gin.Context) {
+	var payload struct {
+		Email        string `json:"email"`
+		Password     string `json:"password"`
+		RefreshToken string `json:"refresh_token"`
+	}
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+	payload.Email = strings.TrimSpace(strings.ToLower(payload.Email))
+	payload.Password = strings.TrimSpace(payload.Password)
+	if payload.Email == "" || payload.Password == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email and password is required to signup"})
+	}
+
+	var user models.User
+	if err := database.DB.Where("email=?", payload.Email).First(&user).Error; err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
+		return
+	}
+	if !utils.IsHashed(user.Password, payload.Password) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
+		return
+	}
+	token, _ := utils.GenerateToken(user.ID, user.Email)
+	payload.RefreshToken, _ = utils.RefreshToken(user.Email)
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":       "login succesful",
+		"token":         token,
+		"refresh_token": payload.RefreshToken,
+		"role":          user.Role,
+		"membership":    user.Membership,
+		"user": gin.H{
+			"id":    user.ID,
+			"name":  user.Name,
+			"email": user.Email,
+		},
+		"last_login": time.Now(),
+	})
+}
+
+// ProfileHandler godoc
+// @Summary Get user profile
+// @Description Retrieves user profile by ID
+// @Tags user
+// @Produce json
+// @Param id path string true "User ID"
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 404 {object} map[string]string
+// @Router /api/user/profile/{id} [get]
+func ProfileHandler(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	upgradeMessage := ""
+	switch user.UpgradeRequestStatus {
+	case "pending":
+		upgradeMessage = "Your request to become admin is pending."
+	case "approved":
+		upgradeMessage = "Your request has been approved. You are now an admin."
+	case "rejected":
+		upgradeMessage = "Your request to become admin has been rejected."
+	default:
+		upgradeMessage = "You have not requested to become an admin."
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"user": gin.H{
+			"id":             user.ID,
+			"name":           user.Name,
+			"email":          user.Email,
+			"joined":         time.Time(user.CreatedAt).Format(time.RFC3339),
+			"membership":     user.Membership,
+			"role":           user.Role,
+			"upgrade_status": upgradeMessage,
+		},
+	})
+}
+
+// UpdateProfile godoc
+// @Summary Update user profile
+// @Description Updates user profile details by ID
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param body body object true "Profile update details"
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/user/updateprofile/{id} [post]
+func UpdateProfile(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized - missing user ID"})
+		return
+	}
+
+	var payload struct {
+		FullName string `json:"full_name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Phone    string `json:"phone"`
+		Country  string `json:"country"`
+		Timezone string `json:"timezone"`
+		Language string `json:"language"`
+		Bio      string `json:"bio"`
+	}
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body", "details": err.Error()})
+		return
+	}
+
+	var user models.User
+	if err := database.DB.First(&user, "id = ?", userID).Error; err != nil { // Use WHERE for safety
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	if payload.FullName != "" {
+		user.Name = strings.TrimSpace(payload.FullName) // Assuming model field is Name; change to user.FullName if model updated
+	}
+	// if payload.Phone != "" {
+	//     user.Phone = strings.TrimSpace(payload.Phone) // Add to models.User if missing
+	// }
+	if payload.Country != "" {
+		user.Country = strings.TrimSpace(payload.Country)
+	}
+	// if payload.Timezone != "" {
+	//     user.Timezone = strings.TrimSpace(payload.Timezone)
+	// }
+	// if payload.Language != "" {
+	//     user.Language = strings.TrimSpace(payload.Language)
+	// }
+	// if payload.Bio != "" {
+	//     user.Bio = strings.TrimSpace(payload.Bio)
+	// }
+	if payload.Email != "" {
+		if !utils.IsValidEmail(payload.Email) {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
+			return
+		}
+		user.Email = payload.Email
+	}
+	if payload.Password != "" {
+		hashed, err := utils.HashPassword(payload.Password)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password", "details": err.Error()})
+			return
+		}
+		user.Password = hashed
+	}
+
+	user.UpdatedAt = utils.FormattedTime(time.Now())
+	if err := database.DB.Save(&user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update profile", "details": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "profile updated successfully",
+		"data": gin.H{
+			"id":    user.ID,
+			"name":  user.Name, // Or "full_name": user.Name
+			"email": user.Email,
+			// "phone":           user.Phone,
+			"country": user.Country,
+			// "timezone":        user.Timezone,
+			// "language":        user.Language,
+			// "bio":             user.Bio,
+			"membership_type": user.Membership,
+			"created_at":      user.CreatedAt,
+			"updated_at":      user.UpdatedAt,
+		},
+	})
+}
+
+// DeleteAccountHandler godoc
+// @Summary Delete user account
+// @Description Deletes a user account by ID
+// @Tags user
+// @Produce json
+// @Param id path string true "User ID"
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/user/delete_account/{id} [delete]
+func DeleteAccountHandler(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if err := database.DB.Delete(&models.User{}, id).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete account"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "account deleted succesfully"})
+}
+
+// ResetPasswordHandler godoc
+// @Summary Reset user password
+// @Description Resets user password using a token
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param body body object true "Reset password details"
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /api/user/reset_password/{id} [post]
+func ResetPasswordHandler(ctx *gin.Context) {
+	var payload struct {
+		Token       string `json:"token"`
+		NewPassword string `json:"new_password"`
+	}
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	if !utils.IsValidPassword(payload.NewPassword) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "weak password"})
+		return
+	}
+
+	hashedToken := utils.HashSHA256(payload.Token)
+
+	var user models.User
+	if err := database.DB.
+		Where("reset_token = ?", hashedToken).
+		First(&user).Error; err != nil {
+
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
+		return
+	}
+
+	if time.Now().After(user.ResetExpiry) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "token expired"})
+		return
+	}
+
+	hashedPassword, _ := utils.HashPassword(payload.NewPassword)
+
+	user.Password = hashedPassword
+	user.ResetToken = ""
+	user.ResetExpiry = time.Time{}
+
+	database.DB.Save(&user)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "password reset successful"})
+}
+
+// ToggleFavorite godoc
+// @Summary Toggle favorite bot
+// @Description Toggles a bot as favorite for the user
+// @Tags user
+// @Produce json
+// @Param id path string true "Bot ID"
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/user/togole_favorite/{id} [get]
+func ToggleFavorite(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	userID := c.GetUint("user_id")
+
+	botID, err := strconv.Atoi(c.Param("bot_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid bot ID"})
+		return
+	}
+
+	var favorite models.Favorite
+
+	// Check if this favorite already exists
+	err = db.Where("user_id = ? AND bot_id = ?", userID, botID).First(&favorite).Error
+
+	if err == nil {
+		// Exists → unfavorite (delete)
+		db.Delete(&favorite)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Bot removed from favorites",
+			"status":  "unfavorited",
+		})
+		return
+	}
+
+	if err != gorm.ErrRecordNotFound {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+
+	// Not found → favorite it
+	newFavorite := models.Favorite{
+		UserID: userID,
+		BotID:  uint(botID),
+	}
+
+	if err := db.Create(&newFavorite).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add favorite"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Bot added to favorites",
+		"status":  "favorited",
+	})
+}
+
+// GetUserFavorites godoc
+// @Summary Get user favorites
+// @Description Retrieves the list of favorite bots for the user
+// @Tags user
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/user/favorite/me [get]
+func GetUserFavorites(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	var favorites []models.Favorite
+
+	// Load all favorites with their bots
+	if err := database.DB.Preload("Bot").Where("user_id = ?", userID).Find(&favorites).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch favorites"})
+		return
+	}
+
+	// Prepare bot list for response
+	var bots []gin.H
+	for _, fav := range favorites {
+		b := fav.Bot
+		bots = append(bots, gin.H{
+			"id":          b.ID,
+			"name":        b.Name,
+			"image":       b.Image,
+			"price":       b.Price,
+			"strategy":    b.Strategy,
+			"status":      b.Status,
+			"bot_link":    b.HTMLFile,
+			"is_favorite": true,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Favorite bots retrieved successfully",
+		"data":    bots,
+	})
+}
+
+// ForgotPasswordHandler godoc
+// @Summary Forgot password
+// @Description Sends a password reset link to the user's email
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param body body object true "Email for password reset"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/auth/forgot_password/ [post]
+func ForgotPasswordHandler(ctx *gin.Context) {
+	var payload struct {
+		Email string `json:"email"`
+	}
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	var user models.User
+	if err := database.DB.Where("email=?", payload.Email).First(&user).Error; err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"message": "if the email exists , a reset link was sent"})
+		return
+	}
+	token, hashedToken, err := utils.GenerateResetToken()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
+		return
+	}
+	user.ResetToken = hashedToken
+	user.ResetExpiry = time.Now().Add(15 * time.Minute)
+	database.DB.Save(&user)
+
+	resetLink := fmt.Sprintf("https://yourfrontend.com/reset-password?token=%s",
+		token)
+
+	go utils.SendResetEmail(user.Email, resetLink)
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "If the email exists, a reset link was sent",
+	})
+}
+
+func GetBotDetails(ctx *gin.Context) {
+	botID := ctx.Param("id")
+	var bot models.Bot
+	if err := database.DB.First(&bot, botID).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "Bot not found"})
+		return
+	}
+
+	var admin models.Admin
+	if err := database.DB.Where("person_id = ?", bot.OwnerID).First(&admin).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"message": "Admin not found"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Bot details retrieved",
+		"data": map[string]interface{}{
+			"id":           bot.ID,
+			"admin_id":     admin.ID,
+			"price":        bot.Price,
+			"rent_price":   bot.RentPrice,
+			"payment_type": bot.SubscriptionType,
+			"name":         bot.Name,
+			"description":  bot.Description,
+		},
+	})
+}

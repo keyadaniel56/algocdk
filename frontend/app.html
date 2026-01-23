@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <link rel="stylesheet" href="output.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AlgoCDK - AI Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'slide-out': 'slideOut 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        },
+                        slideOut: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    },
+                    screens: {
+                        'xs': '475px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sidebar-item.active {
+            background: rgba(255, 69, 0, 0.1);
+            border-left: 3px solid #ff4500;
+            color: #ff4500;
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .ai-analyzing {
+            background: linear-gradient(90deg, #000000, #1a1a1a, #000000);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+            border-color: rgba(255, 69, 0, 0.2);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .bot-running {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 69, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 69, 0, 0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Profile dropdown styles */
+        .profile-dropdown-item {
+            transition: all 0.2s ease;
+        }
+
+        .profile-dropdown-item:hover {
+            background: rgba(255, 69, 0, 0.1);
+        }
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Mobile sidebar */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .mobile-sidebar.active {
+            transform: translateX(0);
+        }
+
+        /* Touch-friendly buttons */
+        .touch-button {
+            padding: 12px 16px;
+            min-height: 44px;
+        }
+
+        /* Responsive text sizes */
+        @media (max-width: 640px) {
+            .text-responsive-xl {
+                font-size: 1.5rem;
+            }
+
+            .text-responsive-lg {
+                font-size: 1.25rem;
+            }
+
+            .text-responsive-md {
+                font-size: 1rem;
+            }
+
+            .text-responsive-sm {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white min-h-screen">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobileSidebar" class="mobile-sidebar bg-dark-800 border-r border-dark-700">
+        <div class="flex flex-col h-full">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b border-dark-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">Algocdk</span>
+                    </div>
+                    <button id="closeSidebar" class="p-2 text-gray-400 hover:text-white">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <nav class="flex-1 px-4 space-y-1 py-4 overflow-y-auto">
+                <a href="./app"
+                    class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg group touch-button">
+                    <i class="fas fa-tachometer-alt mr-3 text-primary-500"></i>
+                    Dashboard
+                </a>
+                <a href="./mybots"
+                    class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                    <i class="fas fa-robot mr-3"></i>
+                    My Bots
+                </a>
+                <a href="./botstore"
+                    class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                    <i class="fas fa-store mr-3"></i>
+                    Bots Marketplace
+                </a>
+                <a href="#"
+                    class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                    <i class="fas fa-history mr-3"></i>
+                    Trade History
+                </a>
+                <a href="./support"
+                    class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                    <i class="fas fa-question-circle mr-3"></i>
+                    Support
+                </a>
+                <a href="./settings"
+                    class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-dark-700">
+                <div class="flex items-center space-x-3">
+                    <div id="mobileUserAvatar"
+                        class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 id="mobileUserName" class="font-medium text-white text-sm truncate">Loading...</h3>
+                        <p id="mobileUserEmail" class="text-xs text-gray-400 truncate">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <nav
+        class="bg-dark-800 border-b border-dark-700 py-3 px-4 sm:px-6 flex justify-between items-center sticky top-0 z-30">
+        <div class="flex items-center">
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuButton" class="mr-3 text-gray-400 hover:text-white md:hidden">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+
+            <a href="#" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <span class="hidden sm:inline">Algocdk</span>
+            </a>
+        </div>
+
+        <div class="flex items-center space-x-3 sm:space-x-4">
+            <div class="hidden sm:flex items-center space-x-2 bg-dark-700 px-3 py-1 rounded-lg border border-dark-600">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-sm">Live</span>
+            </div>
+
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none touch-button">
+                    <div id="userAvatar"
+                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="userName" class="hidden sm:block">Loading...</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-xs hidden sm:block"></i>
+                </button>
+
+                <!-- User Dropdown -->
+                <div id="userDropdown"
+                    class="absolute right-0 mt-2 w-56 bg-dark-800 rounded-lg shadow-xl border border-dark-700 hidden z-10">
+                    <div class="p-4 border-b border-dark-700">
+                        <div class="flex items-center space-x-3">
+                            <div id="dropdownAvatar"
+                                class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h3 id="dropdownName" class="font-medium text-white">Loading...</h3>
+                                <p id="dropdownEmail" class="text-xs text-gray-400 truncate max-w-[150px]">Loading...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <a href="./profile"
+                            class="profile-dropdown-item block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center touch-button">
+                            <i class="fas fa-user-circle mr-3 text-gray-400"></i>
+                            Profile
+                        </a>
+                        <a href="./settings"
+                            class="profile-dropdown-item block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center touch-button">
+                            <i class="fas fa-cog mr-3 text-gray-400"></i>
+                            Settings
+                        </a>
+                        <a href="./billings"
+                            class="profile-dropdown-item block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center touch-button">
+                            <i class="fas fa-credit-card mr-3 text-gray-400"></i>
+                            Billing
+                        </a>
+                        <div class="border-t border-dark-700 my-1"></div>
+                        <a href="#" id="logoutButton"
+                            class="profile-dropdown-item block px-4 py-3 text-sm text-red-500 hover:bg-dark-700 transition-colors flex items-center touch-button">
+                            <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Desktop Sidebar Navigation -->
+        <div class="hidden md:flex md:w-64 md:flex-col">
+            <div
+                class="flex flex-col flex-grow pt-5 overflow-y-auto bg-dark-800 border-r border-dark-700 sticky top-[57px] h-[calc(100vh-57px)]">
+                <div class="flex-grow flex flex-col">
+                    <nav class="flex-1 px-4 space-y-2 py-4">
+                        <a href="./app"
+                            class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg group touch-button">
+                            <i class="fas fa-tachometer-alt mr-3 text-primary-500"></i>
+                            Dashboard
+                        </a>
+                        <a href="./mybots"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                            <i class="fas fa-robot mr-3"></i>
+                            My Bots
+                        </a>
+                        <a href="./botstore"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                            <i class="fas fa-store mr-3"></i>
+                            Bots Marketplace
+                        </a>
+                        <a href="#"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                            <i class="fas fa-history mr-3"></i>
+                            Trade History
+                        </a>
+                        <a href="./support"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                            <i class="fas fa-question-circle mr-3"></i>
+                            Support
+                        </a>
+                        <a href="./settings"
+                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group touch-button">
+                            <i class="fas fa-cog mr-3"></i>
+                            Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-x-hidden">
+            <main class="p-4 sm:p-6 fade-in">
+                <!-- Welcome Section with Personalized Greeting -->
+                <div class="mb-6 sm:mb-8">
+                    <h1 id="welcomeMessage" class="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome to Algocdk
+                    </h1>
+                    <p class="text-gray-400 text-sm sm:text-base max-w-3xl">Your Algo Trading Hub - Discover, customize,
+                        and deploy intelligent
+                        trading bots that work 24/7 to maximize your profits.</p>
+                </div>
+
+                <!-- AI Analyzing Banner -->
+                <div class="ai-analyzing rounded-xl p-4 mb-6 sm:mb-8 border border-primary-500/20">
+                    <div class="flex items-center">
+                        <div
+                            class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary-500/20 flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">
+                            <i class="fas fa-brain text-primary-500 text-sm sm:text-base"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-medium text-white text-sm sm:text-base">AI is analyzing markets...</h3>
+                            <p class="text-xs sm:text-sm text-gray-400 truncate">Our algorithms are scanning for optimal
+                                trading opportunities</p>
+                        </div>
+                        <div class="ml-2 flex-shrink-0">
+                            <div class="flex space-x-1 sm:space-x-2">
+                                <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary-500 animate-pulse"></div>
+                                <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary-500 animate-pulse"
+                                    style="animation-delay: 0.2s"></div>
+                                <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary-500 animate-pulse"
+                                    style="animation-delay: 0.4s"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8" id="statsSection">
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-4 sm:p-6 card-hover">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-xs sm:text-sm">Active Bots</p>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-1 sm:mt-2" id="activeBots">
+                                    Loading...</h3>
+                            </div>
+                            <div class="p-2 sm:p-3 bg-green-500/10 rounded-lg border border-green-500/20 flex-shrink-0">
+                                <i class="fas fa-play-circle text-green-500 text-sm sm:text-base"></i>
+                            </div>
+                        </div>
+                        <p class="text-green-500 text-xs sm:text-sm mt-3 sm:mt-4" id="activeBotsChange"><i
+                                class="fas fa-arrow-up mr-1"></i> Loading...</p>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-4 sm:p-6 card-hover">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-xs sm:text-sm">Total Trades</p>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-1 sm:mt-2" id="totalTrades">
+                                    Loading...</h3>
+                            </div>
+                            <div class="p-2 sm:p-3 bg-blue-500/10 rounded-lg border border-blue-500/20 flex-shrink-0">
+                                <i class="fas fa-exchange-alt text-blue-500 text-sm sm:text-base"></i>
+                            </div>
+                        </div>
+                        <p class="text-green-500 text-xs sm:text-sm mt-3 sm:mt-4" id="totalTradesChange"><i
+                                class="fas fa-arrow-up mr-1"></i> Loading...</p>
+                    </div>
+
+                    <div
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-4 sm:p-6 card-hover col-span-2 lg:col-span-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-xs sm:text-sm">Win Rate</p>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-1 sm:mt-2" id="winRate">
+                                    Loading...</h3>
+                            </div>
+                            <div
+                                class="p-2 sm:p-3 bg-purple-500/10 rounded-lg border border-purple-500/20 flex-shrink-0">
+                                <i class="fas fa-chart-line text-purple-500 text-sm sm:text-base"></i>
+                            </div>
+                        </div>
+                        <p class="text-green-500 text-xs sm:text-sm mt-3 sm:mt-4" id="winRateChange"><i
+                                class="fas fa-arrow-up mr-1"></i>
+                            Loading...</p>
+                    </div>
+
+                    <div
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-4 sm:p-6 card-hover col-span-2 lg:col-span-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-xs sm:text-sm">Account Balance</p>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-1 sm:mt-2" id="accountBalance">
+                                    Loading...</h3>
+                            </div>
+                            <div
+                                class="p-2 sm:p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20 flex-shrink-0">
+                                <i class="fas fa-wallet text-yellow-500 text-sm sm:text-base"></i>
+                            </div>
+                        </div>
+                        <p class="text-green-500 text-xs sm:text-sm mt-3 sm:mt-4" id="accountBalanceChange"><i
+                                class="fas fa-arrow-up mr-1"></i> Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Popular Bots Section -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-4 sm:mb-6">
+                        <h2 class="text-xl sm:text-2xl font-bold text-white">Popular Bots</h2>
+                        <a href="botstore"
+                            class="text-primary-500 hover:text-primary-400 transition-colors text-sm font-medium touch-button inline-flex items-center">
+                            <span class="hidden xs:inline">View All</span>
+                            <i class="fas fa-arrow-right ml-1 text-xs sm:text-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="popularBotsGrid">
+                        <div class="text-center text-gray-400 py-8 col-span-full">
+                            Loading bots...
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-dark-800 border-t border-dark-700 py-4 px-4 sm:px-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center">
+                    <div class="mb-3 sm:mb-0">
+                        <p class="text-gray-400 text-xs sm:text-sm">&copy; <span id="currentYear"></span> AlgoCDK. All
+                            rights
+                            reserved.</p>
+                    </div>
+                    <div class="flex space-x-4 sm:space-x-6">
+                        <a href="#"
+                            class="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm touch-button">Terms</a>
+                        <a href="#"
+                            class="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm touch-button">Privacy</a>
+                        <a href="#"
+                            class="text-gray-400 hover:text-white transition-colors text-xs sm:text-sm touch-button">Support</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Loading Spinner Template (Hidden by default) -->
+    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-dark-800 rounded-xl p-6 flex flex-col items-center border border-dark-600 mx-4">
+            <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
+            </div>
+            <p class="text-white">Starting your trading bot...</p>
+        </div>
+    </div>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Mobile sidebar functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function openMobileSidebar() {
+            mobileSidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileSidebar() {
+            mobileSidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuButton.addEventListener('click', openMobileSidebar);
+        closeSidebar.addEventListener('click', closeMobileSidebar);
+        sidebarOverlay.addEventListener('click', closeMobileSidebar);
+
+        // Close sidebar when clicking on a link (optional)
+        document.querySelectorAll('.mobile-sidebar a').forEach(link => {
+            link.addEventListener('click', () => {
+                setTimeout(closeMobileSidebar, 300);
+            });
+        });
+
+        // User dropdown functionality
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+
+        userMenuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            window.location.href = '/';
+        });
+
+        // Authentication check
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/';
+        }
+
+        // Utility function for authenticated fetch requests
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            };
+
+            const response = await fetch(url, { ...defaultOptions, ...options });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.message || `Request failed: ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // Function to get user initials for avatar
+        function getUserInitials(name) {
+            if (!name || name === 'Loading...' || name === 'User') return 'U';
+
+            const nameParts = name.split(' ');
+            if (nameParts.length === 1) {
+                return nameParts[0].charAt(0).toUpperCase();
+            }
+            return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
+        }
+
+        // Function to extract user name from various possible field names
+        function extractUserName(userData) {
+            const nameFields = [
+                'name',
+                'fullName',
+                'username',
+                'userName',
+                'displayName',
+                'first_name',
+                'firstName',
+                'firstname'
+            ];
+
+            for (const field of nameFields) {
+                if (userData[field] && typeof userData[field] === 'string') {
+                    return userData[field];
+                }
+            }
+
+            if (userData.email) {
+                const email = userData.email.split('@')[0];
+                return email.charAt(0).toUpperCase() + email.slice(1);
+            }
+
+            return 'User';
+        }
+
+        // Function to extract user email from various possible field names
+        function extractUserEmail(userData) {
+            const emailFields = ['email', 'emailAddress', 'userEmail'];
+
+            for (const field of emailFields) {
+                if (userData[field] && typeof userData[field] === 'string') {
+                    return userData[field];
+                }
+            }
+
+            return null;
+        }
+
+        // Function to update user profile in UI
+        function updateUserProfile(userData) {
+            const userName = extractUserName(userData);
+            const userEmail = extractUserEmail(userData);
+            const userInitials = getUserInitials(userName);
+
+            // Update desktop navigation
+            const userNameElement = document.getElementById('userName');
+            const userAvatarElement = document.getElementById('userAvatar');
+
+            userNameElement.textContent = userName;
+            userAvatarElement.textContent = userInitials;
+            userAvatarElement.innerHTML = userInitials;
+
+            // Update dropdown profile
+            const dropdownName = document.getElementById('dropdownName');
+            const dropdownEmail = document.getElementById('dropdownEmail');
+            const dropdownAvatar = document.getElementById('dropdownAvatar');
+
+            dropdownName.textContent = userName;
+            dropdownEmail.textContent = userEmail || 'No email provided';
+            dropdownAvatar.textContent = userInitials;
+            dropdownAvatar.innerHTML = userInitials;
+
+            // Update mobile sidebar profile
+            const mobileUserName = document.getElementById('mobileUserName');
+            const mobileUserEmail = document.getElementById('mobileUserEmail');
+            const mobileUserAvatar = document.getElementById('mobileUserAvatar');
+
+            mobileUserName.textContent = userName;
+            mobileUserEmail.textContent = userEmail || 'No email provided';
+            mobileUserAvatar.textContent = userInitials;
+            mobileUserAvatar.innerHTML = userInitials;
+
+            // Update welcome message
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            const timeOfDay = getTimeOfDay();
+            const greeting = getGreeting(timeOfDay);
+            const firstName = userName.split(' ')[0];
+            welcomeMessage.textContent = `${greeting}, ${firstName}!`;
+        }
+
+        // Helper function to get time of day
+        function getTimeOfDay() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'morning';
+            if (hour < 18) return 'afternoon';
+            return 'evening';
+        }
+
+        // Helper function to get greeting
+        function getGreeting(timeOfDay) {
+            switch (timeOfDay) {
+                case 'morning': return 'Good morning';
+                case 'afternoon': return 'Good afternoon';
+                case 'evening': return 'Good evening';
+                default: return 'Welcome';
+            }
+        }
+
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                updateUserProfile({ name: 'Loading...', email: 'Loading...' });
+
+                const response = await authFetch('/api/user/profile');
+                const userData = response.data || response.user || response;
+
+                if (!userData || typeof userData !== 'object') {
+                    throw new Error('Invalid user data format received');
+                }
+
+                localStorage.setItem('userData', JSON.stringify(userData));
+                updateUserProfile(userData);
+
+                return userData;
+            } catch (error) {
+                console.error('Failed to load user profile:', error);
+
+                updateUserProfile({
+                    name: 'Trader',
+                    email: 'user@example.com'
+                });
+
+                const cachedUserData = localStorage.getItem('userData');
+                if (cachedUserData) {
+                    try {
+                        const parsedData = JSON.parse(cachedUserData);
+                        updateUserProfile(parsedData);
+                    } catch (parseError) {
+                        console.error('Failed to parse cached user data:', parseError);
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        // Load user stats
+        async function loadStats() {
+            try {
+                const cachedUserData = localStorage.getItem('userData');
+                if (cachedUserData) {
+                    const userData = JSON.parse(cachedUserData);
+
+                    if (userData.stats || userData.dashboard) {
+                        updateStats(userData.stats || userData.dashboard);
+                        return;
+                    }
+                }
+
+                const stats = await authFetch('/api/user/stats');
+                updateStats(stats);
+
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+                document.querySelectorAll('#statsSection h3').forEach(el => el.textContent = 'Error');
+                document.querySelectorAll('#statsSection p[id$="Change"]').forEach(el => {
+                    el.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Failed to load';
+                    el.className = 'text-red-500 text-xs sm:text-sm mt-3 sm:mt-4';
+                });
+            }
+        }
+
+        // Helper function to update stats display
+        function updateStats(statsData) {
+            const activeBots = statsData.activeBots || statsData.active_bots || statsData.runningBots || 0;
+            const runningBots = statsData.runningBots || statsData.running_bots || 0;
+            const totalTrades = statsData.totalTrades || statsData.total_trades || statsData.trades || 0;
+            const tradesToday = statsData.tradesToday || statsData.trades_today || statsData.todayTrades || 0;
+            const winRate = statsData.winRate || statsData.win_rate || statsData.successRate || 0;
+            const winRateChange = statsData.winRateChange || statsData.win_rate_change || statsData.weeklyChange || 0;
+            const balance = statsData.balance || statsData.accountBalance || statsData.totalBalance || 0;
+            const balanceChange = statsData.balanceChange || statsData.balance_change || statsData.todayProfit || 0;
+
+            document.getElementById('activeBots').textContent = activeBots;
+            document.getElementById('activeBotsChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${runningBots} running`;
+
+            document.getElementById('totalTrades').textContent = totalTrades.toLocaleString();
+            document.getElementById('totalTradesChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${tradesToday} today`;
+
+            document.getElementById('winRate').textContent = `${winRate}%`;
+            document.getElementById('winRateChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${winRateChange}% from last week`;
+
+            document.getElementById('accountBalance').textContent = `$${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('accountBalanceChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> $${balanceChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} today`;
+        }
+
+        // Load popular bots
+        async function loadPopularBots() {
+            try {
+                const response = await authFetch('/api/marketplace');
+                const botsData = response;
+                const bots = botsData.bots || [];
+
+                const grid = document.getElementById('popularBotsGrid');
+                grid.innerHTML = '';
+
+                if (!bots || bots.length === 0) {
+                    grid.innerHTML = '<div class="text-center text-gray-400 py-8 col-span-full">No bots available in the marketplace yet</div>';
+                    return;
+                }
+
+                bots.forEach(bot => {
+                    const botName = bot.name || 'Unnamed Bot';
+                    const botCreator = bot.creator || {};
+                    const botCreatorName = botCreator.name || 'Unknown';
+                    const botPrice = bot.price || 0;
+                    const botRentPrice = bot.rent_price || 0;
+                    const botStrategy = bot.strategy || 'AI Trading';
+                    const botStatus = bot.status || 'inactive';
+                    const botId = bot.id || '';
+                    const botImage = bot.image || '';
+                    const isFavorite = bot.is_favorite || false;
+
+                    function formatPrice(price) {
+                        if (!price) return 'Free';
+                        return `$${price.toLocaleString()}`;
+                    }
+
+                    function formatRentPrice(price) {
+                        if (!price) return '';
+                        return `$${price}/month`;
+                    }
+
+                    const bgImageStyle = botImage
+                        ? `background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('${botImage}'); background-size: cover; background-position: center;`
+                        : `background: linear-gradient(135deg, #ff4500 0%, #1a1a1a 100%);`;
+
+                    const card = `
+                <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden card-hover relative min-h-[300px] sm:min-h-[320px]">
+                    <div class="absolute inset-0 rounded-xl" style="${bgImageStyle}"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-xl"></div>
+                    
+                    <div class="relative z-10 h-full flex flex-col p-4 sm:p-5">
+                        <div class="flex justify-between items-start mb-3 sm:mb-4">
+                            <div>
+                                <span class="bg-${botStatus === 'active' ? 'green' : 'red'}-500/90 text-${botStatus === 'active' ? 'green' : 'red'}-500 text-xs font-medium px-2 py-1 rounded border border-${botStatus === 'active' ? 'green' : 'red'}-500/30">
+                                    ${botStatus === 'active' ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                            <button class="favorite-btn text-lg ${isFavorite ? 'text-red-500' : 'text-white/70'} hover:text-red-500 transition-colors bg-black/30 rounded-full p-2 touch-button" data-bot-id="${botId}">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col justify-end">
+                            <div class="mb-3">
+                                <h3 class="text-lg sm:text-xl font-bold text-white mb-1 truncate">${botName}</h3>
+                                <div class="flex items-center text-white/80 text-xs sm:text-sm">
+                                    <i class="fas fa-user mr-2"></i>
+                                    <span class="truncate">by ${botCreatorName}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center text-white/80 text-xs sm:text-sm">
+                                    <i class="fas fa-brain mr-2"></i>
+                                    <span class="truncate">${botStrategy} Strategy</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4 grid ${(botPrice > 0 && botRentPrice > 0) ? 'grid-cols-2' : 'grid-cols-1'} gap-2">
+                                ${botPrice > 0 ? `
+                                <div class="bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-white/10">
+                                    <p class="text-primary-400 font-semibold text-xs sm:text-sm">${formatPrice(botPrice)}</p>
+                                    <p class="text-white/60 text-xs">One-time buy</p>
+                                </div>
+                                ` : ''}
+                                
+                                ${botRentPrice > 0 ? `
+                                <div class="bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-white/10">
+                                    <p class="text-purple-400 font-semibold text-xs sm:text-sm">${formatRentPrice(botRentPrice)}</p>
+                                    <p class="text-white/60 text-xs">Monthly rent</p>
+                                </div>
+                                ` : ''}
+                                
+                                ${botPrice === 0 && botRentPrice === 0 ? `
+                                <div class="bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-green-500/30">
+                                    <p class="text-green-400 font-semibold text-xs sm:text-sm">FREE</p>
+                                    <p class="text-white/60 text-xs">No cost to use</p>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div>
+                                ${botPrice > 0 ? `
+                                <button data-bot-id="${botId}" data-action="buy" data-price="${botPrice}" 
+                                        class="w-full bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center shadow-lg touch-button text-sm sm:text-base">
+                                    <i class="fas fa-shopping-cart mr-2"></i> 
+                                    <span>Buy Now</span>
+                                </button>
+                                ` : ''}
+                                
+                                ${botRentPrice > 0 ? `
+                                <button data-bot-id="${botId}" data-action="rent" data-price="${botRentPrice}" 
+                                        class="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center shadow-lg touch-button text-sm sm:text-base">
+                                    <i class="fas fa-calendar-alt mr-2"></i> 
+                                    <span>Rent Now</span>
+                                </button>
+                                ` : ''}
+                                
+                                ${botPrice === 0 && botRentPrice === 0 ? `
+                                <button data-bot-id="${botId}" data-action="use-free" 
+                                        class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center shadow-lg touch-button text-sm sm:text-base">
+                                    <i class="fas fa-play mr-2"></i> 
+                                    <span>Use Free</span>
+                                </button>
+                                ` : ''}
+                            </div>
+                            
+                            <button data-bot-id="${botId}" data-action="demo" 
+                                    class="w-full bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center justify-center border border-white/20 backdrop-blur-sm touch-button">
+                                <i class="fas fa-vial mr-2"></i> 
+                                <span>Try Demo (Free)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+                    grid.innerHTML += card;
+                });
+
+                attachActionListeners();
+
+            } catch (error) {
+                console.error('Failed to load bots:', error);
+                document.getElementById('popularBotsGrid').innerHTML = `
+                <div class="text-center text-red-400 py-8 col-span-full">
+                    <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                    <p>Failed to load bots</p>
+                    <p class="text-sm text-gray-400 mt-1">${error.message || 'Please check your connection'}</p>
+                </div>
+            `;
+            }
+        }
+
+        // Function to handle all action button clicks
+        function attachActionListeners() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            // Favorite buttons
+            document.querySelectorAll('.favorite-btn').forEach(button => {
+                button.addEventListener('click', async function (e) {
+                    e.stopPropagation();
+                    const botId = this.dataset.botId;
+
+                    try {
+                        const response = await authFetch(`/api/user/favorite/${botId}`, {
+                            method: 'POST'
+                        });
+
+                        if (response.is_favorite) {
+                            this.classList.remove('text-white/70');
+                            this.classList.add('text-red-500');
+                            showNotification('Added to favorites', 'success');
+                        } else {
+                            this.classList.remove('text-red-500');
+                            this.classList.add('text-white/70');
+                            showNotification('Removed from favorites', 'info');
+                        }
+                    } catch (error) {
+                        console.error('Failed to toggle favorite:', error);
+                        showNotification('Failed to update favorites', 'error');
+                    }
+                });
+            });
+
+            // Action buttons (Buy/Rent/Free/Demo)
+            document.querySelectorAll('button[data-action]').forEach(button => {
+                button.addEventListener('click', async function () {
+                    const botId = this.dataset.botId;
+                    const action = this.dataset.action;
+                    const price = this.dataset.price;
+
+                    loadingSpinner.classList.remove('hidden');
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-circle-notch animate-spin mr-2"></i>';
+                    this.disabled = true;
+
+                    try {
+                        switch (action) {
+                            case 'demo':
+                                await handleDemoAction(botId);
+                                break;
+                            case 'buy':
+                                await handleBuyAction(botId, price);
+                                break;
+                            case 'rent':
+                                await handleRentAction(botId, price);
+                                break;
+                            case 'use-free':
+                                await handleFreeAction(botId);
+                                break;
+                        }
+                    } catch (error) {
+                        console.error('Action failed:', error);
+                        showNotification(`Error: ${error.message}`, 'error');
+                    } finally {
+                        setTimeout(() => {
+                            loadingSpinner.classList.add('hidden');
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }, 1000);
+                    }
+                });
+            });
+        }
+
+        // Action handlers
+        async function handleDemoAction(botId) {
+            try {
+                showNotification('Starting demo mode...', 'info');
+                setTimeout(() => {
+                    window.location.href = `/bots/${botId}?mode=demo`;
+                }, 500);
+            } catch (error) {
+                console.error('Demo action failed:', error);
+                throw error;
+            }
+        }
+
+        async function handleBuyAction(botId, price) {
+            try {
+                showNotification('Redirecting to purchase...', 'info');
+                setTimeout(() => {
+                    window.location.href = `/payment/buy/${botId}?amount=${price}`;
+                }, 500);
+            } catch (error) {
+                console.error('Buy action failed:', error);
+                throw error;
+            }
+        }
+
+        async function handleRentAction(botId, price) {
+            try {
+                showNotification('Redirecting to rental...', 'info');
+                setTimeout(() => {
+                    window.location.href = `/payment/rent/${botId}?amount=${price}&period=monthly`;
+                }, 500);
+            } catch (error) {
+                console.error('Rent action failed:', error);
+                throw error;
+            }
+        }
+
+        async function handleFreeAction(botId) {
+            try {
+                const response = await authFetch(`/api/bots/${botId}/activate-free`, {
+                    method: 'POST'
+                });
+
+                showNotification('Free bot activated successfully!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = './mybots';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Failed to activate free bot:', error);
+                throw error;
+            }
+        }
+
+        // Simple notification function
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.getElementById('global-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.id = 'global-notification';
+            notification.className = `fixed top-4 right-4 z-50 px-4 sm:px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 ${type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                    type === 'info' ? 'bg-blue-500 text-white' :
+                        type === 'warning' ? 'bg-yellow-500 text-white' :
+                            'bg-primary-500 text-white'
+                } max-w-[calc(100vw-2rem)]`;
+            notification.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} mr-3"></i>
+                <span class="text-sm sm:text-base">${message}</span>
+            </div>
+        `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Load data when page is ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM loaded, starting data fetch...');
+
+            const userData = await loadUserProfile();
+            console.log('User data loaded:', userData);
+
+            await loadStats();
+            await loadPopularBots();
+        });
+
+        // Optional: Auto-refresh user data every 5 minutes
+        setInterval(async () => {
+            try {
+                await loadUserProfile();
+                console.log('User profile auto-refreshed');
+            } catch (error) {
+                console.error('Auto-refresh failed:', error);
+            }
+        }, 300000);
+    </script>
+</body>
+
+</html>
