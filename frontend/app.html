@@ -499,6 +499,54 @@
                     </div>
                 </div>
 
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Start Trading</h3>
+                            <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                                <i class="fas fa-play text-green-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6">Launch your trading bots and start earning</p>
+                        <a href="./mybots"
+                            class="w-full bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center touch-button">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Start Trading
+                        </a>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Browse Marketplace</h3>
+                            <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                                <i class="fas fa-store text-blue-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6">Discover and buy profitable trading bots</p>
+                        <a href="./botstore"
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center touch-button">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            Explore Bots
+                        </a>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 card-hover">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-white">Create Your Bot</h3>
+                            <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+                                <i class="fas fa-plus text-purple-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6">Build and sell your own trading strategies</p>
+                        <button id="createBotBtn"
+                            class="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center touch-button">
+                            <i class="fas fa-code mr-2"></i>
+                            Create Bot
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Popular Bots Section -->
                 <div class="mb-8">
                     <div class="flex justify-between items-center mb-4 sm:mb-6">
@@ -545,6 +593,21 @@
             <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
             </div>
             <p class="text-white">Starting your trading bot...</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="hidden fixed top-4 right-4 z-50">
+        <div class="bg-dark-800 rounded-lg border border-dark-700 p-4 shadow-xl max-w-md">
+            <div class="flex items-center">
+                <i id="notificationIcon" class="fas fa-info-circle mr-3 text-blue-500"></i>
+                <div class="flex-1">
+                    <p id="notificationMessage" class="text-white text-sm"></p>
+                </div>
+                <button id="closeNotification" class="ml-4 text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -597,6 +660,63 @@
             }
         });
 
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notificationToast');
+            const notificationIcon = document.getElementById('notificationIcon');
+            const notificationMessage = document.getElementById('notificationMessage');
+            const closeNotification = document.getElementById('closeNotification');
+
+            // Set icon based on type
+            let iconClass = 'fas fa-info-circle';
+            let iconColor = 'text-blue-500';
+
+            if (type === 'success') {
+                iconClass = 'fas fa-check-circle';
+                iconColor = 'text-green-500';
+            } else if (type === 'error') {
+                iconClass = 'fas fa-exclamation-circle';
+                iconColor = 'text-red-500';
+            } else if (type === 'warning') {
+                iconClass = 'fas fa-exclamation-triangle';
+                iconColor = 'text-yellow-500';
+            }
+
+            notificationIcon.className = `${iconClass} mr-3 ${iconColor}`;
+            notificationMessage.textContent = message;
+
+            // Show notification
+            notification.classList.remove('hidden');
+            notification.classList.add('animate-slide-in');
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+
+            // Close button handler
+            const closeHandler = () => {
+                hideNotification();
+                closeNotification.removeEventListener('click', closeHandler);
+            };
+            closeNotification.addEventListener('click', closeHandler);
+        }
+
+        function hideNotification() {
+            const notification = document.getElementById('notificationToast');
+            notification.classList.add('hidden');
+        }
+
+        // Authentication check
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return false;
+            }
+            return true;
+        }
+
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', (e) => {
             e.preventDefault();
@@ -605,9 +725,9 @@
             window.location.href = '/';
         });
 
-        // Authentication check
-        if (!localStorage.getItem('token')) {
-            window.location.href = '/';
+        // Check authentication on page load
+        if (!checkAuthStatus()) {
+            console.log('Not authenticated, redirecting...');
         }
 
         // Utility function for authenticated fetch requests
@@ -625,6 +745,13 @@
             };
 
             const response = await fetch(url, { ...defaultOptions, ...options });
+
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = '/';
+                throw new Error('Session expired. Please login again.');
+            }
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
@@ -748,8 +875,18 @@
         // Load user profile
         async function loadUserProfile() {
             try {
-                updateUserProfile({ name: 'Loading...', email: 'Loading...' });
+                // First check if we have cached data
+                const cachedData = localStorage.getItem('userData');
+                if (cachedData) {
+                    try {
+                        const userData = JSON.parse(cachedData);
+                        updateUserProfile(userData);
+                    } catch (e) {
+                        console.error('Failed to parse cached data:', e);
+                    }
+                }
 
+                // Fetch fresh data
                 const response = await authFetch('/api/user/profile');
                 const userData = response.data || response.user || response;
 
@@ -764,19 +901,23 @@
             } catch (error) {
                 console.error('Failed to load user profile:', error);
 
-                updateUserProfile({
-                    name: 'Trader',
-                    email: 'user@example.com'
-                });
-
-                const cachedUserData = localStorage.getItem('userData');
-                if (cachedUserData) {
+                // Use cached data if available
+                const cachedData = localStorage.getItem('userData');
+                if (cachedData) {
                     try {
-                        const parsedData = JSON.parse(cachedUserData);
-                        updateUserProfile(parsedData);
+                        const userData = JSON.parse(cachedData);
+                        updateUserProfile(userData);
+                        showNotification('Loaded profile from cache', 'info');
                     } catch (parseError) {
-                        console.error('Failed to parse cached user data:', parseError);
+                        console.error('Failed to parse cached data:', parseError);
                     }
+                } else {
+                    // Set default profile
+                    updateUserProfile({
+                        name: 'Trader',
+                        email: 'user@example.com'
+                    });
+                    showNotification('Using default profile data', 'info');
                 }
 
                 return null;
@@ -786,51 +927,38 @@
         // Load user stats
         async function loadStats() {
             try {
-                const cachedUserData = localStorage.getItem('userData');
-                if (cachedUserData) {
-                    const userData = JSON.parse(cachedUserData);
-
-                    if (userData.stats || userData.dashboard) {
-                        updateStats(userData.stats || userData.dashboard);
-                        return;
-                    }
-                }
-
                 const stats = await authFetch('/api/user/stats');
                 updateStats(stats);
-
             } catch (error) {
                 console.error('Failed to load stats:', error);
+                // Set default stats or error state
                 document.querySelectorAll('#statsSection h3').forEach(el => el.textContent = 'Error');
                 document.querySelectorAll('#statsSection p[id$="Change"]').forEach(el => {
                     el.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Failed to load';
                     el.className = 'text-red-500 text-xs sm:text-sm mt-3 sm:mt-4';
                 });
+                showNotification('Failed to load stats: ' + error.message, 'error');
             }
         }
 
         // Helper function to update stats display
         function updateStats(statsData) {
-            const activeBots = statsData.activeBots || statsData.active_bots || statsData.runningBots || 0;
-            const runningBots = statsData.runningBots || statsData.running_bots || 0;
-            const totalTrades = statsData.totalTrades || statsData.total_trades || statsData.trades || 0;
-            const tradesToday = statsData.tradesToday || statsData.trades_today || statsData.todayTrades || 0;
-            const winRate = statsData.winRate || statsData.win_rate || statsData.successRate || 0;
-            const winRateChange = statsData.winRateChange || statsData.win_rate_change || statsData.weeklyChange || 0;
-            const balance = statsData.balance || statsData.accountBalance || statsData.totalBalance || 0;
-            const balanceChange = statsData.balanceChange || statsData.balance_change || statsData.todayProfit || 0;
+            const activeBots = statsData.activeBots || statsData.active_bots || 0;
+            const totalTrades = statsData.totalTrades || statsData.total_trades || 0;
+            const winRate = statsData.winRate || statsData.win_rate || 0;
+            const accountBalance = statsData.accountBalance || statsData.balance || 0;
 
             document.getElementById('activeBots').textContent = activeBots;
-            document.getElementById('activeBotsChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${runningBots} running`;
+            document.getElementById('activeBotsChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${statsData.activeBotsChange || 0} from last week`;
 
             document.getElementById('totalTrades').textContent = totalTrades.toLocaleString();
-            document.getElementById('totalTradesChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${tradesToday} today`;
+            document.getElementById('totalTradesChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${statsData.todayTrades || 0} today`;
 
             document.getElementById('winRate').textContent = `${winRate}%`;
-            document.getElementById('winRateChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${winRateChange}% from last week`;
+            document.getElementById('winRateChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${statsData.winRateChange || 0}% from last week`;
 
-            document.getElementById('accountBalance').textContent = `$${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('accountBalanceChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> $${balanceChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} today`;
+            document.getElementById('accountBalance').textContent = `$${accountBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('accountBalanceChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> $${(statsData.todayProfit || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} today`;
         }
 
         // Load popular bots
@@ -859,6 +987,9 @@
                     const botId = bot.id || '';
                     const botImage = bot.image || '';
                     const isFavorite = bot.is_favorite || false;
+                    const botPerformance = bot.performance || 0;
+                    const botTrades = bot.total_trades || 0;
+                    const botWinRate = bot.win_rate || 0;
 
                     function formatPrice(price) {
                         if (!price) return 'Free';
@@ -904,6 +1035,22 @@
                                 <div class="flex items-center text-white/80 text-xs sm:text-sm">
                                     <i class="fas fa-brain mr-2"></i>
                                     <span class="truncate">${botStrategy} Strategy</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Performance Stats -->
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-white/10 text-center">
+                                    <p class="text-green-400 font-bold text-sm">+${botPerformance}%</p>
+                                    <p class="text-white/60 text-xs">Profit</p>
+                                </div>
+                                <div class="bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-white/10 text-center">
+                                    <p class="text-blue-400 font-bold text-sm">${botWinRate}%</p>
+                                    <p class="text-white/60 text-xs">Win Rate</p>
+                                </div>
+                                <div class="bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-white/10 text-center">
+                                    <p class="text-yellow-400 font-bold text-sm">${botTrades}</p>
+                                    <p class="text-white/60 text-xs">Trades</p>
                                 </div>
                             </div>
                             
@@ -974,13 +1121,14 @@
 
             } catch (error) {
                 console.error('Failed to load bots:', error);
-                document.getElementById('popularBotsGrid').innerHTML = `
+                grid.innerHTML = `
                 <div class="text-center text-red-400 py-8 col-span-full">
                     <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
                     <p>Failed to load bots</p>
                     <p class="text-sm text-gray-400 mt-1">${error.message || 'Please check your connection'}</p>
                 </div>
             `;
+                showNotification('Failed to load bots: ' + error.message, 'error');
             }
         }
 
@@ -1054,6 +1202,11 @@
                     }
                 });
             });
+
+            // Create Bot button
+            document.getElementById('createBotBtn').addEventListener('click', () => {
+                showNotification('Bot creation feature coming soon!', 'info');
+            });
         }
 
         // Action handlers
@@ -1111,55 +1264,44 @@
             }
         }
 
-        // Simple notification function
-        function showNotification(message, type = 'info') {
-            const existingNotification = document.getElementById('global-notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.id = 'global-notification';
-            notification.className = `fixed top-4 right-4 z-50 px-4 sm:px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 ${type === 'success' ? 'bg-green-500 text-white' :
-                type === 'error' ? 'bg-red-500 text-white' :
-                    type === 'info' ? 'bg-blue-500 text-white' :
-                        type === 'warning' ? 'bg-yellow-500 text-white' :
-                            'bg-primary-500 text-white'
-                } max-w-[calc(100vw-2rem)]`;
-            notification.innerHTML = `
-            <div class="flex items-center">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} mr-3"></i>
-                <span class="text-sm sm:text-base">${message}</span>
-            </div>
-        `;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
         // Load data when page is ready
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('DOM loaded, starting data fetch...');
 
-            const userData = await loadUserProfile();
-            console.log('User data loaded:', userData);
+            // Show loading state immediately
+            updateUserProfile({ name: 'Loading...', email: 'Loading...' });
 
-            await loadStats();
-            await loadPopularBots();
+            try {
+                const userData = await loadUserProfile();
+                console.log('User data loaded:', userData);
+
+                await loadStats();
+                await loadPopularBots();
+            } catch (error) {
+                console.error('Failed to load initial data:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            }
         });
 
-        // Optional: Auto-refresh user data every 5 minutes
+        // Auto-refresh stats every 60 seconds
         setInterval(async () => {
             try {
-                await loadUserProfile();
-                console.log('User profile auto-refreshed');
+                await loadStats();
+                console.log('Stats auto-refreshed');
             } catch (error) {
                 console.error('Auto-refresh failed:', error);
             }
-        }, 300000);
+        }, 60000);
+
+        // Auto-refresh bots every 2 minutes
+        setInterval(async () => {
+            try {
+                await loadPopularBots();
+                console.log('Bots auto-refreshed');
+            } catch (error) {
+                console.error('Bots auto-refresh failed:', error);
+            }
+        }, 120000);
     </script>
 </body>
 
