@@ -27,13 +27,11 @@ func SetUpRouter(router *gin.Engine) {
 			auth.POST("/signup", handlers.SignupHandler)
 			auth.POST("/login", handlers.LoginHandler)
 			auth.POST("/forgot_password/", handlers.ForgotPasswordHandler)
-
 		}
 
 		user := api.Group("/user")
 		user.Use(middleware.AuthMiddleware())
 		{
-
 			user.GET("/profile", handlers.ProfileHandler)
 			user.PUT("/profile", handlers.UpdateProfile)
 			user.DELETE("/account", handlers.DeleteAccountHandler)
@@ -41,7 +39,6 @@ func SetUpRouter(router *gin.Engine) {
 
 			user.POST("/favorite/:bot_id", handlers.ToggleFavorite)
 			user.GET("/favorite", handlers.GetUserFavorites)
-
 		}
 
 		superadmin := api.Group("/superadmin")
@@ -66,7 +63,6 @@ func SetUpRouter(router *gin.Engine) {
 			//All requests that deal with bots
 			superadmin.GET("/bots", handlers.GetBotsHandler)
 			superadmin.GET("/scan_bots", handlers.ScanAllBotsHandler)
-
 		}
 
 		admin := api.Group("/admin")
@@ -84,20 +80,52 @@ func SetUpRouter(router *gin.Engine) {
 			admin.GET("/bots/:id/users", handlers.BotUsersHandler)
 			admin.DELETE("/bots/:bot_id/users/:user_id", handlers.RemoveUserFromBotHandler)
 			admin.POST("/reset_password/:id", handlers.ResetPasswordHandler)
-
 		}
 
 		paystackGroup := api.Group("/payment")
 		{
 			paystackGroup.Use(middleware.AuthMiddleware())
 			{
-				paystackGroup.POST("/initialize", paystack.InitializePayment) // Initialize payment
-				paystackGroup.GET("/verify", paystack.VerifyPayment)          // Verify payment via reference
-				paystackGroup.POST("/callback", paystack.FrontendCallback)    // Handle frontend callback
+				paystackGroup.POST("/initialize", paystack.InitializePayment)
+				paystackGroup.GET("/verify", paystack.VerifyPayment)
+				paystackGroup.POST("/callback", paystack.FrontendCallback)
 				paystackGroup.POST("update-transaction", paystack.UpdateTransaction)
-
 			}
 			paystackGroup.POST("/webhook", paystack.PaystackCallback)
+		}
+
+		// ============================================
+		// DERIV BROKER INTEGRATION
+		// ============================================
+		derivGroup := api.Group("/deriv")
+		{
+			// Public endpoints - no auth required
+			derivGroup.POST("/auth", handlers.AuthenticateDeriv)
+			derivGroup.POST("/user/info", handlers.GetDerivUserInfo)
+			derivGroup.POST("/user/balance", handlers.GetDerivBalance)
+			derivGroup.POST("/accounts/list", handlers.GetDerivAccountList)
+			derivGroup.POST("/accounts/switch", handlers.SwitchDerivAccount)
+
+			// Protected endpoints - requires authentication
+			derivGroup.Use(middleware.AuthMiddleware())
+			{
+				// Account details & validation
+				derivGroup.GET("/account/details", handlers.GetDerivAccountDetails)
+				derivGroup.POST("/validate", handlers.ValidateDerivToken)
+
+				// Token management
+				derivGroup.POST("/token/save", handlers.SaveDerivToken)
+				derivGroup.GET("/token", handlers.GetUserDerivToken)
+				derivGroup.DELETE("/token", handlers.DeleteDerivToken)
+
+				// Account preference
+				derivGroup.PUT("/account/preference", handlers.UpdateDerivAccountPreference)
+
+				// Use stored token (no need to send token in request)
+				derivGroup.GET("/me/info", handlers.GetDerivUserInfoWithStoredToken)
+				derivGroup.GET("/me/balance", handlers.GetDerivBalanceWithStoredToken)
+				derivGroup.GET("/me/accounts", handlers.GetDerivAccountListWithStoredToken)
+			}
 		}
 	}
 
@@ -129,7 +157,6 @@ func SetUpRouter(router *gin.Engine) {
 	router.GET("/botstore", func(c *gin.Context) {
 		c.File(frontendPath + "/botstore.html")
 	})
-
 	router.GET("/superadmin", func(c *gin.Context) {
 		c.File(frontendPath + "/superadmin_dashboard.html")
 	})
@@ -154,7 +181,6 @@ func SetUpRouter(router *gin.Engine) {
 	router.GET("/video", func(c *gin.Context) {
 		c.File(frontendPath + "/video.html")
 	})
-
 	router.GET("/admin", func(c *gin.Context) {
 		c.File(frontendPath + "/admin_dashboard.html")
 	})
@@ -162,5 +188,4 @@ func SetUpRouter(router *gin.Engine) {
 	// router.NoRoute(func(c *gin.Context) {
 	// 	c.File(frontendPath + "/index.html")
 	// })
-
 }

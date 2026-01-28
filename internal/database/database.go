@@ -27,6 +27,7 @@ func InitDB() {
 		&models.SalesHistory{},
 		&models.UserBot{},
 		&models.Sale{},
+		&models.DerivCredentials{},
 	)
 	fmt.Println("database connected")
 }
