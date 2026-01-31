@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Charts | AlgoCDK - Live Trading Charts</title>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0e1117;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #d1d4dc;
+        }
+
+        #controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        select {
+            background: #0e1117;
+            color: #d1d4dc;
+            border: 1px solid #2b2f3a;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #FF4500;
+        }
+        
+        .indicator-tag {
+            background: #2b2f3a;
+            color: #d1d4dc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 2px;
+            transition: all 0.2s ease;
+        }
+        
+        .indicator-tag:hover {
+            background: #FF4500;
+            color: white;
+        }
+
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+
+        /* Brand Header */
+        .brand-header {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(22, 27, 34, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #2b2f3a;
+        }
+
+        .brand-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #FF4500, #FF6347);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .brand-text {
+            color: #d1d4dc;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Navigation */
+        .nav-links {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+            background: rgba(22, 27, 34, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #2b2f3a;
+        }
+
+        .nav-link {
+            color: #8b949e;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #FF4500;
+            background: rgba(255, 69, 0, 0.1);
+        }
+
+        .nav-link.active {
+            color: #FF4500;
+            background: rgba(255, 69, 0, 0.2);
+        }
+
+        /* Price Display */
+        .price-display {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(22, 27, 34, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #2b2f3a;
+            text-align: center;
+        }
+
+        .current-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d1d4dc;
+            margin-bottom: 2px;
+        }
+
+        .price-change {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .price-up {
+            color: #00c176;
+        }
+
+        .price-down {
+            color: #ff4d4f;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            #controls {
+                flex-wrap: wrap;
+                max-width: calc(100vw - 20px);
+                font-size: 14px;
+                padding: 12px;
+                gap: 12px;
+            }
+            
+            select {
+                padding: 8px 12px;
+                font-size: 14px;
+                min-height: 44px;
+                min-width: 80px;
+            }
+            
+            .brand-header {
+                top: 5px;
+                right: 5px;
+                padding: 6px 10px;
+            }
+            
+            .brand-icon {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+            }
+            
+            .brand-text {
+                font-size: 12px;
+            }
+            
+            .price-display {
+                top: 5px;
+                padding: 6px 12px;
+            }
+            
+            .current-price {
+                font-size: 16px;
+            }
+            
+            .price-change {
+                font-size: 11px;
+            }
+            
+            .nav-links {
+                bottom: 5px;
+                left: 5px;
+                padding: 6px;
+                gap: 6px;
+            }
+            
+            .nav-link {
+                padding: 8px 10px;
+                font-size: 11px;
+                min-height: 32px;
+                display: flex;
+                align-items: center;
+            }
+            
+            .indicator-tag {
+                padding: 4px 8px;
+                font-size: 12px;
+                margin: 1px;
+                min-height: 32px;
+                display: inline-flex;
+                align-items: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #controls {
+                top: 5px;
+                left: 5px;
+                right: 5px;
+                width: auto;
+                max-width: none;
+            }
+            
+            .price-display {
+                left: 5px;
+                right: 5px;
+                width: auto;
+                transform: none;
+            }
+            
+            .nav-links {
+                left: 5px;
+                right: 5px;
+                width: auto;
+                justify-content: space-around;
+            }
+            
+            .nav-link {
+                flex: 1;
+                text-align: center;
+                padding: 6px 4px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Brand Header -->
+    <div class="brand-header">
+        <div class="brand-icon">A</div>
+        <div class="brand-text">AlgoCDK</div>
+    </div>
+
+    <!-- Price Display -->
+    <div class="price-display">
+        <div class="current-price" id="currentPrice">--</div>
+        <div class="price-change" id="priceChange">--</div>
+    </div>
+
+    <!-- Controls -->
+    <div id="controls">
+        <select id="symbol">
+            <option value="R_50">Vol 50</option>
+            <option value="R_75">Vol 75</option>
+            <option value="R_100" selected>Vol 100</option>
+            <option value="frxEURUSD">EUR/USD</option>
+            <option value="cryBTCUSD">BTC/USD</option>
+        </select>
+
+        <select id="timeframe">
+            <option value="10">10s</option>
+            <option value="30">30s</option>
+            <option value="60" selected>1m</option>
+            <option value="300">5m</option>
+        </select>
+        
+        <select id="indicators">
+            <option value="">Add Indicator</option>
+            <option value="sma20">SMA 20</option>
+            <option value="sma50">SMA 50</option>
+            <option value="ema20">EMA 20</option>
+            <option value="bb">Bollinger Bands</option>
+            <option value="rsi">RSI</option>
+        </select>
+        
+        <div id="activeIndicators"></div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+        <a href="app" class="nav-link">Dashboard</a>
+        <a href="mybots" class="nav-link">My Bots</a>
+        <a href="botstore" class="nav-link">Marketplace</a>
+        <a href="marketchart" class="nav-link active">Charts</a>
+        <a href="support" class="nav-link">Support</a>
+    </div>
+
+    <canvas id="chart"></canvas>
+
+    <script>
+        /* ================= CONFIG ================= */
+        let SYMBOL = "R_100";
+        let TIMEFRAME = 60;
+        const MAX_CANDLES = 500;
+
+        /* ================= STATE ================= */
+        let candles = [];
+        let currentCandle = null;
+        let ws = null;
+        let indicators = new Map();
+
+        /* ================= VIEWPORT ================= */
+        let zoom = 1;              // candle width multiplier
+        let offset = 0;            // scroll offset (candles)
+        let isDragging = false;
+        let lastX = 0;
+
+        /* ================= CANVAS ================= */
+        const canvas = document.getElementById("chart");
+        const ctx = canvas.getContext("2d");
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        /* ================= CONTROLS ================= */
+        document.getElementById("symbol").onchange = e => {
+            SYMBOL = e.target.value;
+            restart();
+        };
+
+        document.getElementById("timeframe").onchange = e => {
+            TIMEFRAME = +e.target.value;
+            restart();
+        };
+        
+        document.getElementById("indicators").onchange = e => {
+            if (e.target.value) {
+                addIndicator(e.target.value);
+                e.target.value = "";
+            }
+        };
+
+        /* ================= WS ================= */
+        function connect() {
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    ticks_history: SYMBOL,
+                    style: "candles",
+                    granularity: TIMEFRAME,
+                    count: MAX_CANDLES,
+                    end: "latest"
+                }));
+                ws.send(JSON.stringify({ ticks: SYMBOL, subscribe: 1 }));
+            };
+
+            ws.onmessage = e => {
+                const d = JSON.parse(e.data);
+                if (d.error) return;
+
+                if (d.candles) {
+                    candles = d.candles.map(c => ({
+                        time: Math.floor(c.epoch / TIMEFRAME) * TIMEFRAME,
+                        open: +c.open,
+                        high: +c.high,
+                        low: +c.low,
+                        close: +c.close
+                    }));
+                    currentCandle = null;
+                    offset = 0;
+                    draw();
+                }
+
+                if (d.tick) {
+                    updateCandle(+d.tick.quote, d.tick.epoch);
+                }
+            };
+        }
+
+        function restart() {
+            if (ws) ws.close();
+            candles = [];
+            currentCandle = null;
+            zoom = 1;
+            offset = 0;
+            connect();
+        }
+
+        /* ================= CANDLE ENGINE ================= */
+        function updateCandle(price, epoch) {
+            const t = Math.floor(epoch / TIMEFRAME) * TIMEFRAME;
+
+            if (!currentCandle || currentCandle.time !== t) {
+                if (currentCandle) {
+                    candles.push(currentCandle);
+                    if (candles.length > MAX_CANDLES) candles.shift();
+                }
+                currentCandle = { time: t, open: price, high: price, low: price, close: price };
+            } else {
+                currentCandle.high = Math.max(currentCandle.high, price);
+                currentCandle.low = Math.min(currentCandle.low, price);
+                currentCandle.close = price;
+            }
+            
+            // Update price display
+            updatePriceDisplay(price);
+            draw();
+        }
+
+        /* ================= PRICE DISPLAY ================= */
+        function updatePriceDisplay(currentPrice) {
+            const priceEl = document.getElementById('currentPrice');
+            const changeEl = document.getElementById('priceChange');
+            
+            if (candles.length > 0) {
+                const previousPrice = candles[candles.length - 1]?.close || currentPrice;
+                const change = currentPrice - previousPrice;
+                const changePercent = ((change / previousPrice) * 100).toFixed(2);
+                
+                priceEl.textContent = currentPrice.toFixed(5);
+                changeEl.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(5)} (${change >= 0 ? '+' : ''}${changePercent}%)`;
+                changeEl.className = `price-change ${change >= 0 ? 'price-up' : 'price-down'}`;
+            } else {
+                priceEl.textContent = currentPrice.toFixed(5);
+                changeEl.textContent = '--';
+            }
+        }
+
+        /* ================= INTERACTION ================= */
+        // Mouse interaction
+        canvas.addEventListener("mousedown", e => {
+            isDragging = true;
+            lastX = e.clientX;
+        });
+        window.addEventListener("mouseup", () => isDragging = false);
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            offset += (e.clientX - lastX) / 10;
+            lastX = e.clientX;
+            draw();
+        });
+
+        // Touch interaction for mobile
+        canvas.addEventListener("touchstart", e => {
+            e.preventDefault();
+            if (e.touches.length === 1) {
+                isDragging = true;
+                lastX = e.touches[0].clientX;
+            }
+        });
+        
+        canvas.addEventListener("touchmove", e => {
+            e.preventDefault();
+            if (e.touches.length === 1 && isDragging) {
+                offset += (e.touches[0].clientX - lastX) / 10;
+                lastX = e.touches[0].clientX;
+                draw();
+            } else if (e.touches.length === 2) {
+                // Pinch zoom
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const distance = Math.sqrt(
+                    Math.pow(touch2.clientX - touch1.clientX, 2) + 
+                    Math.pow(touch2.clientY - touch1.clientY, 2)
+                );
+                
+                if (window.lastTouchDistance) {
+                    const delta = distance - window.lastTouchDistance;
+                    zoom += delta * 0.01;
+                    zoom = Math.max(0.5, Math.min(3, zoom));
+                    draw();
+                }
+                window.lastTouchDistance = distance;
+            }
+        });
+        
+        canvas.addEventListener("touchend", e => {
+            e.preventDefault();
+            isDragging = false;
+            window.lastTouchDistance = null;
+        });
+
+        // Zoom (wheel)
+        canvas.addEventListener("wheel", e => {
+            e.preventDefault();
+            zoom += e.deltaY * -0.001;
+            zoom = Math.max(0.5, Math.min(3, zoom));
+            draw();
+        });
+
+        /* ================= INDICATORS ================= */
+        function addIndicator(type) {
+            if (indicators.has(type)) return;
+            indicators.set(type, { type, color: getIndicatorColor(type) });
+            updateIndicatorTags();
+            draw();
+        }
+        
+        function removeIndicator(type) {
+            indicators.delete(type);
+            updateIndicatorTags();
+            draw();
+        }
+        
+        function updateIndicatorTags() {
+            const container = document.getElementById("activeIndicators");
+            container.innerHTML = "";
+            indicators.forEach((ind, type) => {
+                const tag = document.createElement("span");
+                tag.className = "indicator-tag";
+                tag.textContent = getIndicatorName(type);
+                tag.onclick = () => removeIndicator(type);
+                container.appendChild(tag);
+            });
+        }
+        
+        function getIndicatorName(type) {
+            const names = {
+                sma20: "SMA 20", sma50: "SMA 50", ema20: "EMA 20",
+                bb: "BB", rsi: "RSI"
+            };
+            return names[type] || type;
+        }
+        
+        function getIndicatorColor(type) {
+            const colors = {
+                sma20: "#ffa500", sma50: "#00bfff", ema20: "#ff69b4",
+                bb: "#9370db", rsi: "#32cd32"
+            };
+            return colors[type] || "#ffffff";
+        }
+        
+        function calculateSMA(data, period) {
+            return data.map((_, i) => {
+                if (i < period - 1) return null;
+                const sum = data.slice(i - period + 1, i + 1).reduce((a, b) => a + b.close, 0);
+                return sum / period;
+            });
+        }
+        
+        function calculateEMA(data, period) {
+            const k = 2 / (period + 1);
+            const ema = [data[0]?.close || 0];
+            for (let i = 1; i < data.length; i++) {
+                ema[i] = data[i].close * k + ema[i - 1] * (1 - k);
+            }
+            return ema;
+        }
+        
+        function calculateBB(data, period = 20, std = 2) {
+            const sma = calculateSMA(data, period);
+            return data.map((_, i) => {
+                if (i < period - 1) return null;
+                const slice = data.slice(i - period + 1, i + 1);
+                const mean = sma[i];
+                const variance = slice.reduce((sum, c) => sum + Math.pow(c.close - mean, 2), 0) / period;
+                const stdDev = Math.sqrt(variance);
+                return {
+                    upper: mean + stdDev * std,
+                    middle: mean,
+                    lower: mean - stdDev * std
+                };
+            });
+        }
+        
+        function calculateRSI(data, period = 14) {
+            const changes = data.slice(1).map((c, i) => c.close - data[i].close);
+            const gains = changes.map(c => c > 0 ? c : 0);
+            const losses = changes.map(c => c < 0 ? -c : 0);
+            
+            let avgGain = gains.slice(0, period).reduce((a, b) => a + b, 0) / period;
+            let avgLoss = losses.slice(0, period).reduce((a, b) => a + b, 0) / period;
+            
+            const rsi = [null];
+            for (let i = 0; i < period; i++) rsi.push(null);
+            
+            for (let i = period; i < changes.length; i++) {
+                avgGain = (avgGain * (period - 1) + gains[i]) / period;
+                avgLoss = (avgLoss * (period - 1) + losses[i]) / period;
+                const rs = avgGain / (avgLoss || 0.001);
+                rsi.push(100 - (100 / (1 + rs)));
+            }
+            return rsi;
+        }
+        
+        /* ================= DRAW ================= */
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let data = [...candles];
+            if (currentCandle) data.push(currentCandle);
+            if (!data.length) return;
+
+            // Responsive padding based on screen size
+            const isMobile = window.innerWidth <= 768;
+            const pad = isMobile ? 40 : 70;
+            const w = canvas.width - pad * 2;
+            const h = canvas.height - pad * 2;
+
+            // Responsive candle spacing
+            const baseCandleSpacing = isMobile ? 4 : 6;
+            const candleSpacing = baseCandleSpacing * zoom;
+            const visible = Math.floor(w / candleSpacing);
+            const start = Math.max(0, data.length - visible - Math.floor(offset));
+            const view = data.slice(start, start + visible);
+
+            const max = Math.max(...view.map(c => c.high));
+            const min = Math.min(...view.map(c => c.low));
+            const range = max - min || 1;
+            const y = p => pad + h - ((p - min) / range) * h;
+
+            // Grid
+            ctx.strokeStyle = "#1f2430";
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const gy = pad + (h / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(pad, gy);
+                ctx.lineTo(canvas.width - pad, gy);
+                ctx.stroke();
+            }
+
+            // Draw candles
+            view.forEach((c, i) => {
+                const x = pad + i * candleSpacing + candleSpacing / 2;
+                const up = c.close >= c.open;
+                ctx.strokeStyle = ctx.fillStyle = up ? "#00c176" : "#ff4d4f";
+                ctx.lineWidth = 1;
+
+                // Wick
+                ctx.beginPath();
+                ctx.moveTo(x, y(c.high));
+                ctx.lineTo(x, y(c.low));
+                ctx.stroke();
+
+                // Body
+                ctx.fillRect(
+                    x - candleSpacing * 0.3,
+                    Math.min(y(c.open), y(c.close)),
+                    candleSpacing * 0.6,
+                    Math.max(1, Math.abs(y(c.close) - y(c.open)))
+                );
+            });
+            
+            // Draw indicators
+            if (indicators.size > 0) {
+                const fullData = [...candles];
+                if (currentCandle) fullData.push(currentCandle);
+                
+                indicators.forEach((ind, type) => {
+                    ctx.strokeStyle = ind.color;
+                    ctx.lineWidth = 2;
+                    
+                    if (type === 'sma20') {
+                        const sma = calculateSMA(fullData, 20);
+                        drawLine(sma.slice(start, start + visible), candleSpacing, y, pad);
+                    }
+                    else if (type === 'sma50') {
+                        const sma = calculateSMA(fullData, 50);
+                        drawLine(sma.slice(start, start + visible), candleSpacing, y, pad);
+                    }
+                    else if (type === 'ema20') {
+                        const ema = calculateEMA(fullData, 20);
+                        drawLine(ema.slice(start, start + visible), candleSpacing, y, pad);
+                    }
+                    else if (type === 'bb') {
+                        const bb = calculateBB(fullData);
+                        drawBB(bb.slice(start, start + visible), candleSpacing, y, ind.color, pad);
+                    }
+                    else if (type === 'rsi') {
+                        const rsi = calculateRSI(fullData);
+                        drawRSI(rsi.slice(start, start + visible), candleSpacing, pad);
+                    }
+                });
+            }
+
+            // Draw price labels
+            drawPriceLabels(min, max, range, pad, h);
+        }
+        
+        function drawLine(values, spacing, yFunc, pad) {
+            ctx.beginPath();
+            let first = true;
+            values.forEach((val, i) => {
+                if (val === null || val === undefined) return;
+                const x = pad + i * spacing + spacing / 2;
+                if (first) {
+                    ctx.moveTo(x, yFunc(val));
+                    first = false;
+                } else {
+                    ctx.lineTo(x, yFunc(val));
+                }
+            });
+            ctx.stroke();
+        }
+        
+        function drawBB(bb, spacing, yFunc, color, pad) {
+            const alpha = ctx.globalAlpha;
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = color;
+            
+            ctx.beginPath();
+            let hasData = false;
+            bb.forEach((b, i) => {
+                if (!b) return;
+                const x = pad + i * spacing + spacing / 2;
+                if (!hasData) {
+                    ctx.moveTo(x, yFunc(b.upper));
+                    hasData = true;
+                } else {
+                    ctx.lineTo(x, yFunc(b.upper));
+                }
+            });
+            
+            for (let i = bb.length - 1; i >= 0; i--) {
+                const b = bb[i];
+                if (!b) continue;
+                const x = pad + i * spacing + spacing / 2;
+                ctx.lineTo(x, yFunc(b.lower));
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            drawLine(bb.map(b => b?.middle), spacing, yFunc, pad);
+        }
+        
+        function drawRSI(rsi, spacing, pad) {
+            const rsiH = 60;
+            const rsiY = canvas.height - rsiH - 10;
+            
+            ctx.fillStyle = "#161b22";
+            ctx.fillRect(pad, rsiY, canvas.width - pad * 2, rsiH);
+            
+            ctx.strokeStyle = "#1f2430";
+            ctx.lineWidth = 1;
+            [30, 50, 70].forEach(level => {
+                const y = rsiY + rsiH - (level / 100) * rsiH;
+                ctx.beginPath();
+                ctx.moveTo(pad, y);
+                ctx.lineTo(canvas.width - pad, y);
+                ctx.stroke();
+            });
+            
+            ctx.strokeStyle = "#32cd32";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let first = true;
+            rsi.forEach((val, i) => {
+                if (val === null || val === undefined) return;
+                const x = pad + i * spacing + spacing / 2;
+                const y = rsiY + rsiH - (val / 100) * rsiH;
+                if (first) {
+                    ctx.moveTo(x, y);
+                    first = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            ctx.fillStyle = "#d1d4dc";
+            ctx.font = "10px Arial";
+            ctx.fillText("RSI", pad + 5, rsiY + 12);
+        }
+
+        function drawPriceLabels(min, max, range, pad, h) {
+            const isMobile = window.innerWidth <= 768;
+            ctx.fillStyle = "#8b949e";
+            ctx.font = isMobile ? "9px Arial" : "11px Arial";
+            ctx.textAlign = "right";
+            
+            const labelCount = isMobile ? 3 : 5;
+            for (let i = 0; i <= labelCount; i++) {
+                const price = min + (range * i / labelCount);
+                const y = pad + h - (i * h / labelCount);
+                const decimals = isMobile ? 3 : 5;
+                ctx.fillText(price.toFixed(decimals), canvas.width - pad + 5, y + 4);
+            }
+            
+            ctx.textAlign = "left";
+        }
+
+        /* ================= START ================= */
+        connect();
+    </script>
+
+</body>
+
+</html>

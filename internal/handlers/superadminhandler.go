@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/keyadaniel56/algocdk/internal/database"
 	"github.com/keyadaniel56/algocdk/internal/models"
@@ -961,6 +960,222 @@ func GetAllTransactions(ctx *gin.Context) {
 	})
 }
 
+// GetAllSales godoc
+// @Summary Get all sales
+// @Description Retrieves all sales data for super admin analytics
+// @Tags superadmin
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]string
+// @Router /api/superadmin/sales [get]
+func GetAllSales(ctx *gin.Context) {
+	var sales []models.Sale
+	if err := database.DB.Order("sale_date DESC").Find(&sales).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch sales"})
+		return
+	}
+
+	// Calculate analytics
+	totalSales := 0.0
+	totalTransactions := len(sales)
+	salesByType := make(map[string]int)
+	salesByMonth := make(map[string]float64)
+	recentSales := []gin.H{}
+
+	for _, sale := range sales {
+		totalSales += sale.Amount
+		salesByType[sale.SaleType]++
+
+		// Group by month
+		monthKey := sale.SaleDate.Format("2006-01")
+		salesByMonth[monthKey] += sale.Amount
+
+		// Get recent sales (last 10)
+		if len(recentSales) < 10 {
+			var buyer, seller models.User
+			var bot models.Bot
+
+			database.DB.Select("id, name, email").First(&buyer, sale.BuyerID)
+			database.DB.Select("id, name, email").First(&seller, sale.SellerID)
+			database.DB.Select("id, name").First(&bot, sale.BotID)
+
+			recentSales = append(recentSales, gin.H{
+				"id":        sale.ID,
+				"amount":    sale.Amount,
+				"sale_type": sale.SaleType,
+				"sale_date": sale.SaleDate,
+				"buyer": gin.H{
+					"id":    buyer.ID,
+					"name":  buyer.Name,
+					"email": buyer.Email,
+				},
+				"seller": gin.H{
+					"id":    seller.ID,
+					"name":  seller.Name,
+					"email": seller.Email,
+				},
+				"bot": gin.H{
+					"id":   bot.ID,
+					"name": bot.Name,
+				},
+			})
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"sales": sales,
+		"analytics": gin.H{
+			"total_sales":        totalSales,
+			"total_transactions": totalTransactions,
+			"sales_by_type":      salesByType,
+			"sales_by_month":     salesByMonth,
+			"recent_sales":       recentSales,
+		},
+	})
+}
+
+// GetPlatformPerformance godoc
+// @Summary Get platform performance metrics
+// @Description Retrieves comprehensive platform performance analytics
+// @Tags superadmin
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]string
+// @Router /api/superadmin/performance [get]
+func GetPlatformPerformance(ctx *gin.Context) {
+	// Get user metrics
+	var totalUsers, activeUsers int64
+	database.DB.Model(&models.User{}).Count(&totalUsers)
+	database.DB.Model(&models.User{}).Where("updated_at > ?", time.Now().AddDate(0, 0, -30)).Count(&activeUsers)
+
+	// Get bot metrics
+	var totalBots, activeBots int64
+	database.DB.Model(&models.Bot{}).Count(&totalBots)
+	database.DB.Model(&models.Bot{}).Where("status = ?", "active").Count(&activeBots)
+
+	// Get transaction metrics
+	var transactions []models.Transaction
+	database.DB.Where("status = ?", "success").Find(&transactions)
+
+	totalRevenue := 0.0
+	totalCompanyRevenue := 0.0
+	monthlyRevenue := make(map[string]float64)
+	revenueByPaymentType := make(map[string]float64)
+
+	for _, tx := range transactions {
+		totalRevenue += tx.Amount
+		totalCompanyRevenue += tx.CompanyShare
+
+		monthKey := tx.CreatedAt.Format("2006-01")
+		monthlyRevenue[monthKey] += tx.Amount
+		revenueByPaymentType[tx.PaymentType] += tx.Amount
+	}
+
+	// Get top performing bots
+	var topBots []struct {
+		BotID      uint
+		BotName    string
+		TotalSales float64
+		SalesCount int64
+	}
+
+	database.DB.Table("transactions").
+		Select("bot_id, COUNT(*) as sales_count, SUM(amount) as total_sales").
+		Joins("JOIN bots ON transactions.bot_id = bots.id").
+		Where("transactions.status = ?", "success").
+		Group("bot_id").
+		Order("total_sales DESC").
+		Limit(10).
+		Scan(&topBots)
+
+	// Add bot names
+	for i := range topBots {
+		var bot models.Bot
+		if err := database.DB.Select("name").First(&bot, topBots[i].BotID).Error; err == nil {
+			topBots[i].BotName = bot.Name
+		}
+	}
+
+	// Get top admins by revenue
+	var topAdmins []struct {
+		AdminID          uint
+		AdminName        string
+		TotalRevenue     float64
+		TransactionCount int64
+	}
+
+	database.DB.Table("transactions").
+		Select("admin_id, COUNT(*) as transaction_count, SUM(admin_share) as total_revenue").
+		Where("status = ?", "success").
+		Group("admin_id").
+		Order("total_revenue DESC").
+		Limit(10).
+		Scan(&topAdmins)
+
+	// Add admin names
+	for i := range topAdmins {
+		var admin models.Admin
+		var user models.User
+		if err := database.DB.First(&admin, topAdmins[i].AdminID).Error; err == nil {
+			if err := database.DB.Select("name").First(&user, admin.PersonID).Error; err == nil {
+				topAdmins[i].AdminName = user.Name
+			}
+		}
+	}
+
+	// Calculate growth rates (comparing last 30 days to previous 30 days)
+	last30Days := time.Now().AddDate(0, 0, -30)
+	previous30Days := time.Now().AddDate(0, 0, -60)
+
+	var recentUsers, previousUsers int64
+	database.DB.Model(&models.User{}).Where("created_at > ?", last30Days).Count(&recentUsers)
+	database.DB.Model(&models.User{}).Where("created_at BETWEEN ? AND ?", previous30Days, last30Days).Count(&previousUsers)
+
+	userGrowthRate := 0.0
+	if previousUsers > 0 {
+		userGrowthRate = float64(recentUsers-previousUsers) / float64(previousUsers) * 100
+	}
+
+	var recentRevenue, previousRevenue float64
+	database.DB.Model(&models.Transaction{}).
+		Where("created_at > ? AND status = ?", last30Days, "success").
+		Select("COALESCE(SUM(amount), 0)").Scan(&recentRevenue)
+	database.DB.Model(&models.Transaction{}).
+		Where("created_at BETWEEN ? AND ? AND status = ?", previous30Days, last30Days, "success").
+		Select("COALESCE(SUM(amount), 0)").Scan(&previousRevenue)
+
+	revenueGrowthRate := 0.0
+	if previousRevenue > 0 {
+		revenueGrowthRate = (recentRevenue - previousRevenue) / previousRevenue * 100
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"user_metrics": gin.H{
+			"total_users":      totalUsers,
+			"active_users":     activeUsers,
+			"user_growth_rate": userGrowthRate,
+		},
+		"bot_metrics": gin.H{
+			"total_bots":  totalBots,
+			"active_bots": activeBots,
+		},
+		"revenue_metrics": gin.H{
+			"total_revenue":       totalRevenue,
+			"company_revenue":     totalCompanyRevenue,
+			"revenue_growth_rate": revenueGrowthRate,
+			"monthly_revenue":     monthlyRevenue,
+			"revenue_by_type":     revenueByPaymentType,
+		},
+		"top_performers": gin.H{
+			"top_bots":   topBots,
+			"top_admins": topAdmins,
+		},
+		"transaction_count": len(transactions),
+	})
+}
+
 // RecordTransaction godoc
 // @Summary Record a transaction
 // @Description Records a new transaction by admin or super admin
@@ -1018,15 +1233,6 @@ func RecordTransaction(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Invalid input",
 			"details": err.Error(),
-		})
-		return
-	}
-
-	// Additional validation using govalidator
-	if !govalidator.IsIn(input.Status, "pending", "success", "failed") ||
-		!govalidator.IsIn(input.PaymentType, "purchase", "rent") {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid status or payment type",
 		})
 		return
 	}

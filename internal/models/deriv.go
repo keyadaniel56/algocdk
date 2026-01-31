@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+// DerivTradeResult represents the result of a trade placement
+type DerivTradeResult struct {
+	ContractID string  `json:"contract_id"`
+	Payout     float64 `json:"payout"`
+	Status     string  `json:"status"`
+}
+
 // DerivCredentials stores Deriv API token with account type
 type DerivCredentials struct {
 	ID          uint      `json:"id" gorm:"primaryKey"`
@@ -29,9 +36,10 @@ type DerivUserInfo struct {
 
 // DerivBalance represents account balance
 type DerivBalance struct {
-	Balance  float64 `json:"balance"`
-	Currency string  `json:"currency"`
-	LoginID  string  `json:"loginid"`
+	Balance   float64 `json:"balance"`
+	Currency  string  `json:"currency"`
+	LoginID   string  `json:"loginid"`
+	IsVirtual bool    `json:"is_virtual"`
 }
 
 // DerivAccountDetails contains detailed account information
@@ -90,6 +98,11 @@ type DerivWSResponse struct {
 	AccountList struct {
 		Accounts []DerivAccount `json:"account_list"`
 	} `json:"account_list"`
+	Buy struct {
+		ContractID string  `json:"contract_id"`
+		Payout     float64 `json:"payout"`
+		Status     string  `json:"status"`
+	} `json:"buy"`
 	Error struct {
 		Code    string `json:"code"`
 		Message string `json:"message"`
@@ -101,9 +114,10 @@ func (DerivCredentials) TableName() string {
 	return "deriv_credentials"
 }
 
-// SaveTokenRequest is the request to save a new API token
+// SaveTokenRequest is the request to save API tokens
 type SaveTokenRequest struct {
-	APIToken string `json:"api_token" binding:"required"`
+	DemoToken string `json:"demo_token"`
+	RealToken string `json:"real_token"`
 }
 
 // UpdateAccountTypeRequest is the request to update preferred account

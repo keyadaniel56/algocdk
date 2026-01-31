@@ -1,9 +1,26 @@
 // api.js - Client-side API helper functions for interacting with the backend API
 // Base URL for the API (update this for production)
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = window.location.origin + '/api';
+
+// Token management
+const TokenManager = {
+  get: () => localStorage.getItem('token'),
+  set: (token) => localStorage.setItem('token', token),
+  remove: () => localStorage.removeItem('token'),
+  isValid: () => {
+    const token = TokenManager.get();
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp > Date.now() / 1000;
+    } catch {
+      return false;
+    }
+  }
+};
 
 // Helper function to make API requests
-async function apiRequest(endpoint, method = 'GET', data = null, headers = {}) {
+async function apiRequest(endpoint, method = 'GET', data = null, headers = {}, requireAuth = false) {
   const config = {
     method,
     headers: {
@@ -12,6 +29,16 @@ async function apiRequest(endpoint, method = 'GET', data = null, headers = {}) {
     },
   };
 
+  // Add auth token if required or available
+  if (requireAuth || TokenManager.get()) {
+    const token = TokenManager.get();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else if (requireAuth) {
+      throw new Error('Authentication required');
+    }
+  }
+
   if (data) {
     config.body = JSON.stringify(data);
   }
@@ -19,7 +46,8 @@ async function apiRequest(endpoint, method = 'GET', data = null, headers = {}) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (!response.ok) {
-    throw new Error(`API request failed: ${response.statusText}`);
+    const errorData = await response.json().catch(() => ({ message: response.statusText }));
+    throw new Error(errorData.message || `API request failed: ${response.statusText}`);
   }
 
   return response.json();
@@ -42,12 +70,12 @@ const api = {
   },
 
   user: {
-    getProfile: (id) => apiRequest(`/user/profile/${id}`),
-    updateProfile: (id, data) => apiRequest(`/user/updateprofile/${id}`, 'POST', data),
-    deleteAccount: (id) => apiRequest(`/user/delete_account/${id}`, 'DELETE'),
-    resetPassword: (id, data) => apiRequest(`/user/reset_password/${id}`, 'POST', data),
-    toggleFavorite: (id) => apiRequest(`/user/togole_favorite/${id}`),
-    getFavorites: () => apiRequest('/user/favorite/me'),
+    getProfile: () => apiRequest('/user/profile', 'GET', null, {}, true),
+    updateProfile: (data) => apiRequest('/user/profile', 'PUT', data, {}, true),
+    deleteAccount: () => apiRequest('/user/account', 'DELETE', null, {}, true),
+    resetPassword: (data) => apiRequest('/user/reset-password', 'POST', data, {}, true),
+    toggleFavorite: (botId) => apiRequest(`/user/favorite/${botId}`, 'POST', null, {}, true),
+    getFavorites: () => apiRequest('/user/favorite', 'GET', null, {}, true),
   },
 
   superadmin: {
@@ -55,50 +83,131 @@ const api = {
       signup: (data) => apiRequest('/superadmin/auth/signup', 'POST', data),
       login: (data) => apiRequest('/superadmin/auth/login', 'POST', data),
     },
-    getProfile: (id) => apiRequest(`/superadmin/profile/${id}`),
-    getDashboard: (id) => apiRequest(`/superadmin/superadmindashboard/${id}`),
-    createUser: (data) => apiRequest('/superadmin/create_user', 'POST', data),
-    updateUser: (id, data) => apiRequest(`/superadmin/update_user/${id}`, 'POST', data),
-    deleteUser: (id) => apiRequest(`/superadmin/delete_user/${id}`, 'DELETE'),
-    getAllUsers: () => apiRequest('/superadmin/users'),
-    getUserById: (id) => apiRequest(`/superadmin/user/${id}`),
-    createAdmin: (data) => apiRequest('/superadmin/create_admin', 'POST', data),
-    getAllAdmins: () => apiRequest('/superadmin/get_all_admins'),
-    toggleAdminStatus: () => apiRequest('/superadmin/toggle_admin_status'),
-    updateAdmin: (id, data) => apiRequest(`/superadmin/update_admin/${id}`, 'POST', data),
-    deleteAdmin: () => apiRequest('/superadmin/delete_admin', 'DELETE'),
-    updateAdminPassword: (data) => apiRequest('/superadmin/update_admin_password', 'POST', data),
-    getBots: () => apiRequest('/superadmin/bots'),
-    scanBots: () => apiRequest('/superadmin/scan_bots'),
+    getProfile: (id) => apiRequest(`/superadmin/profile/${id}`, 'GET', null, {}, true),
+    getDashboard: (id) => apiRequest(`/superadmin/superadmindashboard/${id}`, 'GET', null, {}, true),
+    createUser: (data) => apiRequest('/superadmin/create_user', 'POST', data, {}, true),
+    updateUser: (id, data) => apiRequest(`/superadmin/update_user/${id}`, 'POST', data, {}, true),
+    deleteUser: (id) => apiRequest(`/superadmin/delete_user/${id}`, 'DELETE', null, {}, true),
+    getAllUsers: () => apiRequest('/superadmin/users', 'GET', null, {}, true),
+    getUserById: (id) => apiRequest(`/superadmin/user/${id}`, 'GET', null, {}, true),
+    createAdmin: (data) => apiRequest('/superadmin/create_admin', 'POST', data, {}, true),
+    getAllAdmins: () => apiRequest('/superadmin/get_all_admins', 'GET', null, {}, true),
+    toggleAdminStatus: () => apiRequest('/superadmin/toggle_admin_status', 'GET', null, {}, true),
+    updateAdmin: (id, data) => apiRequest(`/superadmin/update_admin/${id}`, 'POST', data, {}, true),
+    deleteAdmin: () => apiRequest('/superadmin/delete_admin', 'DELETE', null, {}, true),
+    updateAdminPassword: (data) => apiRequest('/superadmin/update_admin_password', 'POST', data, {}, true),
+    getBots: () => apiRequest('/superadmin/bots', 'GET', null, {}, true),
+    scanBots: () => apiRequest('/superadmin/scan_bots', 'GET', null, {}, true),
+    
+    // Sales and Performance Analytics
+    getSales: () => apiRequest('/superadmin/sales', 'GET', null, {}, true),
+    getPerformance: () => apiRequest('/superadmin/performance', 'GET', null, {}, true),
+    getTransactions: () => apiRequest('/superadmin/transactions', 'GET', null, {}, true),
   },
 
   admin: {
-    getDashboard: () => apiRequest('/admin/dashboard'),
-    createBot: (data) => apiRequest('/admin/create-bot', 'POST', data),
-    updateBot: (id, data) => apiRequest(`/admin/update-bot/${id}`, 'PUT', data),
-    deleteBot: (id) => apiRequest(`/admin/delete-bot/${id}`, 'DELETE'),
-    getBots: () => apiRequest('/admin/bots'),
-    getProfile: () => apiRequest('/admin/profile'),
-    updateBankDetails: (data) => apiRequest('/admin/bank-details', 'PUT', data),
-    getTransactions: () => apiRequest('/admin/transactions'),
-    recordTransaction: (data) => apiRequest('/admin/transactions', 'POST', data),
-    getBotUsers: (id) => apiRequest(`/admin/bots/${id}/users`),
-    removeUserFromBot: (bot_id, user_id) => apiRequest(`/admin/bots/${bot_id}/users/${user_id}`, 'DELETE'),
-    resetPassword: (id, data) => apiRequest(`/admin/reset_password/${id}`, 'POST', data),
+    getDashboard: () => apiRequest('/admin/dashboard', 'GET', null, {}, true),
+    createBot: (data) => apiRequest('/admin/create-bot', 'POST', data, {}, true),
+    updateBot: (id, data) => apiRequest(`/admin/update-bot/${id}`, 'PUT', data, {}, true),
+    deleteBot: (id) => apiRequest(`/admin/delete-bot/${id}`, 'DELETE', null, {}, true),
+    getBots: () => apiRequest('/admin/bots', 'GET', null, {}, true),
+    getProfile: () => apiRequest('/admin/profile', 'GET', null, {}, true),
+    updateBankDetails: (data) => apiRequest('/admin/bank-details', 'PUT', data, {}, true),
+    getTransactions: () => apiRequest('/admin/transactions', 'GET', null, {}, true),
+    recordTransaction: (data) => apiRequest('/admin/transactions', 'POST', data, {}, true),
+    getBotUsers: (id) => apiRequest(`/admin/bots/${id}/users`, 'GET', null, {}, true),
+    removeUserFromBot: (bot_id, user_id) => apiRequest(`/admin/bots/${bot_id}/users/${user_id}`, 'DELETE', null, {}, true),
+    resetPassword: (id, data) => apiRequest(`/admin/reset_password/${id}`, 'POST', data, {}, true),
   },
 
   payment: {
-    initialize: (data) => apiRequest('/payment/initialize', 'POST', data),
-    verify: () => apiRequest('/payment/verify'),
-    callback: (data) => apiRequest('/payment/callback', 'POST', data),
-    updateTransaction: (data) => apiRequest('/payment/update-transaction', 'POST', data),
+    initialize: (data) => apiRequest('/payment/initialize', 'POST', data, {}, true),
+    verify: () => apiRequest('/payment/verify', 'GET', null, {}, true),
+    callback: (data) => apiRequest('/payment/callback', 'POST', data, {}, true),
+    updateTransaction: (data) => apiRequest('/payment/update-transaction', 'POST', data, {}, true),
     webhook: (data) => apiRequest('/payment/webhook', 'POST', data),
+  },
+
+  // Deriv Integration API
+  deriv: {
+    // Public endpoints
+    authenticate: (data) => apiRequest('/deriv/auth', 'POST', data),
+    getUserInfo: (data) => apiRequest('/deriv/user/info', 'POST', data),
+    getBalance: (data) => apiRequest('/deriv/user/balance', 'POST', data),
+    getAccountList: (data) => apiRequest('/deriv/accounts/list', 'POST', data),
+    switchAccount: (data) => apiRequest('/deriv/accounts/switch', 'POST', data),
+
+    // Protected endpoints
+    getAccountDetails: () => apiRequest('/deriv/account/details', 'GET', null, {}, true),
+    validateToken: (data) => apiRequest('/deriv/validate', 'POST', data, {}, true),
+    saveToken: (data) => apiRequest('/deriv/token/save', 'POST', data, {}, true),
+    getToken: () => apiRequest('/deriv/token', 'GET', null, {}, true),
+    deleteToken: () => apiRequest('/deriv/token', 'DELETE', null, {}, true),
+    updateAccountPreference: (data) => apiRequest('/deriv/account/preference', 'PUT', data, {}, true),
+    
+    // Stored token endpoints
+    getMyInfo: () => apiRequest('/deriv/me/info', 'GET', null, {}, true),
+    getMyBalance: () => apiRequest('/deriv/me/balance', 'GET', null, {}, true),
+    getMyAccounts: () => apiRequest('/deriv/me/accounts', 'GET', null, {}, true),
+  },
+
+  // Bot serving endpoint
+  bots: {
+    serve: (id) => apiRequest(`/bots/${id}`, 'GET'),
   },
 };
 
-// Make api global so it's accessible from other scripts
-window.api = api;
+// Utility functions
+const utils = {
+  // Handle API errors consistently
+  handleError: (error) => {
+    console.error('API Error:', error);
+    if (error.message.includes('Authentication') || error.message.includes('401')) {
+      TokenManager.remove();
+      window.location.href = '/auth';
+    }
+    return error;
+  },
 
-// Usage example:
+  // Format currency
+  formatCurrency: (amount, currency = 'USD') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency
+    }).format(amount);
+  },
+
+  // Format percentage
+  formatPercentage: (value) => {
+    return `${(value * 100).toFixed(2)}%`;
+  },
+
+  // Validate email
+  isValidEmail: (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  },
+
+  // Show notification (will be overridden by notifications.js)
+  notify: (message, type = 'info') => {
+    console.log(`[${type.toUpperCase()}] ${message}`);
+    // Show browser alert as fallback
+    if (type === 'error') {
+      alert('Error: ' + message);
+    }
+  }
+};
+
+// Make api and utilities global
+window.api = api;
+window.TokenManager = TokenManager;
+window.utils = utils;
+
+// Remove auto-redirect logic - let auth.js handle it
+// if (window.location.pathname !== '/auth' && window.location.pathname !== '/' && !TokenManager.isValid()) {
+//   window.location.href = '/auth';
+// }
+
+// Usage examples:
 // const response = await api.auth.signup({ email: 'user@example.com', password: 'pass' });
-// Note: For authenticated endpoints, add token to headers, e.g., apiRequest(..., { Authorization: `Bearer ${token}` })
+// const profile = await api.user.getProfile();
+// const derivInfo = await api.deriv.getMyInfo();

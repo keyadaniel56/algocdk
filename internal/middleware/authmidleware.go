@@ -21,7 +21,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// If token still missing, block request
 		if tokenString == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing token"})
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "missing token  could not generate token"})
 			ctx.Abort()
 			return
 		}

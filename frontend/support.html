@@ -2,488 +2,771 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Support | Algocdk</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="output.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#fff0f0',
-                            100: '#ffd6d6',
-                            500: '#ff4500',
-                            600: '#e63e00',
-                            700: '#cc3700',
-                        },
-                        dark: {
-                            900: '#000000',
-                            800: '#1a1a1a',
-                            700: '#333333',
-                            600: '#4d4d4d',
-                        },
-                        success: {
-                            500: '#10b981',
-                            600: '#059669',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support | AlgoCDK - Help & Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #ff4500;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #e63e00;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0e1117;
+            color: #d1d4dc;
+            line-height: 1.6;
         }
 
-        .content-section {
-            animation: fadeIn 0.5s ease-in-out;
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(14, 17, 23, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #2b2f3a;
+            z-index: 1000;
+            padding: 0 20px;
         }
 
-        .accordion-content {
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #d1d4dc;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #FF4500;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FF4500;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #8b949e;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #FF4500;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: #d1d4dc;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #FF4500, #FF6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 20px;
+            color: #8b949e;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Search */
+        .search-section {
+            margin-bottom: 60px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 12px;
+            color: #d1d4dc;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #FF4500;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8b949e;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .quick-link-card {
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quick-link-card:hover {
+            border-color: #FF4500;
+            transform: translateY(-2px);
+        }
+
+        .quick-link-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 69, 0, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: #FF4500;
+        }
+
+        .quick-link-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .quick-link-card p {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-bottom: 80px;
+        }
+
+        .faq-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .faq-item {
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .faq-item:hover {
+            border-color: #FF4500;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 24px;
+            background: none;
+            border: none;
+            color: #d1d4dc;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-icon {
+            transition: transform 0.2s ease;
+            color: #8b949e;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+            color: #FF4500;
+        }
+
+        .faq-answer {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.3s ease;
         }
 
-        .accordion-content.open {
-            max-height: 500px;
-            /* Adjust based on content */
+        .faq-item.active .faq-answer {
+            max-height: 300px;
         }
 
-        .tooltip {
-            position: relative;
+        .faq-answer-content {
+            padding: 0 24px 24px;
+            color: #8b949e;
+            line-height: 1.6;
         }
 
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: #333333;
-            color: #fff;
+        /* Contact Form */
+        .contact-section {
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .contact-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .contact-subtitle {
+            color: #8b949e;
+            margin-bottom: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #d1d4dc;
+        }
+
+        .form-input,
+        .form-textarea {
+            padding: 12px 16px;
+            background: #0e1117;
+            border: 1px solid #2b2f3a;
+            border-radius: 8px;
+            color: #d1d4dc;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #FF4500;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #FF4500, #FF6347);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid #2b2f3a;
+            padding: 40px 0;
             text-align: center;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
         }
 
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .footer-text {
+            color: #8b949e;
+            margin-bottom: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #8b949e;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #FF4500;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .header p {
+                font-size: 18px;
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-section {
+                padding: 24px;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .faq-question {
+                padding: 20px;
+                font-size: 15px;
+            }
+
+            .faq-answer-content {
+                padding: 0 20px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 40px 0;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .search-input {
+                padding: 14px 16px 14px 44px;
+            }
+
+            .quick-link-card {
+                padding: 24px 16px;
+            }
+
+            .contact-section {
+                padding: 20px;
+            }
+
+            .footer-links {
+                gap: 16px;
+            }
         }
     </style>
 </head>
 
-<body class="bg-dark-900 text-white min-h-screen">
-    <!-- Header -->
-    <header class="bg-dark-800 border-b border-dark-700">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <a href="/" class="text-2xl font-bold text-primary-500">
-                    Algocdk
-                </a>
-                <nav class="hidden md:flex space-x-6">
-                    <a href="./app" class="text-gray-400 hover:text-white transition-colors">Dashboard</a>
-                    <a href="terms" class="text-gray-400 hover:text-white transition-colors">Terms</a>
-                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors">Privacy</a>
-                    <a href="support" class="text-primary-500 font-medium">Support</a>
-                </nav>
-                <button class="md:hidden text-gray-400">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="app" class="logo">
+                <div class="logo-icon">A</div>
+                <div class="logo-text">Algocdk</div>
+            </a>
+
+            <div class="nav-links">
+                <a href="app" class="nav-link">Dashboard</a>
+                <a href="mybots" class="nav-link">My Bots</a>
+                <a href="botstore" class="nav-link">Marketplace</a>
+                <a href="marketchart" class="nav-link">Charts</a>
+                <a href="support" class="nav-link active">Support</a>
             </div>
-        </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-primary-500 to-primary-600 text-white text-center py-16">
-        <div class="container mx-auto px-6">
-            <h1 class="text-4xl font-bold mb-4">Support Center</h1>
-            <p class="text-lg opacity-90 max-w-2xl mx-auto">We're here to help you with anything you need on Algocdk.
-                Our team is available 24/7 to assist you.</p>
+            <button class="mobile-menu" onclick="toggleMobileMenu()">☰</button>
         </div>
-    </section>
+    </nav>
 
-    <!-- Main Support Section -->
-    <main class="container mx-auto px-6 py-12 fade-in">
-        <div class="max-w-4xl mx-auto">
-            <!-- Search Bar for FAQs -->
-            <div class="mb-8">
-                <div class="relative">
-                    <input type="text" id="faqSearch" placeholder="Search FAQs..."
-                        class="w-full p-4 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors pr-12">
-                    <button
-                        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary-500 transition-colors">
-                        <i class="fas fa-search"></i>
-                    </button>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>How can we help you?</h1>
+                <p>Find answers to common questions or get in touch with our support team</p>
+            </div>
+
+            <!-- Search -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search for help..." id="searchInput">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
                 </div>
             </div>
 
+            <!-- Quick Links -->
+            <div class="quick-links">
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>Documentation</h3>
+                    <p>Comprehensive guides and tutorials</p>
+                </a>
+
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                    </div>
+                    <h3>Video Tutorials</h3>
+                    <p>Step-by-step video guides</p>
+                </a>
+
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>Community</h3>
+                    <p>Join our Discord community</p>
+                </a>
+
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Email Support</h3>
+                    <p>24/7 professional assistance</p>
+                </a>
+            </div>
+
             <!-- FAQ Section -->
-            <div class="mb-12">
-                <h2 class="text-2xl font-semibold mb-6 text-white">Frequently Asked Questions</h2>
-                <div class="space-y-4" id="faqList">
-                    <div class="bg-dark-800 rounded-xl border border-dark-700">
-                        <button
-                            class="w-full p-6 flex justify-between items-center text-left hover:bg-dark-700 transition-colors accordion-toggle"
-                            aria-expanded="false">
-                            <div class="flex items-center">
-                                <i class="fas fa-robot text-primary-500 mr-3"></i>
-                                <h3 class="text-lg font-medium text-white">Bot Setup & Configuration</h3>
-                            </div>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </button>
-                        <div class="accordion-content px-6 pb-6 text-gray-400 text-sm">
-                            Learn how to set up and configure your trading bots for optimal performance. Start by
-                            logging into your dashboard, selecting "My Bots," and following the step-by-step wizard. If
-                            you encounter errors, check your API keys in the settings.
+            <div class="faq-section">
+                <h2 class="faq-title">Frequently Asked Questions</h2>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I get started with AlgoCDK?</span>
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Getting started is easy! First, create an account and connect your Deriv account using your API token. Then browse our Bot Marketplace to find trading bots that match your strategy. Purchase or activate a bot, configure your settings, and start automated trading!
                         </div>
                     </div>
-                    <div class="bg-dark-800 rounded-xl border border-dark-700">
-                        <button
-                            class="w-full p-6 flex justify-between items-center text-left hover:bg-dark-700 transition-colors accordion-toggle"
-                            aria-expanded="false">
-                            <div class="flex items-center">
-                                <i class="fas fa-exchange-alt text-primary-500 mr-3"></i>
-                                <h3 class="text-lg font-medium text-white">API Integration</h3>
-                            </div>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </button>
-                        <div class="accordion-content px-6 pb-6 text-gray-400 text-sm">
-                            Troubleshoot API connection issues with Deriv and other platforms. Ensure your API token is
-                            active and has the necessary permissions. Test the connection in the "Integrations" tab of
-                            your account settings.
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I connect my Deriv account?</span>
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            To connect your Deriv account: 1) Log in to app.deriv.com 2) Go to Account Settings → API Token 3) Create a new token with trading permissions 4) Copy the token 5) In AlgoCDK Settings, paste your token and click "Connect Account". Your account will be verified automatically.
                         </div>
                     </div>
-                    <div class="bg-dark-800 rounded-xl border border-dark-700">
-                        <button
-                            class="w-full p-6 flex justify-between items-center text-left hover:bg-dark-700 transition-colors accordion-toggle"
-                            aria-expanded="false">
-                            <div class="flex items-center">
-                                <i class="fas fa-credit-card text-primary-500 mr-3"></i>
-                                <h3 class="text-lg font-medium text-white">Billing & Payments</h3>
-                            </div>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </button>
-                        <div class="accordion-content px-6 pb-6 text-gray-400 text-sm">
-                            Questions about subscriptions, payments, and billing cycles. View your billing history in
-                            the "Billing" section. Subscriptions renew monthly; contact support for refunds or changes.
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Are my funds safe with AlgoCDK?</span>
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Yes! Your funds remain in your Deriv account at all times. AlgoCDK only receives permission to execute trades through the API token. We never have direct access to withdraw or transfer your funds. You can revoke API access anytime from your Deriv account settings.
                         </div>
                     </div>
-                    <div class="bg-dark-800 rounded-xl border border-dark-700">
-                        <button
-                            class="w-full p-6 flex justify-between items-center text-left hover:bg-dark-700 transition-colors accordion-toggle"
-                            aria-expanded="false">
-                            <div class="flex items-center">
-                                <i class="fas fa-shield-alt text-primary-500 mr-3"></i>
-                                <h3 class="text-lg font-medium text-white">Account Security</h3>
-                            </div>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </button>
-                        <div class="accordion-content px-6 pb-6 text-gray-400 text-sm">
-                            Secure your account and troubleshoot login issues. Enable 2FA in settings, use strong
-                            passwords, and monitor active sessions. If locked out, use the "Forgot Password" link.
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What are the pricing options?</span>
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            AlgoCDK offers both free and premium bots. Free bots provide basic trading strategies for all users. Premium bots offer advanced features, higher win rates, and proven profitability. Most premium bots are one-time purchases with lifetime access. Check the Bot Marketplace for specific pricing.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I customize bot strategies?</span>
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Yes! Most bots offer customizable parameters including trade size, risk level, stop loss, take profit, and more. You can adjust these settings from your bot's configuration page. The core trading algorithm remains fixed to ensure consistency and proven performance.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What if I experience losses?</span>
+                        <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Trading involves risk and losses are possible. While our bots use proven strategies and risk management, we cannot guarantee profits. We recommend starting with small amounts, using stop-loss features, and never investing more than you can afford to lose. Always review a bot's performance history first.
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Contact Form -->
-            <div class="mb-12">
-                <h2 class="text-2xl font-semibold mb-4 text-white">Get in Touch</h2>
-                <p class="mb-6 text-gray-400">
-                    Whether you're facing a technical issue, need help with your trading bot, or just have a question,
-                    our support team is available 24/7.
-                    Fill out the form below or use one of the contact methods to reach us.
-                </p>
+            <div class="contact-section">
+                <h2 class="contact-title">Still have questions?</h2>
+                <p class="contact-subtitle">Send us a message and we'll get back to you as soon as possible</p>
 
-                <form class="bg-dark-800 rounded-xl border border-dark-700 p-6 space-y-6" action="#" method="POST"
-                    id="contactForm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-2 text-gray-300" for="name">Full Name</label>
-                            <input type="text" id="name" name="name" placeholder="John Doe" required
-                                aria-required="true"
-                                class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
+                <form id="contactForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-input" placeholder="Your name" required>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2 text-gray-300" for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="you@example.com" required
-                                aria-required="true"
-                                class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium mb-2 text-gray-300" for="issue">Issue Type</label>
-                        <select id="issue" name="issue" required aria-required="true"
-                            class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
-                            <option value="" disabled selected>Select an issue type</option>
-                            <option class="bg-dark-700">Technical Issue</option>
-                            <option class="bg-dark-700">Payment Inquiry</option>
-                            <option class="bg-dark-700">Bot Setup Help</option>
-                            <option class="bg-dark-700">Account Issue</option>
-                            <option class="bg-dark-700">Other</option>
-                        </select>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" name="subject" class="form-input" placeholder="How can we help?" required>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium mb-2 text-gray-300" for="message">Message</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Describe your issue..." required
-                            aria-required="true"
-                            class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors"></textarea>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea name="message" class="form-textarea" placeholder="Tell us more about your question..." required></textarea>
                     </div>
 
-                    <button type="submit"
-                        class="w-full bg-primary-500 text-white py-3 rounded-lg font-semibold hover:bg-primary-600 transition-colors flex items-center justify-center">
-                        <i class="fas fa-paper-plane mr-2"></i> Submit Request
-                    </button>
+                    <button type="submit" class="submit-btn">Send Message</button>
                 </form>
-                <p id="formSuccess" class="hidden mt-4 text-success-500 text-center">Your request has been submitted
-                    successfully!</p>
-            </div>
-
-            <!-- Feedback Section -->
-            <div class="mb-12">
-                <h3 class="text-xl font-semibold mb-6 text-white">Rate Our Support</h3>
-                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 text-center">
-                    <p class="text-gray-400 mb-4">How would you rate our support page?</p>
-                    <div class="flex justify-center space-x-2">
-                        <button class="text-3xl hover:text-primary-500 transition-colors"
-                            onclick="submitRating(1)">⭐</button>
-                        <button class="text-3xl hover:text-primary-500 transition-colors"
-                            onclick="submitRating(2)">⭐</button>
-                        <button class="text-3xl hover:text-primary-500 transition-colors"
-                            onclick="submitRating(3)">⭐</button>
-                        <button class="text-3xl hover:text-primary-500 transition-colors"
-                            onclick="submitRating(4)">⭐</button>
-                        <button class="text-3xl hover:text-primary-500 transition-colors"
-                            onclick="submitRating(5)">⭐</button>
-                    </div>
-                    <p id="ratingSuccess" class="hidden mt-4 text-success-500">Thank you for your feedback!</p>
-                </div>
-            </div>
-
-            <!-- Other Support Options -->
-            <div class="mb-12">
-                <h3 class="text-xl font-semibold mb-6 text-white">Other Ways to Reach Us</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <a href="mailto:support@Algocdk.com"
-                        class="tooltip bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500 transition-colors group text-center">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-envelope text-primary-500 text-xl"></i>
-                        </div>
-                        <h4 class="font-medium text-white mb-2">Email Support</h4>
-                        <p class="text-gray-400 text-sm">support@Algocdk.com</p>
-                        <span class="tooltip-text">Send us an email for detailed inquiries</span>
-                    </a>
-
-                    <a href="https://t.me/algocdk_support" target="_blank"
-                        class="tooltip bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500 transition-colors group text-center">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fab fa-telegram text-primary-500 text-xl"></i>
-                        </div>
-                        <h4 class="font-medium text-white mb-2">Telegram</h4>
-                        <p class="text-gray-400 text-sm">@Algocdk_support</p>
-                        <span class="tooltip-text">Join our channel for quick responses</span>
-                    </a>
-
-                    <a href="https://algocdk.com" target="_blank"
-                        class="tooltip bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500 transition-colors group text-center">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-globe text-primary-500 text-xl"></i>
-                        </div>
-                        <h4 class="font-medium text-white mb-2">Website</h4>
-                        <p class="text-gray-400 text-sm">www.Algocdk.com</p>
-                        <span class="tooltip-text">Visit our site for more resources</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Response Time Info -->
-            <div class="bg-primary-500/10 rounded-xl border border-primary-500/20 p-6">
-                <div class="flex items-start">
-                    <i class="fas fa-clock text-primary-500 mt-1 mr-4 text-xl"></i>
-                    <div>
-                        <h3 class="text-lg font-medium text-white mb-2">Response Time</h3>
-                        <p class="text-gray-300">We typically respond to support requests within 2-4 hours during
-                            business hours. For urgent issues, please use our Telegram channel for faster assistance.
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
 
-    <!-- Live Chat Button -->
-    <button id="liveChatBtn"
-        class="fixed bottom-6 right-6 bg-primary-500 text-white p-4 rounded-full shadow-lg hover:bg-primary-600 transition-colors flex items-center">
-        <i class="fas fa-comment-dots mr-2"></i> Live Chat
-    </button>
-
-    <!-- Live Chat Modal -->
-    <div id="chatModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="bg-dark-800 rounded-xl p-6 w-full max-w-md border border-dark-600">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">Live Chat</h3>
-                <button id="closeChat" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="h-64 overflow-y-auto bg-dark-700 p-4 rounded-lg mb-4">
-                <!-- Chat messages would go here -->
-                <p class="text-gray-400">Welcome to live chat! How can we help?</p>
-            </div>
-            <input type="text" placeholder="Type your message..."
-                class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
-        </div>
-    </div>
-
     <!-- Footer -->
-    <footer class="bg-dark-800 border-t border-dark-700 mt-16">
-        <div class="container mx-auto px-6 py-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <p class="text-gray-400">&copy; <span id="year"></span> Algocdk by CDK Technologies. All rights
-                        reserved.</p>
-                </div>
-                <div class="flex space-x-6">
-                    <a href="terms" class="text-gray-400 hover:text-white transition-colors">Terms & Conditions</a>
-                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-                    <a href="support" class="text-primary-500 font-medium">Support</a>
-                </div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo">
+                <div class="logo-icon">A</div>
+                <div class="logo-text">Algocdk</div>
+            </div>
+            <p class="footer-text">Need immediate assistance? Email us at support@algocdk.com</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Legal</a>
+                <a href="#" class="footer-link">Status</a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Set current year in footer
-        document.getElementById("year").textContent = new Date().getFullYear();
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const faqItem = button.parentElement;
+                const isActive = faqItem.classList.contains('active');
 
-        // Simple fade-in animation for page load
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.classList.add('fade-in');
-        });
-
-        // Accordion functionality
-        const accordionToggles = document.querySelectorAll('.accordion-toggle');
-        accordionToggles.forEach(toggle => {
-            toggle.addEventListener('click', function () {
-                const content = this.nextElementSibling;
-                const icon = this.querySelector('.fa-chevron-down');
-                const isOpen = content.classList.contains('open');
-
-                // Close all others
-                document.querySelectorAll('.accordion-content.open').forEach(openContent => {
-                    if (openContent !== content) {
-                        openContent.classList.remove('open');
-                        openContent.previousElementSibling.querySelector('.fa-chevron-down').classList.remove('rotate-180');
-                    }
+                // Close all FAQ items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
                 });
 
-                // Toggle current
-                content.classList.toggle('open', !isOpen);
-                icon.classList.toggle('rotate-180', !isOpen);
-                this.setAttribute('aria-expanded', !isOpen);
-            });
-        });
-
-        // FAQ Search functionality (client-side filter)
-        const faqSearch = document.getElementById('faqSearch');
-        const faqItems = document.querySelectorAll('#faqList > div');
-        faqSearch.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
-            faqItems.forEach(item => {
-                const title = item.querySelector('h3').textContent.toLowerCase();
-                const content = item.querySelector('.accordion-content').textContent.toLowerCase();
-                if (title.includes(searchTerm) || content.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    faqItem.classList.add('active');
                 }
             });
         });
 
-        // Form submission placeholder
-        const contactForm = document.getElementById('contactForm');
-        const formSuccess = document.getElementById('formSuccess');
-        contactForm.addEventListener('submit', function (e) {
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                const answer = item.querySelector('.faq-answer-content').textContent.toLowerCase();
+
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = searchTerm ? 'none' : 'block';
+                }
+            });
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            // Simulate submission
+            
+            // Get form data
+            const formData = new FormData(e.target);
+            const ticketData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                subject: formData.get('subject'),
+                message: formData.get('message'),
+                timestamp: new Date().toISOString(),
+                id: Date.now() // Simple ID generation
+            };
+            
+            // Show success message
+            const submitBtn = e.target.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Message Sent!';
+            submitBtn.style.background = '#00c176';
+            
             setTimeout(() => {
-                formSuccess.classList.remove('hidden');
-                contactForm.reset();
-                setTimeout(() => formSuccess.classList.add('hidden'), 5000);
-            }, 1000);
+                submitBtn.textContent = originalText;
+                submitBtn.style.background = '';
+                e.target.reset();
+            }, 2000);
+
+            // Show ticket confirmation
+            alert(`Thank you ${ticketData.name}! Your support ticket has been submitted.\n\nTicket ID: #${ticketData.id}\nWe'll respond to ${ticketData.email} within 24 hours.`);
         });
 
-        // Rating submission placeholder
-        function submitRating(rating) {
-            // Simulate API call
-            console.log('Rating submitted:', rating);
-            document.getElementById('ratingSuccess').classList.remove('hidden');
-            setTimeout(() => document.getElementById('ratingSuccess').classList.add('hidden'), 3000);
+        // Mobile menu toggle (placeholder)
+        function toggleMobileMenu() {
+            // Mobile menu functionality can be added here
+            alert('Mobile menu - navigate to other pages using the links above');
         }
-
-        // Live Chat functionality (placeholder)
-        const liveChatBtn = document.getElementById('liveChatBtn');
-        const chatModal = document.getElementById('chatModal');
-        const closeChat = document.getElementById('closeChat');
-
-        liveChatBtn.addEventListener('click', () => {
-            chatModal.classList.remove('hidden');
-        });
-
-        closeChat.addEventListener('click', () => {
-            chatModal.classList.add('hidden');
-        });
-
-        // Close modal on outside click
-        window.addEventListener('click', (e) => {
-            if (e.target === chatModal) {
-                chatModal.classList.add('hidden');
-            }
-        });
     </script>
 </body>
 

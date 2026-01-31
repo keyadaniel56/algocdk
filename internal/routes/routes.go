@@ -29,6 +29,21 @@ func SetUpRouter(router *gin.Engine) {
 			auth.POST("/forgot_password/", handlers.ForgotPasswordHandler)
 		}
 
+		// ================= MARKET DATA =================
+		market := api.Group("/market")
+		{
+			market.GET("/data", handlers.GetMarketData)
+			market.GET("/deriv", handlers.GetDerivMarketData)
+			market.GET("/chart/:symbol", handlers.GetChartData)
+			market.GET("/calendar", handlers.GetEconomicCalendar)
+			market.GET("/news", handlers.GetMarketNews)
+		}
+
+		// WebSocket endpoint
+		router.GET("/ws/market", handlers.MarketWebSocket)
+
+		// ================= ADMIN AUTH (PUBLIC) =================
+
 		user := api.Group("/user")
 		user.Use(middleware.AuthMiddleware())
 		{
@@ -36,33 +51,51 @@ func SetUpRouter(router *gin.Engine) {
 			user.PUT("/profile", handlers.UpdateProfile)
 			user.DELETE("/account", handlers.DeleteAccountHandler)
 			user.POST("/reset-password", handlers.ResetPasswordHandler)
+			user.GET("/bots", handlers.GetUserBotsHandler)
+			user.POST("/trades", handlers.RecordTradeHandler)
+			user.GET("/trades", handlers.GetUserTradesHandler)
 
 			user.POST("/favorite/:bot_id", handlers.ToggleFavorite)
 			user.GET("/favorite", handlers.GetUserFavorites)
 		}
 
+		// ================= SUPERADMIN AUTH (PUBLIC) =================
+		superadminAuth := api.Group("/superadmin/auth")
+		{
+			superadminAuth.POST("/signup", handlers.SuperAdminRegisterHandler)
+			superadminAuth.POST("/login", handlers.SuperAdminLoginHandler)
+		}
+
+		// ================= SUPERADMIN PROTECTED =================
 		superadmin := api.Group("/superadmin")
 		superadmin.Use(middleware.AuthMiddleware())
 		{
-			superadmin.POST("/auth/signup", handlers.SuperAdminRegisterHandler)
-			superadmin.POST("/auth/login", handlers.SuperAdminLoginHandler)
 			superadmin.GET("/profile/:id", handlers.SuperAdminProfileHandler)
 			superadmin.GET("/superadmindashboard/:id", handlers.SuperAdminDashboardHandler)
+
+			// Users
 			superadmin.POST("/create_user", handlers.CreateUser)
 			superadmin.POST("/update_user/:id", handlers.UpdateUser)
 			superadmin.DELETE("/delete_user/:id", handlers.DeleteUser)
 			superadmin.GET("/users", handlers.GetAllUsers)
 			superadmin.GET("/user/:id", handlers.GetUserByID)
-			//All requests that deal with admins
+
+			// Admins
 			superadmin.POST("/create_admin", handlers.CreateAdmin)
 			superadmin.GET("/get_all_admins", handlers.GetAllAdmins)
 			superadmin.GET("/toggle_admin_status", handlers.ToggleAdminStatus)
 			superadmin.POST("/update_admin/:id", handlers.UpdateAdmin)
 			superadmin.DELETE("/delete_admin", handlers.DeleteAdmin)
 			superadmin.POST("/update_admin_password", handlers.UpdateAdminPassword)
-			//All requests that deal with bots
+
+			// Bots
 			superadmin.GET("/bots", handlers.GetBotsHandler)
 			superadmin.GET("/scan_bots", handlers.ScanAllBotsHandler)
+
+			// Sales and Performance Analytics
+			superadmin.GET("/sales", handlers.GetAllSales)
+			superadmin.GET("/performance", handlers.GetPlatformPerformance)
+			superadmin.GET("/transactions", handlers.GetAllTransactions)
 		}
 
 		admin := api.Group("/admin")
@@ -97,43 +130,58 @@ func SetUpRouter(router *gin.Engine) {
 		// ============================================
 		// DERIV BROKER INTEGRATION
 		// ============================================
+
+		// Public Deriv endpoints - no auth required
 		derivGroup := api.Group("/deriv")
 		{
-			// Public endpoints - no auth required
 			derivGroup.POST("/auth", handlers.AuthenticateDeriv)
 			derivGroup.POST("/user/info", handlers.GetDerivUserInfo)
 			derivGroup.POST("/user/balance", handlers.GetDerivBalance)
 			derivGroup.POST("/accounts/list", handlers.GetDerivAccountList)
 			derivGroup.POST("/accounts/switch", handlers.SwitchDerivAccount)
+		}
 
-			// Protected endpoints - requires authentication
-			derivGroup.Use(middleware.AuthMiddleware())
-			{
-				// Account details & validation
-				derivGroup.GET("/account/details", handlers.GetDerivAccountDetails)
-				derivGroup.POST("/validate", handlers.ValidateDerivToken)
+		// Protected Deriv endpoints - requires authentication
+		derivProtected := api.Group("/deriv")
+		derivProtected.Use(middleware.AuthMiddleware())
+		{
+			// Account details & validation
+			derivProtected.GET("/account/details", handlers.GetDerivAccountDetails)
+			derivProtected.POST("/validate", handlers.ValidateDerivToken)
 
-				// Token management
-				derivGroup.POST("/token/save", handlers.SaveDerivToken)
-				derivGroup.GET("/token", handlers.GetUserDerivToken)
-				derivGroup.DELETE("/token", handlers.DeleteDerivToken)
+			// Token management
+			derivProtected.POST("/token/save", handlers.SaveDerivToken)
+			derivProtected.GET("/token", handlers.GetUserDerivToken)
+			derivProtected.DELETE("/token", handlers.DeleteDerivToken)
 
-				// Account preference
-				derivGroup.PUT("/account/preference", handlers.UpdateDerivAccountPreference)
+			// Account preference
+			derivProtected.PUT("/account/preference", handlers.UpdateDerivAccountPreference)
 
-				// Use stored token (no need to send token in request)
-				derivGroup.GET("/me/info", handlers.GetDerivUserInfoWithStoredToken)
-				derivGroup.GET("/me/balance", handlers.GetDerivBalanceWithStoredToken)
-				derivGroup.GET("/me/accounts", handlers.GetDerivAccountListWithStoredToken)
-			}
+			// Use stored token (no need to send token in request)
+			derivProtected.GET("/me/info", handlers.GetDerivUserInfoWithStoredToken)
+			derivProtected.GET("/me/balance", handlers.GetDerivBalanceWithStoredToken)
+			derivProtected.GET("/me/accounts", handlers.GetDerivAccountListWithStoredToken)
+			derivProtected.POST("/me/switch", handlers.SwitchDerivAccountWithStoredToken)
+			derivProtected.POST("/trade", handlers.PlaceDerivTrade)
 		}
 	}
 
 	// Frontend path
 	frontendPath := "./frontend"
 
-	// Serve assets
+	// Serve assets and JavaScript files
 	router.Static("/assets", frontendPath)
+	router.Static("/js", frontendPath)
+	router.StaticFile("/api.js", frontendPath+"/api.js")
+	router.StaticFile("/auth.js", frontendPath+"/auth.js")
+	router.StaticFile("/dashboard.js", frontendPath+"/dashboard.js")
+	router.StaticFile("/notifications.js", frontendPath+"/notifications.js")
+	router.StaticFile("/trading.js", frontendPath+"/trading.js")
+	router.StaticFile("/app.js", frontendPath+"/app.js")
+	router.StaticFile("/superadmin-dashboard.js", frontendPath+"/superadmin-dashboard.js")
+	router.StaticFile("/admin-dashboard.js", frontendPath+"/admin-dashboard.js")
+	router.StaticFile("/output.css", frontendPath+"/output.css")
+	router.StaticFile("/theme.css", frontendPath+"/theme.css")
 
 	// Serve HTML files manually
 	router.GET("/", func(c *gin.Context) {
@@ -169,17 +217,8 @@ func SetUpRouter(router *gin.Engine) {
 	router.GET("/terms", func(c *gin.Context) {
 		c.File(frontendPath + "/terms.html")
 	})
-	router.GET("/legal", func(c *gin.Context) {
-		c.File(frontendPath + "/legal.html")
-	})
 	router.GET("/marketchart", func(c *gin.Context) {
 		c.File(frontendPath + "/marketchart.html")
-	})
-	router.GET("/test_upgrade", func(c *gin.Context) {
-		c.File(frontendPath + "/test_upgrade.html")
-	})
-	router.GET("/video", func(c *gin.Context) {
-		c.File(frontendPath + "/video.html")
 	})
 	router.GET("/admin", func(c *gin.Context) {
 		c.File(frontendPath + "/admin_dashboard.html")

@@ -42,22 +42,87 @@ func AdminDashboardHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
 		return
 	}
+
+	// Get admin's bots
+	var bots []models.Bot
+	database.DB.Where("owner_id = ?", userID).Find(&bots)
+
+	// Get admin's transactions
+	var transactions []models.Transaction
+	database.DB.Where("admin_id = ?", userID).Order("created_at DESC").Find(&transactions)
+
+	// Calculate metrics
+	totalRevenue := 0.0
+	adminShare := 0.0
+	activeBots := 0
+	totalUsers := 0
+
+	for _, bot := range bots {
+		if bot.Status == "active" {
+			activeBots++
+		}
+		// Count users for this bot
+		var userCount int64
+		database.DB.Table("bot_users").Where("bot_id = ?", bot.ID).Count(&userCount)
+		totalUsers += int(userCount)
+	}
+
+	for _, tx := range transactions {
+		if tx.Status == "success" {
+			totalRevenue += tx.Amount
+			adminShare += tx.AdminShare
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Dashboard data loaded successfully",
+		"data": gin.H{
+			"admin": gin.H{
+				"id":    admin.ID,
+				"name":  admin.Name,
+				"email": admin.Email,
+			},
+			"totalRevenue":       totalRevenue,
+			"adminShare":         adminShare,
+			"activeBots":         activeBots,
+			"totalBots":          len(bots),
+			"totalUsers":         totalUsers,
+			"totalTransactions":  len(transactions),
+			"recentTransactions": transactions[:min(5, len(transactions))],
+		},
+	})
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
 
 // AdminProfileHandler godoc
 // @Summary Get admin profile
-// @Description Retrieves the profile of the admin by ID
+// @Description Retrieves the profile of the current admin
 // @Tags admin
 // @Produce json
-// @Param id path string true "Admin ID"
 // @Security ApiKeyAuth
 // @Success 200 {object} map[string]interface{}
 // @Failure 404 {object} map[string]string
-// @Router /api/admin/profile/{id} [get]
+// @Router /api/admin/profile [get]
 func AdminProfileHandler(ctx *gin.Context) {
-	id := ctx.Param("id")
+	userIDInterface, exists := ctx.Get("user_id")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	userID, ok := userIDInterface.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id"})
+		return
+	}
+
 	var person models.User
-	if err := database.DB.Where("id = ?", id).First(&person).Error; err != nil {
+	if err := database.DB.Where("id = ?", userID).First(&person).Error; err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "admin not found"})
 		return
 	}

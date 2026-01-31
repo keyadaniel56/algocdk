@@ -28,6 +28,7 @@ func InitDB() {
 		&models.UserBot{},
 		&models.Sale{},
 		&models.DerivCredentials{},
+		&models.SuperAdmin{},
 	)
 	fmt.Println("database connected")
 }

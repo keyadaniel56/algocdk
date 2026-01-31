@@ -13,67 +13,147 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#fff0f0',
-                            100: '#ffd6d6',
-                            500: '#ff4500',
-                            600: '#e63e00',
-                            700: '#cc3700',
-                        },
-                        dark: {
-                            900: '#000000',
-                            800: '#1a1a1a',
-                            700: '#333333',
-                            600: '#4d4d4d',
-                        },
-                        success: {
-                            500: '#10b981',
-                            600: '#059669',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
+                        primary: '#FF4500',
+                        secondary: '#FF6347',
+                        success: '#00C851',
+                        danger: '#FF4444',
+                        warning: '#FFBB33',
+                        dark: '#0D1421',
+                        darker: '#0A0E1A',
+                        accent: '#1E293B'
                     }
                 }
             }
         }
     </script>
     <style>
+        /* Theme Variables */
+        :root {
+            --bg-primary: #0e1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1f2430;
+            --border-color: #2b2f3a;
+            --text-primary: #d1d4dc;
+            --text-secondary: #8b949e;
+            --accent-primary: #FF4500;
+            --accent-secondary: #FF6347;
+            --success: #00c176;
+            --danger: #ff4d4f;
+            --warning: #ffa500;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+            background: var(--bg-primary);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #ff4500;
+            background: var(--accent-primary);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #e63e00;
+            background: var(--accent-secondary);
         }
 
+        /* Navigation */
+        .navbar {
+            background: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Cards */
         .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .card-hover:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 69, 0, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 69, 0, 0.4);
         }
 
+        .stats-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            border-color: rgba(255, 69, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Form Elements */
+        .form-input {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 69, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 69, 0, 0.1);
+            border-color: var(--accent-primary);
+        }
+
+        /* Filter buttons */
+        .filter-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: rgba(255, 69, 0, 0.2);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        /* Animations */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -83,7 +163,6 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -98,33 +177,81 @@
             0% {
                 box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.7);
             }
-
             70% {
                 box-shadow: 0 0 0 10px rgba(255, 69, 0, 0);
             }
-
             100% {
                 box-shadow: 0 0 0 0 rgba(255, 69, 0, 0);
             }
         }
 
+        /* Glass effect */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(22, 27, 34, 0.8);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Status indicators */
+        .status-active {
+            background: rgba(0, 193, 118, 0.2);
+            color: var(--success);
+            border: 1px solid rgba(0, 193, 118, 0.3);
+        }
+
+        .status-paused {
+            background: rgba(255, 165, 0, 0.2);
+            color: var(--warning);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .status-expired {
+            background: rgba(255, 77, 79, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 79, 0.3);
+        }
+
+        /* Bot card enhancements */
+        .bot-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bot-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .bot-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent-primary);
         }
     </style>
 </head>
 
-<body class="bg-dark-900 text-white">
+<body>
     <!-- Top Navigation Bar -->
-    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center sticky top-0 z-10">
+    <nav class="navbar py-3 px-6 flex justify-between items-center sticky top-0 z-10">
         <div class="flex items-center">
-            <a href="#" class="text-xl font-bold text-white flex items-center">
-                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+            <a href="#" class="text-xl font-bold flex items-center" style="color: var(--text-primary);">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2" style="background: var(--accent-primary);">
                     <i class="fas fa-robot text-white text-sm"></i>
                 </div>
-                Algocdk
+                AlgoCDK
             </a>
         </div>
 
@@ -132,50 +259,49 @@
         <div class="hidden md:flex flex-1 max-w-md mx-4">
             <div class="relative w-full">
                 <input type="text" id="searchInput" placeholder="Search my bots..."
-                    class="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
-                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    class="w-full pl-10 pr-4 py-2 form-input rounded-lg">
+                <i class="fas fa-search absolute left-3 top-3" style="color: var(--text-secondary);"></i>
             </div>
         </div>
 
         <div class="flex items-center space-x-4">
             <!-- Mobile Search Button -->
-            <button class="md:hidden text-gray-400 hover:text-white transition-colors" id="mobileSearchBtn">
+            <button class="md:hidden transition-colors" style="color: var(--text-secondary);" id="mobileSearchBtn">
                 <i class="fas fa-search"></i>
             </button>
 
             <!-- Navigation Links -->
             <div class="hidden md:flex items-center space-x-4">
-                <a href="mybots" class="text-primary-500 font-medium">MyBots</a>
-                <a href="botstore" class="text-gray-300 hover:text-white transition-colors">Marketplace</a>
-                <a href="#" class="text-gray-300 hover:text-white transition-colors">Trade History</a>
-                <a href="support" class="text-gray-300 hover:text-white transition-colors">Support</a>
+                <a href="mybots" class="font-medium" style="color: var(--accent-primary);">MyBots</a>
+                <a href="botstore" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Marketplace</a>
+                <a href="#" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Trade History</a>
+                <a href="support" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Support</a>
             </div>
 
             <!-- User Menu -->
             <div class="relative">
                 <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
                     <div id="userAvatar"
-                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-white font-medium" style="background: var(--accent-primary);">
                         <i class="fas fa-user"></i>
                     </div>
                     <span id="userName" class="hidden md:block">Loading...</span>
-                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                    <i class="fas fa-chevron-down text-xs" style="color: var(--text-secondary);"></i>
                 </button>
 
                 <!-- User Dropdown -->
                 <div id="userDropdown"
-                    class="absolute right-0 mt-2 w-48 bg-dark-800 rounded-lg shadow-lg border border-dark-700 hidden z-10">
+                    class="absolute right-0 mt-2 w-48 rounded-lg shadow-lg hidden z-10 glass-effect">
                     <div class="py-1">
                         <a href="profile"
-                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Profile</a>
+                            class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">Profile</a>
                         <a href="mybots"
-                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">My
-                            Bots</a>
+                            class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">My Bots</a>
                         <a href="settings"
-                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Settings</a>
-                        <div class="border-t border-dark-700 my-1"></div>
+                            class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">Settings</a>
+                        <div class="my-1" style="border-top: 1px solid var(--border-color);"></div>
                         <a href="#" id="logoutButton"
-                            class="block px-4 py-2 text-sm text-red-500 hover:bg-dark-700 transition-colors">
+                            class="block px-4 py-2 text-sm transition-colors" style="color: var(--danger);" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </a>
                     </div>
@@ -186,124 +312,118 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-6 fade-in">
-        <!-- Header Section -->
-        <section class="mb-8">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-white mb-2">My Trading Bots</h1>
-                    <p class="text-gray-400">Manage and monitor your purchased and rented trading bots</p>
-                </div>
-                <a href="botstore"
-                    class="mt-4 md:mt-0 bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium flex items-center">
-                    <i class="fas fa-plus mr-2"></i> Get More Bots
+        <!-- Quick Actions Bar -->
+        <section class="mb-6">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button class="btn-primary px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-play mr-2"></i> Start All Active
+                </button>
+                <button class="btn-secondary px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-pause mr-2"></i> Pause All
+                </button>
+                <button class="btn-secondary px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line mr-2"></i> View Analytics
+                </button>
+                <a href="botstore" class="btn-primary px-4 py-2 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Add Bot
                 </a>
             </div>
         </section>
 
-        <!-- Stats Section -->
+        <!-- Header Section -->
         <section class="mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 stats-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-400 text-sm">Total Bots</p>
-                            <h3 class="text-2xl font-bold text-white mt-2" id="totalBots">0</h3>
-                        </div>
-                        <div class="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                            <i class="fas fa-robot text-blue-500"></i>
-                        </div>
-                    </div>
-                    <p class="text-green-500 text-sm mt-4" id="activeBotsText"><i class="fas fa-arrow-up mr-1"></i> 0
-                        active</p>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary);">My Trading Bots</h1>
+                    <p style="color: var(--text-secondary);">Manage and monitor your automated trading strategies</p>
                 </div>
-
-                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 stats-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-400 text-sm">Total Spent</p>
-                            <h3 class="text-2xl font-bold text-white mt-2" id="totalSpent">$0</h3>
-                        </div>
-                        <div class="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                            <i class="fas fa-dollar-sign text-green-500"></i>
-                        </div>
+                <div class="mt-4 md:mt-0 flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full" style="background: var(--success);"></div>
+                        <span class="text-sm" style="color: var(--text-secondary);">Live Trading</span>
                     </div>
-                    <p class="text-green-500 text-sm mt-4" id="monthlySpent"><i class="fas fa-arrow-up mr-1"></i> $0
-                        this month</p>
-                </div>
-
-                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 stats-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-400 text-sm">Monthly Cost</p>
-                            <h3 class="text-2xl font-bold text-white mt-2" id="monthlyCost">$0</h3>
-                        </div>
-                        <div class="p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                            <i class="fas fa-calendar-alt text-yellow-500"></i>
-                        </div>
-                    </div>
-                    <p class="text-green-500 text-sm mt-4" id="costChange"><i class="fas fa-arrow-down mr-1"></i> $0
-                        from last month
-                    </p>
-                </div>
-
-                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 stats-card">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-400 text-sm">Avg. Performance</p>
-                            <h3 class="text-2xl font-bold text-white mt-2" id="avgPerformance">+0.0%</h3>
-                        </div>
-                        <div class="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
-                            <i class="fas fa-chart-line text-purple-500"></i>
-                        </div>
-                    </div>
-                    <p class="text-green-500 text-sm mt-4" id="performanceChange"><i class="fas fa-arrow-up mr-1"></i>
-                        0.0% from last week</p>
                 </div>
             </div>
         </section>
 
-        <!-- Filters Section -->
-        <section class="mb-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div class="flex flex-wrap gap-3 mb-4 md:mb-0">
-                    <button
-                        class="filter-btn bg-primary-500/20 text-primary-500 px-4 py-2 rounded-lg border border-primary-500/30 font-medium"
-                        data-filter="all">
-                        All Bots
-                    </button>
-                    <button
-                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
-                        data-filter="active">
-                        Active
-                    </button>
-                    <button
-                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
-                        data-filter="paused">
-                        Paused
-                    </button>
-                    <button
-                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
-                        data-filter="rental">
-                        Rental
-                    </button>
-                    <button
-                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
-                        data-filter="purchased">
-                        Purchased
-                    </button>
+        <!-- Stats Overview -->
+        <section class="mb-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="stats-card rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-2 rounded-lg" style="background: rgba(0, 193, 118, 0.1);">
+                            <i class="fas fa-robot text-sm" style="color: var(--success);"></i>
+                        </div>
+                        <span class="text-xs" style="color: var(--text-secondary);">Active</span>
+                    </div>
+                    <h3 class="text-xl font-bold" style="color: var(--text-primary);" id="totalBots">0</h3>
+                    <p class="text-xs" style="color: var(--text-secondary);">Total Bots</p>
                 </div>
 
-                <div class="flex space-x-4">
-                    <div class="relative">
-                        <select id="sortSelect"
-                            class="bg-dark-800 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white appearance-none pr-8">
-                            <option value="recent">Recently Added</option>
-                            <option value="name">Name A-Z</option>
-                            <option value="performance">Best Performance</option>
-                            <option value="cost">Monthly Cost</option>
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                <div class="stats-card rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-2 rounded-lg" style="background: rgba(255, 69, 0, 0.1);">
+                            <i class="fas fa-dollar-sign text-sm" style="color: var(--accent-primary);"></i>
+                        </div>
+                        <span class="text-xs" style="color: var(--text-secondary);">Today</span>
                     </div>
+                    <h3 class="text-xl font-bold" style="color: var(--text-primary);" id="todayPnL">+$0</h3>
+                    <p class="text-xs" style="color: var(--text-secondary);">P&L</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-2 rounded-lg" style="background: rgba(255, 165, 0, 0.1);">
+                            <i class="fas fa-chart-line text-sm" style="color: var(--warning);"></i>
+                        </div>
+                        <span class="text-xs" style="color: var(--text-secondary);">Avg</span>
+                    </div>
+                    <h3 class="text-xl font-bold" style="color: var(--text-primary);" id="avgPerformance">+0.0%</h3>
+                    <p class="text-xs" style="color: var(--text-secondary);">Performance</p>
+                </div>
+
+                <div class="stats-card rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="p-2 rounded-lg" style="background: rgba(138, 43, 226, 0.1);">
+                            <i class="fas fa-calendar text-sm" style="color: #8a2be2;"></i>
+                        </div>
+                        <span class="text-xs" style="color: var(--text-secondary);">Monthly</span>
+                    </div>
+                    <h3 class="text-xl font-bold" style="color: var(--text-primary);" id="monthlyCost">$0</h3>
+                    <p class="text-xs" style="color: var(--text-secondary);">Cost</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters and Search -->
+        <section class="mb-6">
+            <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn active px-3 py-1.5 rounded-full text-sm font-medium" data-filter="all">
+                        All
+                    </button>
+                    <button class="filter-btn px-3 py-1.5 rounded-full text-sm" data-filter="active">
+                        <i class="fas fa-play mr-1"></i> Running
+                    </button>
+                    <button class="filter-btn px-3 py-1.5 rounded-full text-sm" data-filter="paused">
+                        <i class="fas fa-pause mr-1"></i> Paused
+                    </button>
+                    <button class="filter-btn px-3 py-1.5 rounded-full text-sm" data-filter="rental">
+                        <i class="fas fa-clock mr-1"></i> Rental
+                    </button>
+                </div>
+                
+                <div class="flex gap-3 w-full lg:w-auto">
+                    <div class="relative flex-1 lg:w-64">
+                        <input type="text" id="searchInput" placeholder="Search bots..."
+                            class="w-full pl-10 pr-4 py-2 form-input rounded-lg text-sm">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-sm" style="color: var(--text-secondary);"></i>
+                    </div>
+                    <select id="sortSelect" class="form-input rounded-lg px-3 py-2 text-sm">
+                        <option value="recent">Recent</option>
+                        <option value="name">Name</option>
+                        <option value="performance">Performance</option>
+                    </select>
                 </div>
             </div>
         </section>
@@ -311,20 +431,20 @@
         <!-- Bots Grid Section -->
         <section>
             <div id="loadingIndicator" class="flex justify-center items-center py-12">
-                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
-                <span class="ml-3 text-gray-400">Loading your bots...</span>
+                <div class="animate-spin rounded-full h-12 w-12 loading-spinner"></div>
+                <span class="ml-3" style="color: var(--text-secondary);">Loading your bots...</span>
             </div>
 
-            <div id="botsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="botsGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <!-- Bot cards will be populated here by JavaScript -->
             </div>
 
             <div id="noBots" class="hidden text-center py-12">
-                <i class="fas fa-robot text-5xl text-gray-600 mb-4"></i>
-                <h3 class="text-xl font-medium text-white mb-2">You don't have any bots yet</h3>
-                <p class="text-gray-400 mb-6">Start building your trading portfolio by exploring our marketplace</p>
+                <i class="fas fa-robot text-5xl mb-4" style="color: var(--text-secondary);"></i>
+                <h3 class="text-xl font-medium mb-2" style="color: var(--text-primary);">You don't have any bots yet</h3>
+                <p class="mb-6" style="color: var(--text-secondary);">Start building your trading portfolio by exploring our marketplace</p>
                 <a href="botstore"
-                    class="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                    class="btn-primary text-white px-6 py-3 rounded-lg font-medium">
                     Browse Marketplace
                 </a>
             </div>
@@ -332,34 +452,32 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark-800 border-t border-dark-700 py-8 mt-12">
+    <footer class="border-t py-8 mt-12" style="background: var(--bg-secondary); border-color: var(--border-color);">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
                     <div class="flex items-center mb-2">
-                        <div class="w-6 h-6 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                        <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2" style="background: var(--accent-primary);">
                             <i class="fas fa-robot text-white text-xs"></i>
                         </div>
-                        <span class="text-lg font-bold text-white">AlgoCDK</span>
+                        <span class="text-lg font-bold" style="color: var(--text-primary);">AlgoCDK</span>
                     </div>
-                    <p class="text-gray-400 text-sm">&copy; <span id="currentYear"></span> AlgoCDK. All rights reserved.
-                    </p>
+                    <p class="text-sm" style="color: var(--text-secondary);">&copy; <span id="currentYear"></span> AlgoCDK. All rights reserved.</p>
                 </div>
                 <div class="flex space-x-6">
-                    <a href="terms" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
-                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
-                    <a href="support" class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
+                    <a href="terms" class="text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Terms</a>
+                    <a href="privacy" class="text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Privacy</a>
+                    <a href="support" class="text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Support</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Loading Spinner Template (Hidden by default) -->
-    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-dark-800 rounded-xl p-6 flex flex-col items-center border border-dark-600">
-            <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
-            </div>
-            <p class="text-white">Processing...</p>
+    <div id="loadingSpinner" class="hidden fixed inset-0 flex items-center justify-center z-50" style="background: rgba(0, 0, 0, 0.5);">
+        <div class="rounded-xl p-6 flex flex-col items-center glass-effect">
+            <div class="w-16 h-16 rounded-full animate-spin mb-4 loading-spinner"></div>
+            <p style="color: var(--text-primary);">Processing...</p>
         </div>
     </div>
 
@@ -502,30 +620,20 @@
             const totalBots = bots.length;
             const activeBots = bots.filter(bot => bot.status === 'active').length;
             const runningBots = bots.filter(bot => bot.is_running).length;
-            const rentalBots = bots.filter(bot => bot.purchase_type === 'rental').length;
-            const purchasedBots = bots.filter(bot => bot.purchase_type === 'purchased').length;
-
-            // Calculate costs
-            const totalSpent = bots.reduce((sum, bot) => sum + (bot.total_cost || 0), 0);
             const monthlyCost = bots.reduce((sum, bot) => sum + (bot.monthly_cost || 0), 0);
-
-            // Calculate average performance
             const avgPerformance = bots.length > 0
                 ? `+${(bots.reduce((sum, bot) => {
                     const perf = parseFloat(bot.performance?.replace('%', '').replace('+', '')) || 0;
                     return sum + perf;
                 }, 0) / bots.length).toFixed(1)}%`
                 : '+0.0%';
+            const todayPnL = Math.floor(Math.random() * 500) - 250; // Simulated daily P&L
 
-            // Update DOM elements
-            document.getElementById('totalBots').textContent = totalBots;
-            document.getElementById('activeBotsText').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${runningBots} running`;
-            document.getElementById('totalSpent').textContent = `$${totalSpent.toLocaleString()}`;
-            document.getElementById('monthlySpent').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> $${Math.floor(totalSpent * 0.2)} this month`;
-            document.getElementById('monthlyCost').textContent = `$${monthlyCost}`;
-            document.getElementById('costChange').innerHTML = `<i class="fas fa-arrow-down mr-1"></i> $${Math.floor(monthlyCost * 0.15)} from last month`;
+            document.getElementById('totalBots').textContent = runningBots;
+            document.getElementById('todayPnL').textContent = `${todayPnL >= 0 ? '+' : ''}$${todayPnL}`;
+            document.getElementById('todayPnL').style.color = todayPnL >= 0 ? 'var(--success)' : 'var(--danger)';
             document.getElementById('avgPerformance').textContent = avgPerformance;
-            document.getElementById('performanceChange').innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${(Math.random() * 5).toFixed(1)}% from last week`;
+            document.getElementById('monthlyCost').textContent = `$${monthlyCost}`;
         }
 
         // Display bots in grid
@@ -554,7 +662,7 @@
             attachBotCardListeners();
         }
 
-        // Create bot card with background image
+        // Create simplified bot card
         function createBotCard(bot) {
             const botName = bot.name || 'Unnamed Bot';
             const botCreator = bot.creator || {};
@@ -565,145 +673,90 @@
             const botImage = bot.image || '';
             const botPerformance = bot.performance || '+0%';
             const purchaseType = bot.purchase_type || 'purchased';
-            const purchaseDate = bot.purchase_date || new Date().toISOString().split('T')[0];
-            const expirationDate = bot.expiration_date;
             const isRunning = bot.is_running || false;
             const price = bot.price || 0;
             const rentPrice = bot.rent_price || 0;
 
-            // Background image style
-            const bgImageStyle = botImage
-                ? `background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), url('${botImage}'); background-size: cover; background-position: center;`
-                : `background: linear-gradient(135deg, #ff4500 0%, #1a1a1a 100%);`;
-
-            // Format date
-            function formatDate(dateString) {
-                if (!dateString) return 'N/A';
-                const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString(undefined, options);
-            }
-
             const card = document.createElement('div');
-            card.className = 'bg-dark-800 rounded-xl border border-dark-700 overflow-hidden card-hover relative min-h-[350px]';
+            card.className = 'bot-card rounded-xl overflow-hidden card-hover relative';
             card.setAttribute('data-status', botStatus);
             card.setAttribute('data-purchase-type', purchaseType);
             card.setAttribute('data-bot-id', botId);
 
             card.innerHTML = `
-                <!-- Background Image with Gradient Overlay -->
-                <div class="absolute inset-0 rounded-xl" style="${bgImageStyle}"></div>
-                
-                <!-- Gradient Overlay for better text readability -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent rounded-xl"></div>
-                
-                <!-- Content Container -->
-                <div class="relative z-10 h-full flex flex-col p-5">
-                    <!-- Top Row: Status + Purchase Type -->
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="space-y-1">
-                            <span class="bg-${botStatus === 'active' ? 'green' : botStatus === 'paused' ? 'yellow' : 'red'}-500/20 text-${botStatus === 'active' ? 'green' : botStatus === 'paused' ? 'yellow' : 'red'}-400 text-xs font-medium px-2 py-1 rounded border border-${botStatus === 'active' ? 'green' : botStatus === 'paused' ? 'yellow' : 'red'}-500/30">
-                                ${botStatus === 'active' ? 'Active' : botStatus === 'paused' ? 'Paused' : 'Expired'}
-                            </span>
-                            <span class="bg-${purchaseType === 'rental' ? 'blue' : 'purple'}-500/20 text-${purchaseType === 'rental' ? 'blue' : 'purple'}-400 text-xs font-medium px-2 py-1 rounded border border-${purchaseType === 'rental' ? 'blue' : 'purple'}-500/30">
-                                ${purchaseType === 'rental' ? 'Rental' : 'Owned'}
-                            </span>
-                        </div>
-                        ${isRunning ? `
-                        <div class="flex items-center bg-green-500/20 text-green-400 text-xs font-medium px-2 py-1 rounded border border-green-500/30">
-                            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></div>
-                            Running
-                        </div>
-                        ` : ''}
-                    </div>
-                    
-                    <!-- Bot Info - Takes remaining space -->
-                    <div class="flex-1 flex flex-col justify-end">
-                        <!-- Bot Name and Creator -->
-                        <div class="mb-3">
-                            <h3 class="text-xl font-bold text-white mb-1">${botName}</h3>
-                            <div class="flex items-center text-white/80 text-sm">
-                                <i class="fas fa-user mr-2"></i>
-                                <span class="truncate">by ${botCreatorName}</span>
+                <div class="p-4">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold" style="color: var(--text-primary);">${botName}</h3>
+                                <p class="text-xs" style="color: var(--text-secondary);">by ${botCreatorName}</p>
                             </div>
                         </div>
-                        
-                        <!-- Strategy Info -->
-                        <div class="mb-4">
-                            <div class="flex items-center text-white/80 text-sm">
-                                <i class="fas fa-brain mr-2"></i>
-                                <span>${botStrategy} Strategy</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Performance and Cost -->
-                        <div class="grid grid-cols-2 gap-3 mb-4">
-                            <div class="bg-black/50 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                                <p class="text-white/60 text-xs">Performance</p>
-                                <p class="${botPerformance.startsWith('+') ? 'text-green-400' : 'text-red-400'} font-semibold">${botPerformance}</p>
-                            </div>
-                            <div class="bg-black/50 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-                                <p class="text-white/60 text-xs">${purchaseType === 'rental' ? 'Monthly' : 'Total'}</p>
-                                <p class="text-white font-semibold">$${purchaseType === 'rental' ? rentPrice : price}</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Purchase Info -->
-                        <div class="text-xs text-white/60 mb-4 space-y-1">
-                            <div class="flex justify-between">
-                                <span>Purchased:</span>
-                                <span>${formatDate(purchaseDate)}</span>
-                            </div>
-                            ${expirationDate ? `
-                            <div class="flex justify-between">
-                                <span>Expires:</span>
-                                <span>${formatDate(expirationDate)}</span>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="space-y-2">
-                        <!-- Main Action Button -->
-                        <div class="grid ${botStatus === 'expired' ? 'grid-cols-1' : 'grid-cols-2'} gap-2">
-                            ${botStatus === 'active' ? `
+                        <div class="flex items-center gap-2">
                             ${isRunning ? `
-                            <button class="stop-bot-btn bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center shadow-lg">
-                                <i class="fas fa-stop mr-1"></i> Stop
-                            </button>
+                            <div class="flex items-center gap-1 px-2 py-1 rounded-full text-xs" style="background: rgba(0, 193, 118, 0.2); color: var(--success);">
+                                <div class="w-2 h-2 rounded-full animate-pulse" style="background: var(--success);"></div>
+                                Live
+                            </div>
                             ` : `
-                            <button class="run-bot-btn bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center shadow-lg">
-                                <i class="fas fa-play mr-1"></i> Run
-                            </button>
+                            <div class="flex items-center gap-1 px-2 py-1 rounded-full text-xs" style="background: rgba(139, 148, 158, 0.2); color: var(--text-secondary);">
+                                <div class="w-2 h-2 rounded-full" style="background: var(--text-secondary);"></div>
+                                Idle
+                            </div>
                             `}
-                            <button class="configure-bot-btn bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center border border-white/20">
-                                <i class="fas fa-cog mr-1"></i> Configure
-                            </button>
-                            ` : botStatus === 'paused' ? `
-                            <button class="run-bot-btn bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center shadow-lg">
-                                <i class="fas fa-play mr-1"></i> Resume
-                            </button>
-                            <button class="configure-bot-btn bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center border border-white/20">
-                                <i class="fas fa-cog mr-1"></i> Configure
-                            </button>
-                            ` : botStatus === 'expired' && purchaseType === 'rental' ? `
-                            <button class="renew-bot-btn bg-primary-500 hover:bg-primary-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center shadow-lg">
-                                <i class="fas fa-sync-alt mr-1"></i> Renew Now
-                            </button>
-                            ` : ''}
                         </div>
-                        
-                        <!-- Secondary Actions -->
-                        ${botStatus !== 'expired' ? `
-                        <div class="grid grid-cols-2 gap-2">
-                            <button class="details-bot-btn bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center border border-white/20">
-                                <i class="fas fa-chart-line mr-1"></i> Stats
-                            </button>
-                            <button class="view-bot-btn bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center border border-blue-500/30">
-                                <i class="fas fa-external-link-alt mr-1"></i> View
-                            </button>
+                    </div>
+
+                    <!-- Performance -->
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="text-center">
+                            <p class="text-xs" style="color: var(--text-secondary);">Performance</p>
+                            <p class="font-semibold ${botPerformance.startsWith('+') ? 'text-green-400' : 'text-red-400'}">${botPerformance}</p>
                         </div>
-                        ` : ''}
+                        <div class="text-center">
+                            <p class="text-xs" style="color: var(--text-secondary);">Type</p>
+                            <p class="font-semibold text-xs" style="color: var(--text-primary);">${purchaseType === 'rental' ? 'Rental' : 'Owned'}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs" style="color: var(--text-secondary);">Cost</p>
+                            <p class="font-semibold text-xs" style="color: var(--text-primary);">$${purchaseType === 'rental' ? rentPrice : price}</p>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        ${botStatus === 'active' ? `
+                        ${isRunning ? `
+                        <button class="stop-bot-btn flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors" style="background: rgba(255, 77, 79, 0.2); color: var(--danger); border: 1px solid rgba(255, 77, 79, 0.3);">
+                            <i class="fas fa-stop mr-1"></i> Stop
+                        </button>
+                        ` : `
+                        <button class="run-bot-btn flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors" style="background: rgba(0, 193, 118, 0.2); color: var(--success); border: 1px solid rgba(0, 193, 118, 0.3);">
+                            <i class="fas fa-play mr-1"></i> Start
+                        </button>
+                        `}
+                        <button class="configure-bot-btn px-3 py-2 rounded-lg text-sm transition-colors" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color);">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="details-bot-btn px-3 py-2 rounded-lg text-sm transition-colors" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color);">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                        ` : botStatus === 'paused' ? `
+                        <button class="run-bot-btn flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors" style="background: rgba(255, 69, 0, 0.2); color: var(--accent-primary); border: 1px solid rgba(255, 69, 0, 0.3);">
+                            <i class="fas fa-play mr-1"></i> Resume
+                        </button>
+                        <button class="configure-bot-btn px-3 py-2 rounded-lg text-sm transition-colors" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color);">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        ` : `
+                        <button class="renew-bot-btn flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors" style="background: rgba(255, 69, 0, 0.2); color: var(--accent-primary); border: 1px solid rgba(255, 69, 0, 0.3);">
+                            <i class="fas fa-sync-alt mr-1"></i> Renew
+                        </button>
+                        `}
                     </div>
                 </div>
             `;
@@ -887,18 +940,16 @@
             }, 3000);
         }
 
-        // Setup event listeners
+        // Update filter button styles
         function setupEventListeners() {
             // Filter buttons
             document.querySelectorAll('.filter-btn').forEach(button => {
                 button.addEventListener('click', function () {
                     // Update active button
                     document.querySelectorAll('.filter-btn').forEach(btn => {
-                        btn.classList.remove('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
-                        btn.classList.add('bg-dark-700', 'text-gray-300', 'border-dark-600');
+                        btn.classList.remove('active');
                     });
-                    this.classList.remove('bg-dark-700', 'text-gray-300', 'border-dark-600');
-                    this.classList.add('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+                    this.classList.add('active');
 
                     // Filter bots
                     const filter = this.getAttribute('data-filter');

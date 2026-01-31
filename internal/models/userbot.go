@@ -6,6 +6,7 @@ type UserBot struct {
 	ID            uint       `gorm:"primaryKey" json:"id"`
 	UserID        uint       `json:"user_id"`
 	BotID         uint       `json:"bot_id"`
+	Bot           Bot        `json:"bot" gorm:"foreignKey:BotID"`
 	AccessType    string     `json:"access_type"` // "purchase" or "rent" (replaces Type)
 	IsActive      bool       `json:"is_active"`   // replaces Active
 	TransactionID *uint      `json:"transaction_id,omitempty"`

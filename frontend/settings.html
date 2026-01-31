@@ -1,838 +1,1145 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
-    <link rel="stylesheet" href="output.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoCDK - Settings</title>
+    <title>Settings - AlgoCDK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#fff0f0',
-                            100: '#ffd6d6',
-                            500: '#ff4500',
-                            600: '#e63e00',
-                            700: '#cc3700',
-                        },
-                        dark: {
-                            900: '#000000',
-                            800: '#1a1a1a',
-                            700: '#333333',
-                            600: '#4d4d4d',
-                        },
-                        success: {
-                            500: '#10b981',
-                            600: '#059669',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
+                        primary: '#FF4500',
+                        secondary: '#FF6347',
+                        success: '#00C851',
+                        danger: '#FF4444',
+                        warning: '#FFBB33',
+                        dark: '#0D1421',
+                        darker: '#0A0E1A',
+                        accent: '#1E293B'
                     }
                 }
             }
         }
     </script>
     <style>
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #ff4500;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #e63e00;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0D1421;
+            color: #E2E8F0;
         }
 
-        .sidebar-item.active {
-            background: rgba(255, 69, 0, 0.1);
-            border-left: 3px solid #ff4500;
-            color: #ff4500;
+        .navbar-blur {
+            background: rgba(13, 20, 33, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 69, 0, 0.1);
         }
 
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .settings-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 69, 0, 0.1);
         }
 
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 69, 0, 0.3);
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .form-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .input-field {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            color: #E2E8F0;
             transition: all 0.3s ease;
         }
 
-        .form-input:focus {
-            border-color: #ff4500;
-            box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.1);
+        .input-field:focus {
+            outline: none;
+            border-color: #FF4500;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF4500 0%, #FF6347 100%);
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(255, 69, 0, 0.4);
         }
 
         .tab-button {
+            color: #94A3B8;
+            border-bottom: 2px solid transparent;
             transition: all 0.3s ease;
         }
 
         .tab-button.active {
-            background: rgba(255, 69, 0, 0.1);
-            color: #ff4500;
-            border-color: #ff4500;
+            color: #FF4500;
+            border-bottom-color: #FF4500;
         }
 
-        .badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
         }
 
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+        .alert-success {
+            background: rgba(0, 200, 81, 0.1);
+            border: 1px solid rgba(0, 200, 81, 0.3);
+            color: #86efac;
         }
 
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        .select2-container--default .select2-selection--single {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 0.5rem !important;
-            height: 42px !important;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: white !important;
-            line-height: 42px !important;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 42px !important;
-        }
-
-        .select2-dropdown {
-            background-color: #1a1a1a !important;
-            border: 1px solid #333333 !important;
-        }
-
-        .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #ff4500 !important;
-        }
-
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            background-color: #333333 !important;
-            color: white !important;
-            border: 1px solid #4d4d4d !important;
+        .alert-error {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            color: #fca5a5;
         }
     </style>
 </head>
 
-<body class="bg-dark-900 text-white min-h-screen">
-    <!-- Top Navigation Bar -->
-    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center">
-        <div class="flex items-center">
-            <a href="index.html" class="text-xl font-bold text-white flex items-center">
-                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
-                    <i class="fas fa-robot text-white text-sm"></i>
-                </div>
-                Algocdk
-            </a>
-        </div>
-
-        <div class="flex items-center space-x-4">
-            <div class="hidden md:flex items-center space-x-2 bg-dark-700 px-3 py-1 rounded-lg border border-dark-600">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span class="text-sm">Live</span>
-            </div>
-
-            <div class="relative">
-                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
-                    <div id="userAvatar"
-                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <span id="userName" class="hidden md:block">Loading...</span>
-                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                </button>
-
-                <!-- User Dropdown -->
-                <div id="userDropdown"
-                    class="absolute right-0 mt-2 w-56 bg-dark-800 rounded-lg shadow-xl border border-dark-700 hidden z-10">
-                    <div class="p-4 border-b border-dark-700">
-                        <div class="flex items-center space-x-3">
-                            <div id="dropdownAvatar"
-                                class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <h3 id="dropdownName" class="font-medium text-white">Loading...</h3>
-                                <p id="dropdownEmail" class="text-xs text-gray-400 truncate max-w-[150px]">Loading...
-                                </p>
-                            </div>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar-blur fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="/" class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                            <span class="text-lg sm:text-xl font-bold text-white">A</span>
                         </div>
-                    </div>
-                    <div class="py-2">
-                        <a href="./profile"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
-                            <i class="fas fa-user-circle mr-3 text-primary-500"></i>
-                            Profile
-                        </a>
-                        <a href="./settings"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
-                            <i class="fas fa-cog mr-3 text-gray-400"></i>
-                            Settings
-                        </a>
-                        <a href="billing.html"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
-                            <i class="fas fa-credit-card mr-3 text-gray-400"></i>
-                            Billing
-                        </a>
-                        <div class="border-t border-dark-700 my-1"></div>
-                        <a href="#" id="logoutButton"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-red-500 hover:bg-dark-700 transition-colors flex items-center">
-                            <i class="fas fa-sign-out-alt mr-3"></i>Logout
-                        </a>
-                    </div>
+                        <span class="text-xl sm:text-2xl font-bold">AlgoCDK</span>
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/app" class="text-gray-300 hover:text-primary transition">Dashboard</a>
+                    <a href="/mybots" class="text-gray-300 hover:text-primary transition">My Bots</a>
+                    <a href="/botstore" class="text-gray-300 hover:text-primary transition">Marketplace</a>
+                    <a href="/settings" class="text-primary">Settings</a>
+                </div>
+
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <a href="/profile" class="text-gray-300 hover:text-primary transition text-sm sm:text-base">Profile</a>
+                    <button id="logoutBtn" class="text-gray-300 hover:text-red-400 transition text-sm sm:text-base">Logout</button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="flex">
-        <!-- Sidebar Navigation -->
-        <div class="hidden md:flex md:w-64 md:flex-col">
-            <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-dark-800 border-r border-dark-700">
-                <div class="flex-grow flex flex-col">
-                    <nav class="flex-1 px-4 space-y-2 py-4">
-                        <a href="./app"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-tachometer-alt mr-3"></i>
-                            Dashboard
-                        </a>
-                        <a href="./my-bots"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-robot mr-3"></i>
-                            My Bots
-                        </a>
-                        <a href="./marketplace"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-store mr-3"></i>
-                            AI Bots Marketplace
-                        </a>
-                        <a href="trade-history.html"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-history mr-3"></i>
-                            Trade History
-                        </a>
-                        <div class="border-t border-dark-700 my-2"></div>
-                        <a href="./profile"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-user-circle mr-3 text-primary-500"></i>
-                            Profile
-                        </a>
-                        <a href="./settings"
-                            class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg group">
-                            <i class="fas fa-cog mr-3"></i>
-                            Settings
-                        </a>
-                        <a href="./support"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-question-circle mr-3"></i>
-                            
-                        </a>
-                    </nav>
-                </div>
+    <!-- Main Content -->
+    <main class="pt-20 sm:pt-24 pb-12 px-3 sm:px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-4xl font-bold mb-2">Settings</h1>
+                <p class="text-gray-400 text-sm sm:text-base">Manage your account and preferences</p>
             </div>
-        </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 overflow-x-hidden">
-            <main class="p-6 fade-in">
-                <!-- Settings Header -->
-                <div class="mb-8">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+            <!-- Tabs -->
+            <div class="flex space-x-4 sm:space-x-8 mb-6 sm:mb-8 border-b border-gray-700 overflow-x-auto">
+                <button class="tab-button pb-3 text-sm sm:text-lg font-semibold active whitespace-nowrap" data-tab="profile">Profile</button>
+                <button class="tab-button pb-3 text-sm sm:text-lg font-semibold whitespace-nowrap" data-tab="deriv">Deriv Integration</button>
+                <button class="tab-button pb-3 text-sm sm:text-lg font-semibold whitespace-nowrap" data-tab="security">Security</button>
+                <button class="tab-button pb-3 text-sm sm:text-lg font-semibold whitespace-nowrap" data-tab="notifications">Notifications</button>
+            </div>
+
+            <!-- Alert Container -->
+            <div id="alertContainer"></div>
+
+            <!-- Profile Tab -->
+            <div id="profileTab" class="tab-content">
+                <div class="settings-card p-4 sm:p-8 rounded-2xl">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Profile Information</h2>
+
+                    <form id="profileForm" class="space-y-4 sm:space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+                                <input type="text" id="profileName" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                    placeholder="John Doe">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                                <input type="email" id="profileEmail" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                    placeholder="you@example.com" readonly>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Phone</label>
+                                <input type="tel" id="profilePhone" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                    placeholder="+1 234 567 8900">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Country</label>
+                                <input type="text" id="profileCountry" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                    placeholder="United States">
+                            </div>
+                        </div>
+
                         <div>
-                            <h1 class="text-3xl font-bold text-white mb-2">Settings</h1>
-                            <p class="text-gray-400">Customize your account preferences and trading options</p>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Bio</label>
+                            <textarea id="profileBio" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base" rows="4"
+                                placeholder="Tell us about yourself..."></textarea>
                         </div>
-                        <div class="flex space-x-3 mt-4 md:mt-0">
-                            <button id="editSettingsBtn"
-                                class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fas fa-edit mr-2"></i> Edit Settings
-                            </button>
-                            <button id="saveSettingsBtn" style="display: none;"
-                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fas fa-save mr-2"></i> Save Changes
-                            </button>
-                            <button id="cancelEditBtn" style="display: none;"
-                                class="bg-dark-700 hover:bg-dark-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center border border-dark-600">
-                                <i class="fas fa-times mr-2"></i> Cancel
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Tabs -->
-                    <div class="flex border-b border-dark-700 mb-8">
-                        <button
-                            class="tab-button active px-4 py-3 font-medium text-sm border-b-2 border-primary-500 text-primary-500">
-                            <i class="fas fa-cog mr-2"></i> General
+                        <button type="submit" class="btn-primary px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base w-full sm:w-auto">
+                            Save Changes
                         </button>
-                        <button id="notificationsTab"
-                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
-                            <i class="fas fa-bell mr-2"></i> Notifications
-                        </button>
-                        <button id="tradingTab"
-                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
-                            <i class="fas fa-chart-line mr-2"></i> Trading
-                        </button>
-                        <button id="securityTab"
-                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
-                            <i class="fas fa-shield-alt mr-2"></i> Security
-                        </button>
-                    </div>
+                    </form>
                 </div>
-
-                <!-- General Settings Section -->
-                <div id="generalSection" class="fade-in">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                            <h2 class="text-xl font-bold text-white mb-6">Account Preferences</h2>
-                            <form id="generalForm">
-                                <div class="space-y-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400 mb-2">Theme</label>
-                                        <select id="themeSelect"
-                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                            disabled>
-                                            <option value="dark">Dark (Default)</option>
-                                            <option value="light">Light</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400 mb-2">Currency</label>
-                                        <select id="currencySelect"
-                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                            disabled>
-                                            <option value="USD">USD</option>
-                                            <option value="EUR">EUR</option>
-                                            <option value="GBP">GBP</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-400 mb-2">Date Format</label>
-                                        <select id="dateFormatSelect"
-                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                            disabled>
-                                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                            <h2 class="text-xl font-bold text-white mb-6">Privacy Settings</h2>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h3 class="font-medium text-white">Data Sharing</h3>
-                                        <p class="text-gray-400 text-sm">Share trading data with partners</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="dataSharingToggle" class="sr-only peer" disabled>
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h3 class="font-medium text-white">Public Profile</h3>
-                                        <p class="text-gray-400 text-sm">Make profile visible to others</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="publicProfileToggle" class="sr-only peer" disabled>
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-               support
-
-                <!-- Notifications Section -->
-                <div id="notificationsSection" class="hidden fade-in">
-                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                        <h2 class="text-xl font-bold text-white mb-6">Notification Preferences</h2>
-                        <form id="notificationsForm">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between p-4 border border-dark-700 rounded-lg">
-                                    <div>
-                                        <h3 class="font-medium text-white">Email Notifications</h3>
-                                        <p class="text-gray-400 text-sm">Receive emails for trade alerts</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="emailNotifications" class="sr-only peer" disabled
-                                            checked>
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between p-4 border border-dark-700 rounded-lg">
-                                    <div>
-                                        <h3 class="font-medium text-white">Push Notifications</h3>
-                                        <p class="text-gray-400 text-sm">Receive mobile push notifications</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="pushNotifications" class="sr-only peer" disabled>
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                        </div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between p-4 border border-dark-700 rounded-lg">
-                                    <div>
-                                        <h3 class="font-medium text-white">SMS Alerts</h3>
-                                        <p class="text-gray-400 text-sm">Receive SMS for critical events</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="smsAlerts" class="sr-only peer" disabled>
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Trading Settings Section -->
-                <div id="tradingSection" class="hidden fade-in">
-                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                        <h2 class="text-xl font-bold text-white mb-6">Trading Preferences</h2>
-                        <form id="tradingForm">
-                            <div class="space-y-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400 mb-2">Risk Level</label>
-                                    <select id="riskLevel"
-                                        class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                        disabled>
-                                        <option value="low">Low</option>
-                                        <option value="medium" selected>Medium</option>
-                                        <option value="high">High</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400 mb-2">Max Daily Trades</label>
-                                    <input type="number" id="maxTrades"
-                                        class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                        value="10" disabled>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-400 mb-2">Auto Trade</label>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="autoTrade" class="sr-only peer" disabled checked>
-                                        <div
-                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                        </div>
-                                        <span class="ml-3 text-sm font-medium text-gray-400">Enable Auto Trading</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Security Settings Section -->
-                <div id="securitySection" class="hidden fade-in">
-                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                        <h2 class="text-xl font-bold text-white mb-6">Security Settings</h2>
-                        <div class="space-y-6">
-                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
-                                <div>
-                                    <h3 class="font-medium text-white">Two-Factor Authentication</h3>
-                                    <p class="text-gray-400 text-sm">Add an extra layer of security</p>
-                                </div>
-                                <button id="enable2faBtn"
-                                    class="bg-dark-700 hover:bg-dark-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-dark-600">
-                                    Enable 2FA
-                                </button>
-                            </div>
-                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
-                                <div>
-                                    <h3 class="font-medium text-white">Login Alerts</h3>
-                                    <p class="text-gray-400 text-sm">Notify on new logins</p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="loginAlerts" class="sr-only peer" disabled checked>
-                                    <div
-                                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600">
-                                    </div>
-                                </label>
-                            </div>
-                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
-                                <div>
-                                    <h3 class="font-medium text-white">Active Sessions</h3>
-                                    <p class="text-gray-400 text-sm"><span id="activeSessions">1</span> device connected
-                                    </p>
-                                </div>
-                                <button id="viewSessionsBtn"
-                                    class="text-primary-500 hover:text-primary-400 text-sm font-medium">
-                                    View All
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-
-            <!-- Footer -->
-            <footer class="bg-dark-800 border-t border-dark-700 py-6 px-6">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="mb-4 md:mb-0">
-                        <p class="text-gray-400 text-sm">&copy; <span id="currentYear"></span> AlgoCDK. All rights
-                            reserved.</p>
-                    </div>
-                    <div class="flex space-x-6">
-                        <a href="terms.html" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
-                        <a href="privacy.html"
-                            class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
-                        <a href="support.html"
-                            class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
-                    </div>
-                </div>
-            </footer>
-        </div>
-    </div>
-
-    <!-- Loading Spinner -->
-    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-dark-800 rounded-xl p-6 flex flex-col items-center border border-dark-600">
-            <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
             </div>
-            <p class="text-white">Loading settings...</p>
+
+            <!-- Deriv Integration Tab -->
+            <div id="derivTab" class="tab-content hidden">
+                <div class="settings-card p-4 sm:p-8 rounded-2xl mb-6">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4">Deriv Account Integration</h2>
+                    <p class="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">Connect your Deriv account to enable real-time trading with live market data</p>
+
+                    <!-- Connection Status -->
+                    <div id="derivStatus" class="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg border border-gray-700">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div id="statusIndicator" class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                <span id="statusText" class="font-medium text-sm sm:text-base">Not Connected</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button id="refreshStatusBtn" class="text-cyan-400 hover:text-cyan-300 text-sm">Refresh Status</button>
+                                <button id="disconnectBtn" class="text-red-400 hover:text-red-300 text-sm hidden">Disconnect All</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Demo Account Info -->
+                        <div id="demoAccountInfo" class="mb-4 p-3 rounded-lg bg-blue-900/20 border border-blue-600/30 hidden">
+                            <h4 class="text-sm font-medium text-blue-400 mb-2">Demo Account</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-400">Account ID</p>
+                                    <p id="demoAccountId" class="font-mono break-all">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Balance</p>
+                                    <p id="demoAccountBalance" class="font-mono text-blue-400">$0.00</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Status</p>
+                                    <p id="demoAccountStatus" class="font-mono">Connected</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Real Account Info -->
+                        <div id="realAccountInfo" class="p-3 rounded-lg bg-red-900/20 border border-red-600/30 hidden">
+                            <h4 class="text-sm font-medium text-red-400 mb-2">Real Account</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-400">Account ID</p>
+                                    <p id="realAccountId" class="font-mono break-all">-</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Balance</p>
+                                    <p id="realAccountBalance" class="font-mono text-red-400">$0.00</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400">Status</p>
+                                    <p id="realAccountStatus" class="font-mono">Connected</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Token Input Form -->
+                    <form id="derivTokenForm" class="space-y-4 sm:space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Demo Account Token</label>
+                                <input type="password" id="demoToken" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg mono text-sm sm:text-base" placeholder="Enter your demo account token">
+                                <p class="text-xs text-gray-500 mt-2">
+                                    Demo account token for practice trading
+                                </p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Real Account Token</label>
+                                <input type="password" id="realToken" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg mono text-sm sm:text-base" placeholder="Enter your real account token">
+                                <p class="text-xs text-gray-500 mt-2">
+                                    Real account token for live trading
+                                </p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            Get your API tokens from <a href="https://app.deriv.com/account/api-token" target="_blank" class="text-cyan-400 hover:text-cyan-300">Deriv API Token page</a>
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                            <button type="submit" class="btn-primary px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base w-full sm:w-auto">Save Tokens</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Account Selection -->
+                <div id="accountSelection" class="settings-card p-4 sm:p-8 rounded-2xl hidden mb-6">
+                    <h3 class="text-lg sm:text-xl font-bold mb-4">Select Trading Account</h3>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+                        <span class="text-gray-400 text-sm sm:text-base">Switch between Demo and Real accounts</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-400">Demo</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="accountTypeToggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
+                            </label>
+                            <span class="text-sm text-gray-400">Real</span>
+                        </div>
+                    </div>
+                    <div id="accountsList" class="space-y-3">
+                        <!-- Accounts will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Real-time Market Data Preview -->
+                <div id="marketDataPreview" class="settings-card p-4 sm:p-8 rounded-2xl hidden">
+                    <h3 class="text-lg sm:text-xl font-bold mb-4">Live Market Data & Trading</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="liveMarketData">
+                        <!-- Live market data will be displayed here -->
+                    </div>
+                    
+                    <!-- Quick Trade Panel -->
+                    <div class="border-t border-gray-700 pt-6">
+                        <h4 class="text-lg font-bold mb-4">Quick Trade</h4>
+                        <form id="quickTradeForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Symbol</label>
+                                <select id="tradeSymbol" class="input-field w-full px-3 py-2 rounded-lg text-sm" required>
+                                    <option value="R_10">Volatility 10 Index</option>
+                                    <option value="R_25">Volatility 25 Index</option>
+                                    <option value="R_50">Volatility 50 Index</option>
+                                    <option value="R_100">Volatility 100 Index</option>
+                                    <option value="BOOM1000">Boom 1000 Index</option>
+                                    <option value="CRASH1000">Crash 1000 Index</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Trade Type</label>
+                                <select id="tradeType" class="input-field w-full px-3 py-2 rounded-lg text-sm" required>
+                                    <option value="CALL">Higher (Call)</option>
+                                    <option value="PUT">Lower (Put)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Amount ($)</label>
+                                <input type="number" id="tradeAmount" class="input-field w-full px-3 py-2 rounded-lg text-sm" min="1" max="1000" value="10" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Duration (ticks)</label>
+                                <input type="number" id="tradeDuration" class="input-field w-full px-3 py-2 rounded-lg text-sm" min="1" max="10" value="5" required>
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-4">
+                                <button type="submit" class="btn-primary px-6 py-3 rounded-lg w-full sm:w-auto">
+                                    Place Trade
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Tab -->
+            <div id="securityTab" class="tab-content hidden">
+                <div class="settings-card p-4 sm:p-8 rounded-2xl">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Security Settings</h2>
+
+                    <form id="passwordForm" class="space-y-4 sm:space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Current Password</label>
+                            <input type="password" id="currentPassword" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                placeholder="••••••••">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+                            <input type="password" id="newPassword" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                placeholder="••••••••">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="input-field w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-sm sm:text-base"
+                                placeholder="••••••••">
+                        </div>
+
+                        <button type="submit" class="btn-primary px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-sm sm:text-base w-full sm:w-auto">
+                            Update Password
+                        </button>
+                    </form>
+
+                    <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-700">
+                        <h3 class="text-lg sm:text-xl font-bold mb-4 text-red-400">Danger Zone</h3>
+                        <p class="text-gray-400 mb-4 text-sm sm:text-base">Once you delete your account, there is no going back. Please be
+                            certain.</p>
+                        <button id="deleteAccountBtn"
+                            class="bg-red-500/20 text-red-400 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-red-500/30 border border-red-500/50 text-sm sm:text-base w-full sm:w-auto">
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Tab -->
+            <div id="notificationsTab" class="tab-content hidden">
+                <div class="settings-card p-4 sm:p-8 rounded-2xl">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Notification Preferences</h2>
+
+                    <div class="space-y-4 sm:space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-gray-700 space-y-2 sm:space-y-0">
+                            <div>
+                                <p class="font-medium text-sm sm:text-base">Email Notifications</p>
+                                <p class="text-xs sm:text-sm text-gray-400">Receive emails about your account activity</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div
+                                    class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-gray-700 space-y-2 sm:space-y-0">
+                            <div>
+                                <p class="font-medium text-sm sm:text-base">Trading Alerts</p>
+                                <p class="text-xs sm:text-sm text-gray-400">Get notified about bot trades and performance</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div
+                                    class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500">
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-gray-700 space-y-2 sm:space-y-0">
+                            <div>
+                                <p class="font-medium text-sm sm:text-base">Marketing Updates</p>
+                                <p class="text-xs sm:text-sm text-gray-400">Receive updates about new features and bots</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // Set current year in footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        const API_BASE = '/api';
+        let token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-        // Authentication check
-        if (!localStorage.getItem('token')) {
-            window.location.href = '/';
+        // Check if token is valid, if not redirect to login
+        if (!token) {
+            window.location.href = '/auth';
+        }
+        
+        // Function to check if token is still valid
+        async function checkTokenValidity() {
+            try {
+                const response = await fetch(`${API_BASE}/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.status === 401) {
+                    // Token is invalid, redirect to login
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/auth';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Token validation error:', error);
+                return false;
+            }
         }
 
-        // Utility function for authenticated fetch requests
-        async function authFetch(url, options = {}) {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
+        // Disable all notifications temporarily
+        const originalShowAlert = window.showAlert;
+        const originalNotify = window.utils?.notify;
+        const originalNotifications = window.notifications;
+        
+        // Override notification functions to prevent popups
+        window.showAlert = function() {};
+        if (window.utils) window.utils.notify = function() {};
+        if (window.notifications) {
+            window.notifications.show = function() {};
+            window.notifications.success = function() {};
+            window.notifications.info = function() {};
+        }
 
-            const defaultOptions = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+                document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            });
+        });
+
+        // Alert helper
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_BASE}/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('profileName').value = data.name || '';
+                    document.getElementById('profileEmail').value = data.email || '';
+                    document.getElementById('profilePhone').value = data.phone || '';
+                    document.getElementById('profileCountry').value = data.country || '';
+                    document.getElementById('profileBio').value = data.bio || '';
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Update profile
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const profileData = {
+                name: document.getElementById('profileName').value,
+                phone: document.getElementById('profilePhone').value,
+                country: document.getElementById('profileCountry').value,
+                bio: document.getElementById('profileBio').value
             };
 
-            const response = await fetch(url, { ...defaultOptions, ...options });
-
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = '/';
-                throw new Error('Session expired. Please login again.');
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || errorData.message || `Request failed: ${response.status}`);
-            }
-
-            return response.json();
-        }
-
-        // Function to get user initials
-        function getUserInitials(name) {
-            if (!name || name === 'Loading...') return 'U';
-            const nameParts = name.split(' ');
-            if (nameParts.length === 1) {
-                return nameParts[0].charAt(0).toUpperCase();
-            }
-            return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
-        }
-
-        // Load user data for nav
-        async function loadUserData() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            loadingSpinner.classList.remove('hidden');
-
             try {
-                const response = await authFetch('/api/user/profile');
-                const userData = response.data || response.user || response;
+                const response = await fetch(`${API_BASE}/user/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(profileData)
+                });
 
-                const userName = userData.full_name || userData.name || userData.username || 'User';
-                const userEmail = userData.email || 'Not provided';
-                const userInitials = getUserInitials(userName);
-
-                // Update navigation
-                document.getElementById('userName').textContent = userName;
-                document.getElementById('userAvatar').textContent = userInitials;
-                document.getElementById('dropdownName').textContent = userName;
-                document.getElementById('dropdownEmail').textContent = userEmail;
-                document.getElementById('dropdownAvatar').textContent = userInitials;
-
-                // Load settings-specific data (simulated or from API)
-                loadSettingsUI(userData);
-
+                if (response.ok) {
+                    showAlert('Profile updated successfully!');
+                } else {
+                    showAlert('Failed to update profile', 'error');
+                }
             } catch (error) {
-                console.error('Failed to load user data:', error);
-                showNotification('Failed to load data: ' + error.message, 'error');
-            } finally {
-                loadingSpinner.classList.add('hidden');
+                showAlert('Error updating profile', 'error');
+            }
+        });
+
+        // Deriv Integration
+        let derivWebSocket = null;
+        let currentAccountType = 'demo';
+        let availableAccounts = [];
+
+        async function checkDerivConnection() {
+            console.log('Checking Deriv connection...');
+            let hasDemo = false;
+            let hasReal = false;
+            
+            try {
+                // Check demo token
+                const demoResponse = await fetch(`${API_BASE}/deriv/token?account_type=demo`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                console.log('Demo response:', demoResponse.status);
+                if (demoResponse.ok) {
+                    const demoData = await demoResponse.json();
+                    console.log('Demo data:', demoData);
+                    if (demoData.has_token && demoData.token) {
+                        hasDemo = true;
+                        await loadAccountInfo('demo', demoData.token);
+                    }
+                }
+                
+                // Check real token
+                const realResponse = await fetch(`${API_BASE}/deriv/token?account_type=real`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                console.log('Real response:', realResponse.status);
+                if (realResponse.ok) {
+                    const realData = await realResponse.json();
+                    console.log('Real data:', realData);
+                    if (realData.has_token && realData.token) {
+                        hasReal = true;
+                        await loadAccountInfo('real', realData.token);
+                    }
+                }
+                
+                console.log('Final status - hasDemo:', hasDemo, 'hasReal:', hasReal);
+                updateDerivStatus(hasDemo || hasReal, hasDemo, hasReal);
+            } catch (error) {
+                console.error('Error checking Deriv connection:', error);
+                updateDerivStatus(false, false, false);
             }
         }
 
-        // Load settings UI (placeholder - fetch from API if separate endpoint exists)
-        function loadSettingsUI(userData) {
-            // General
-            document.getElementById('themeSelect').value = userData.theme || 'dark';
-            document.getElementById('currencySelect').value = userData.currency || 'USD';
-            document.getElementById('dateFormatSelect').value = userData.date_format || 'MM/DD/YYYY';
+        function updateDerivStatus(connected, hasDemo, hasReal) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const demoAccountInfo = document.getElementById('demoAccountInfo');
+            const realAccountInfo = document.getElementById('realAccountInfo');
 
-            // Privacy
-            document.getElementById('dataSharingToggle').checked = userData.data_sharing || false;
-            document.getElementById('publicProfileToggle').checked = userData.public_profile || false;
-
-            // Notifications
-            document.getElementById('emailNotifications').checked = userData.email_notifications || true;
-            document.getElementById('pushNotifications').checked = userData.push_notifications || false;
-            document.getElementById('smsAlerts').checked = userData.sms_alerts || false;
-
-            // Trading
-            document.getElementById('riskLevel').value = userData.risk_level || 'medium';
-            document.getElementById('maxTrades').value = userData.max_daily_trades || 10;
-            document.getElementById('autoTrade').checked = userData.auto_trade || true;
+            if (connected) {
+                indicator.classList.remove('bg-red-500');
+                indicator.classList.add('bg-green-500');
+                
+                let statusMessage = 'Connected';
+                if (hasDemo && hasReal) {
+                    statusMessage = 'Demo & Real Accounts Connected';
+                } else if (hasDemo) {
+                    statusMessage = 'Demo Account Connected';
+                } else if (hasReal) {
+                    statusMessage = 'Real Account Connected';
+                }
+                
+                statusText.textContent = statusMessage;
+                disconnectBtn.classList.remove('hidden');
+                
+                if (hasDemo) demoAccountInfo.classList.remove('hidden');
+                if (hasReal) realAccountInfo.classList.remove('hidden');
+                
+                // Cache the connection status
+                localStorage.setItem('derivConnectionStatus', JSON.stringify({
+                    connected: true,
+                    hasDemo,
+                    hasReal,
+                    timestamp: Date.now()
+                }));
+            } else {
+                indicator.classList.remove('bg-green-500');
+                indicator.classList.add('bg-red-500');
+                statusText.textContent = 'Not Connected';
+                disconnectBtn.classList.add('hidden');
+                demoAccountInfo.classList.add('hidden');
+                realAccountInfo.classList.add('hidden');
+                
+                // Clear cached status
+                localStorage.removeItem('derivConnectionStatus');
+            }
         }
 
-        // Enable/disable form fields for editing
-        function setEditMode(enabled) {
-            const formFields = document.querySelectorAll('select, input[type="number"], input[type="checkbox"]');
-            formFields.forEach(field => {
-                field.disabled = !enabled;
+        async function loadAccountInfo(accountType, token) {
+            try {
+                // Get account info using the specific token
+                const response = await fetch(`${API_BASE}/deriv/user/info`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ api_token: token })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        const userInfo = data.data;
+                        
+                        // Get balance
+                        const balanceResponse = await fetch(`${API_BASE}/deriv/user/balance`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ api_token: token })
+                        });
+                        
+                        let balance = 0;
+                        if (balanceResponse.ok) {
+                            const balanceData = await balanceResponse.json();
+                            if (balanceData.success) {
+                                balance = balanceData.data.balance;
+                            }
+                        }
+                        
+                        // Store account info in localStorage
+                        const accountInfo = {
+                            loginid: userInfo.loginid,
+                            balance: balance,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem(`derivAccount_${accountType}`, JSON.stringify(accountInfo));
+                        
+                        // Update UI
+                        if (accountType === 'demo') {
+                            document.getElementById('demoAccountId').textContent = userInfo.loginid || 'N/A';
+                            document.getElementById('demoAccountBalance').textContent = `$${balance.toFixed(2)}`;
+                        } else {
+                            document.getElementById('realAccountId').textContent = userInfo.loginid || 'N/A';
+                            document.getElementById('realAccountBalance').textContent = `$${balance.toFixed(2)}`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`Error loading ${accountType} account info:`, error);
+            }
+        }
+
+        async function loadAvailableAccounts() {
+            try {
+                const response = await fetch(`${API_BASE}/deriv/me/accounts`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    availableAccounts = data.accounts || [];
+                    displayAvailableAccounts();
+                }
+            } catch (error) {
+                console.error('Error loading accounts:', error);
+            }
+        }
+
+        function displayAvailableAccounts() {
+            const accountsList = document.getElementById('accountsList');
+            if (!availableAccounts.length) {
+                accountsList.innerHTML = '<p class="text-gray-400">No accounts available</p>';
+                return;
+            }
+
+            // Filter accounts based on toggle
+            const isReal = document.getElementById('accountTypeToggle').checked;
+            const filteredAccounts = availableAccounts.filter(acc => 
+                isReal ? !acc.is_virtual : acc.is_virtual
+            );
+
+            if (filteredAccounts.length === 0) {
+                const accountType = isReal ? 'real' : 'demo';
+                accountsList.innerHTML = `<p class="text-gray-400">No ${accountType} accounts available</p>`;
+                return;
+            }
+
+            accountsList.innerHTML = filteredAccounts.map(account => `
+                <div class="p-4 border border-gray-700 rounded-lg hover:border-cyan-500/50 cursor-pointer account-item" data-loginid="${account.loginid}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-medium">${account.loginid}</h4>
+                            <p class="text-sm text-gray-400">${account.is_virtual ? 'Demo Account' : 'Real Account'} • ${account.currency}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-mono text-cyan-400">$${(account.balance || 0).toFixed(2)}</p>
+                            <p class="text-xs text-gray-400">${account.is_disabled ? 'Disabled' : 'Active'}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers for account switching
+            document.querySelectorAll('.account-item').forEach(item => {
+                item.addEventListener('click', () => switchAccount(item.dataset.loginid));
             });
-
-            // Show/hide buttons
-            document.getElementById('editSettingsBtn').style.display = enabled ? 'none' : 'flex';
-            document.getElementById('saveSettingsBtn').style.display = enabled ? 'flex' : 'none';
-            document.getElementById('cancelEditBtn').style.display = enabled ? 'flex' : 'none';
         }
 
-        // Save settings
-        async function saveSettings() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            loadingSpinner.classList.remove('hidden');
+        async function switchAccount(loginid) {
+            try {
+                const response = await fetch(`${API_BASE}/deriv/me/switch`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ loginid })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update account info immediately
+                    document.getElementById('accountId').textContent = data.loginid || 'N/A';
+                    document.getElementById('accountBalance').textContent = `$${(data.balance || 0).toFixed(2)}`;
+                    
+                    // Detect account type based on balance
+                    const isVirtual = (data.balance || 0) >= 5000;
+                    const accountTypeText = isVirtual ? 'Demo Account' : 'Real Account';
+                    document.getElementById('accountType').textContent = accountTypeText;
+                    document.getElementById('accountTypeToggle').checked = !isVirtual;
+                    
+                    // Reload accounts list
+                    await loadAvailableAccounts();
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.error || 'Failed to switch account', 'error');
+                }
+            } catch (error) {
+                showAlert('Error switching account', 'error');
+            }
+        }
+
+        function startDerivWebSocket() {
+            if (derivWebSocket) {
+                derivWebSocket.close();
+            }
 
             try {
-                const formData = {
-                    theme: document.getElementById('themeSelect').value,
-                    currency: document.getElementById('currencySelect').value,
-                    date_format: document.getElementById('dateFormatSelect').value,
-                    data_sharing: document.getElementById('dataSharingToggle').checked,
-                    public_profile: document.getElementById('publicProfileToggle').checked,
-                    email_notifications: document.getElementById('emailNotifications').checked,
-                    push_notifications: document.getElementById('pushNotifications').checked,
-                    sms_alerts: document.getElementById('smsAlerts').checked,
-                    risk_level: document.getElementById('riskLevel').value,
-                    max_daily_trades: parseInt(document.getElementById('maxTrades').value),
-                    auto_trade: document.getElementById('autoTrade').checked
+                derivWebSocket = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+                
+                derivWebSocket.onopen = () => {
+                    // Subscribe to market data silently
+                    subscribeToMarketData();
                 };
 
-                const response = await authFetch('/api/user/profile', { // Reuse profile endpoint or create /settings if needed
-                    method: 'PUT',
-                    body: JSON.stringify(formData)
-                });
+                derivWebSocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    handleDerivWebSocketData(data);
+                };
 
-                showNotification('Settings updated successfully', 'success');
-                setEditMode(false);
-
+                derivWebSocket.onclose = () => {
+                    // Retry connection after 5 seconds
+                    setTimeout(startDerivWebSocket, 5000);
+                };
             } catch (error) {
-                console.error('Failed to save settings:', error);
-                showNotification('Failed to update settings: ' + error.message, 'error');
-            } finally {
-                loadingSpinner.classList.add('hidden');
+                console.error('Error starting Deriv WebSocket:', error);
             }
         }
 
-        // Tab switching functionality
-        const tabs = {
-            general: document.getElementById('generalSection'),
-            notifications: document.getElementById('notificationsSection'),
-            trading: document.getElementById('tradingSection'),
-            security: document.getElementById('securitySection')
-        };
+        function subscribeToMarketData() {
+            if (!derivWebSocket || derivWebSocket.readyState !== WebSocket.OPEN) return;
 
-        const tabButtons = document.querySelectorAll('.tab-button');
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                tabButtons.forEach(btn => {
-                    btn.classList.remove('active', 'border-primary-500', 'text-primary-500');
-                    btn.classList.add('text-gray-400');
-                });
-
-                Object.values(tabs).forEach(section => {
-                    section.classList.add('hidden');
-                });
-
-                this.classList.remove('text-gray-400');
-                this.classList.add('active', 'border-primary-500', 'text-primary-500');
-
-                const tabText = this.textContent.toLowerCase();
-                if (tabText.includes('general')) {
-                    tabs.general.classList.remove('hidden');
-                } else if (tabText.includes('notifications')) {
-                    tabs.notifications.classList.remove('hidden');
-                } else if (tabText.includes('trading')) {
-                    tabs.trading.classList.remove('hidden');
-                } else if (tabText.includes('security')) {
-                    tabs.security.classList.remove('hidden');
-                }
+            const symbols = ['R_10', 'R_25', 'R_50', 'R_75', 'R_100', 'BOOM1000', 'CRASH1000', 'frxEURUSD'];
+            symbols.forEach(symbol => {
+                derivWebSocket.send(JSON.stringify({
+                    ticks: symbol,
+                    subscribe: 1
+                }));
             });
-        });
+        }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            loadUserData();
-
-            // Edit settings button
-            document.getElementById('editSettingsBtn').addEventListener('click', () => {
-                setEditMode(true);
-            });
-
-            // Save settings button
-            document.getElementById('saveSettingsBtn').addEventListener('click', (e) => {
-                e.preventDefault();
-                saveSettings();
-            });
-
-            // Cancel edit button
-            document.getElementById('cancelEditBtn').addEventListener('click', () => {
-                setEditMode(false);
-                // Reload data
-                loadUserData();
-            });
-
-            // Logout functionality
-            document.getElementById('logoutButton').addEventListener('click', (e) => {
-                e.preventDefault();
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = '/';
-            });
-
-            // Placeholder for 2FA and sessions
-            document.getElementById('enable2faBtn').addEventListener('click', () => {
-                showNotification('2FA setup coming soon', 'info');
-            });
-            document.getElementById('viewSessionsBtn').addEventListener('click', () => {
-                showNotification('Active sessions view coming soon', 'info');
-            });
-        });
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const existingNotification = document.querySelector('.notification-toast');
-            if (existingNotification) {
-                existingNotification.remove();
+        function handleDerivWebSocketData(data) {
+            if (data.msg_type === 'tick') {
+                updateLiveMarketData(data.tick);
             }
+        }
 
-            const notification = document.createElement('div');
-            notification.className = `notification-toast fixed top-4 right-4 p-4 rounded-lg shadow-lg border z-50 transform transition-all duration-300 fade-in`;
+        function updateLiveMarketData(tick) {
+            const liveMarketData = document.getElementById('liveMarketData');
+            if (!liveMarketData) return;
 
-            let bgColor = 'bg-dark-800';
-            let borderColor = 'border-dark-700';
-            let icon = 'fas fa-info-circle';
+            const existingItem = liveMarketData.querySelector(`[data-symbol="${tick.symbol}"]`);
+            const priceChange = existingItem ? (tick.quote - parseFloat(existingItem.dataset.price)) : 0;
+            const changeClass = priceChange > 0 ? 'text-green-400' : priceChange < 0 ? 'text-red-400' : 'text-gray-400';
 
-            if (type === 'success') {
-                bgColor = 'bg-green-500/20';
-                borderColor = 'border-green-500/30';
-                icon = 'fas fa-check-circle text-green-500';
-            } else if (type === 'error') {
-                bgColor = 'bg-red-500/20';
-                borderColor = 'border-red-500/30';
-                icon = 'fas fa-exclamation-circle text-red-500';
-            } else if (type === 'warning') {
-                bgColor = 'bg-yellow-500/20';
-                borderColor = 'border-yellow-500/30';
-                icon = 'fas fa-exclamation-triangle text-yellow-500';
-            } else if (type === 'info') {
-                bgColor = 'bg-blue-500/20';
-                borderColor = 'border-blue-500/30';
-                icon = 'fas fa-info-circle text-blue-500';
-            }
-
-            notification.className += ` ${bgColor} ${borderColor}`;
-            notification.innerHTML = `
-                <div class="flex items-center">
-                    <i class="${icon} mr-3"></i>
-                    <p class="text-white">${message}</p>
+            const itemHtml = `
+                <div class="p-3 border border-gray-700 rounded-lg" data-symbol="${tick.symbol}" data-price="${tick.quote}">
+                    <div class="text-sm font-medium">${tick.symbol}</div>
+                    <div class="font-mono text-lg ${changeClass}">${tick.quote.toFixed(tick.symbol.includes('frx') ? 5 : 2)}</div>
+                    <div class="text-xs text-gray-400">${new Date(tick.epoch * 1000).toLocaleTimeString()}</div>
                 </div>
             `;
 
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.classList.add('opacity-0', 'translate-x-full');
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
+            if (existingItem) {
+                existingItem.outerHTML = itemHtml;
+            } else {
+                liveMarketData.innerHTML += itemHtml;
+            }
         }
+
+        document.getElementById('derivTokenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const demoTokenEl = document.getElementById('demoToken');
+            const realTokenEl = document.getElementById('realToken');
+            
+            if (!demoTokenEl || !realTokenEl) {
+                console.error('Token input elements not found');
+                return;
+            }
+
+            const demoToken = demoTokenEl.value;
+            const realToken = realTokenEl.value;
+            
+            if (!demoToken && !realToken) {
+                showAlert('Please enter at least one token', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/deriv/token/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        demo_token: demoToken,
+                        real_token: realToken
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Deriv tokens saved successfully!');
+                    demoTokenEl.value = '';
+                    realTokenEl.value = '';
+                    // Refresh connection status
+                    setTimeout(checkDerivConnection, 1000);
+                } else {
+                    const errorData = await response.json();
+                    showAlert(errorData.error || 'Failed to save tokens', 'error');
+                }
+            } catch (error) {
+                showAlert('Error saving tokens', 'error');
+            }
+        });
+
+        document.getElementById('validateBtn').addEventListener('click', async () => {
+            const tokenValue = document.getElementById('derivToken').value;
+            if (!tokenValue) {
+                showAlert('Please enter a token to validate', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/deriv/validate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ api_token: tokenValue })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showAlert(`Token is valid! Account: ${data.loginid || 'Unknown'}`);
+                } else {
+                    showAlert('Invalid token', 'error');
+                }
+            } catch (error) {
+                showAlert('Error validating token', 'error');
+            }
+        });
+
+        document.getElementById('disconnectBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to disconnect your Deriv account?')) {
+                try {
+                    const response = await fetch(`${API_BASE}/deriv/token`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (response.ok) {
+                        showAlert('Deriv account disconnected');
+                        updateDerivStatus(false);
+                        document.getElementById('derivToken').value = '';
+                        if (derivWebSocket) {
+                            derivWebSocket.close();
+                            derivWebSocket = null;
+                        }
+                    }
+                } catch (error) {
+                    showAlert('Error disconnecting account', 'error');
+                }
+            }
+        });
+
+        // Account type toggle
+        document.getElementById('accountTypeToggle').addEventListener('change', (e) => {
+            displayAvailableAccounts();
+        });
+
+        // Quick trade form
+        document.getElementById('quickTradeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const tradeData = {
+                symbol: document.getElementById('tradeSymbol').value,
+                trade_type: document.getElementById('tradeType').value,
+                amount: parseFloat(document.getElementById('tradeAmount').value),
+                duration: parseInt(document.getElementById('tradeDuration').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/deriv/trade`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(tradeData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    showAlert(`Trade placed successfully! Contract ID: ${result.contract_id}`);
+                    // Refresh balance
+                    await loadDerivAccountInfo();
+                } else {
+                    const error = await response.json();
+                    showAlert(`Failed to place trade: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert('Error placing trade', 'error');
+            }
+        });
+
+        // Password change
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showAlert('Passwords do not match!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/user/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        old_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Password updated successfully!');
+                    document.getElementById('passwordForm').reset();
+                } else {
+                    showAlert('Failed to update password', 'error');
+                }
+            } catch (error) {
+                showAlert('Error updating password', 'error');
+            }
+        });
+
+        // Delete account
+        document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+            if (confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.')) {
+                try {
+                    const response = await fetch(`${API_BASE}/user/account`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (response.ok) {
+                        alert('Your account has been deleted.');
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        window.location.href = '/';
+                    } else {
+                        showAlert('Failed to delete account', 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error deleting account', 'error');
+                }
+            }
+        });
+
+        // Initialize - ensure connection check runs
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+        
+        async function initializePage() {
+            // Check if token is still valid first
+            const isValidToken = await checkTokenValidity();
+            if (!isValidToken) {
+                return; // Will redirect to login
+            }
+            
+            // Load cached connection status first for immediate display
+            loadCachedConnectionStatus();
+            
+            loadProfile();
+            checkDerivConnection();
+        }
+        
+        function loadCachedConnectionStatus() {
+            try {
+                const cached = localStorage.getItem('derivConnectionStatus');
+                if (cached) {
+                    const status = JSON.parse(cached);
+                    // Only use cache if it's less than 5 minutes old
+                    if (Date.now() - status.timestamp < 5 * 60 * 1000) {
+                        updateDerivStatus(status.connected, status.hasDemo, status.hasReal);
+                        
+                        // Load cached account info
+                        if (status.hasDemo) {
+                            const demoInfo = localStorage.getItem('derivAccount_demo');
+                            if (demoInfo) {
+                                const demo = JSON.parse(demoInfo);
+                                document.getElementById('demoAccountId').textContent = demo.loginid || 'N/A';
+                                document.getElementById('demoAccountBalance').textContent = `$${demo.balance.toFixed(2)}`;
+                            }
+                        }
+                        
+                        if (status.hasReal) {
+                            const realInfo = localStorage.getItem('derivAccount_real');
+                            if (realInfo) {
+                                const real = JSON.parse(realInfo);
+                                document.getElementById('realAccountId').textContent = real.loginid || 'N/A';
+                                document.getElementById('realAccountBalance').textContent = `$${real.balance.toFixed(2)}`;
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading cached status:', error);
+            }
+        }
+        
+        // Add event listeners after DOM is ready
+        setTimeout(() => {
+            const refreshBtn = document.getElementById('refreshStatusBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    console.log('Manual refresh clicked');
+                    checkDerivConnection();
+                });
+            }
+        }, 500);
     </script>
 </body>
 

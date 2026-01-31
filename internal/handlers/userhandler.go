@@ -562,3 +562,137 @@ func GetBotDetails(ctx *gin.Context) {
 		},
 	})
 }
+
+// GetUserBotsHandler godoc
+// @Summary Get user bots
+// @Description Retrieves all bots owned by the authenticated user
+// @Tags user
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/user/bots [get]
+func GetUserBotsHandler(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	var userBots []models.UserBot
+	if err := database.DB.Preload("Bot").Where("user_id = ?", userID).Find(&userBots).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch user bots"})
+		return
+	}
+
+	// Get real profit from trades
+	var totalProfit float64
+	database.DB.Model(&models.Trade{}).Where("user_id = ?", userID).Select("COALESCE(SUM(profit_loss), 0)").Scan(&totalProfit)
+
+	var bots []gin.H
+	for _, userBot := range userBots {
+		bot := userBot.Bot
+		status := "inactive"
+		if userBot.IsActive {
+			status = "active"
+		}
+
+		// Get bot-specific profit
+		var botProfit float64
+		database.DB.Model(&models.Trade{}).Where("user_id = ? AND bot_id = ?", userID, bot.ID).Select("COALESCE(SUM(profit_loss), 0)").Scan(&botProfit)
+
+		bots = append(bots, gin.H{
+			"id":            bot.ID,
+			"name":          bot.Name,
+			"status":        status,
+			"profit":        botProfit,
+			"price":         bot.Price,
+			"access_type":   userBot.AccessType,
+			"purchase_date": userBot.PurchaseDate,
+			"expiry_date":   userBot.ExpiryDate,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":      "User bots retrieved successfully",
+		"bots":         bots,
+		"total_profit": totalProfit,
+	})
+}
+
+// RecordTradeHandler records a new trade from Deriv
+func RecordTradeHandler(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	var payload struct {
+		BotID        uint    `json:"bot_id"`
+		DerivTradeID string  `json:"deriv_trade_id"`
+		Symbol       string  `json:"symbol"`
+		TradeType    string  `json:"trade_type"`
+		Stake        float64 `json:"stake"`
+		Payout       float64 `json:"payout"`
+		ProfitLoss   float64 `json:"profit_loss"`
+		Status       string  `json:"status"`
+	}
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	trade := models.Trade{
+		UserID:       userID,
+		BotID:        payload.BotID,
+		DerivTradeID: payload.DerivTradeID,
+		Symbol:       payload.Symbol,
+		TradeType:    payload.TradeType,
+		Stake:        payload.Stake,
+		Payout:       payload.Payout,
+		ProfitLoss:   payload.ProfitLoss,
+		Status:       payload.Status,
+		OpenTime:     time.Now(),
+		CreatedAt:    time.Now(),
+	}
+
+	if payload.Status != "open" {
+		now := time.Now()
+		trade.CloseTime = &now
+	}
+
+	if err := database.DB.Create(&trade).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to record trade"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Trade recorded successfully"})
+}
+
+// GetUserTradesHandler gets user's trade history
+func GetUserTradesHandler(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	var trades []models.Trade
+	if err := database.DB.Where("user_id = ?", userID).Order("created_at DESC").Find(&trades).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch trades"})
+		return
+	}
+
+	var totalProfit float64
+	for _, trade := range trades {
+		totalProfit += trade.ProfitLoss
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"trades":       trades,
+		"total_profit": totalProfit,
+	})
+}

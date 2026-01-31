@@ -2,173 +2,53 @@
 <html lang="en" class="dark">
 
 <head>
-    <link rel="stylesheet" href="output.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlgoCDK - User Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#fff0f0',
-                            100: '#ffd6d6',
-                            500: '#ff4500',
-                            600: '#e63e00',
-                            700: '#cc3700',
-                        },
-                        dark: {
-                            900: '#000000',
-                            800: '#1a1a1a',
-                            700: '#333333',
-                            600: '#4d4d4d',
-                        },
-                        success: {
-                            500: '#10b981',
-                            600: '#059669',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        }
+                        primary: '#FF4500',
+                        secondary: '#FF6347',
+                        success: '#00C851',
+                        danger: '#FF4444',
+                        warning: '#FFBB33',
+                        dark: '#0D1421',
+                        darker: '#0A0E1A',
+                        accent: '#1E293B'
                     }
                 }
             }
         }
     </script>
     <style>
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #ff4500;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #e63e00;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .sidebar-item.active {
-            background: rgba(255, 69, 0, 0.1);
-            border-left: 3px solid #ff4500;
-            color: #ff4500;
-        }
-
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            border-color: rgba(255, 69, 0, 0.3);
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         .form-input {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 69, 0, 0.2);
             transition: all 0.3s ease;
         }
 
         .form-input:focus {
-            border-color: #ff4500;
+            border-color: #FF4500;
             box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.1);
-        }
-
-        .tab-button {
-            transition: all 0.3s ease;
-        }
-
-        .tab-button.active {
-            background: rgba(255, 69, 0, 0.1);
-            color: #ff4500;
-            border-color: #ff4500;
-        }
-
-        .badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        .select2-container--default .select2-selection--single {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            border-radius: 0.5rem !important;
-            height: 42px !important;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: white !important;
-            line-height: 42px !important;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 42px !important;
-        }
-
-        .select2-dropdown {
-            background-color: #1a1a1a !important;
-            border: 1px solid #333333 !important;
-        }
-
-        .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #ff4500 !important;
-        }
-
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            background-color: #333333 !important;
-            color: white !important;
-            border: 1px solid #4d4d4d !important;
         }
     </style>
 </head>
 
-<body class="bg-dark-900 text-white min-h-screen">
+<body class="bg-dark text-gray-100 min-h-screen">
     <!-- Top Navigation Bar -->
-    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center">
+    <nav class="bg-darker border-b border-gray-700 py-3 px-6 flex justify-between items-center">
         <div class="flex items-center">
-            <a href="index.html" class="text-xl font-bold text-white flex items-center">
-                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+            <a href="/" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center mr-2">
                     <i class="fas fa-robot text-white text-sm"></i>
                 </div>
                 Algocdk
@@ -176,15 +56,10 @@
         </div>
 
         <div class="flex items-center space-x-4">
-            <div class="hidden md:flex items-center space-x-2 bg-dark-700 px-3 py-1 rounded-lg border border-dark-600">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span class="text-sm">Live</span>
-            </div>
-
             <div class="relative">
                 <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
                     <div id="userAvatar"
-                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-medium">
                         <i class="fas fa-user"></i>
                     </div>
                     <span id="userName" class="hidden md:block">Loading...</span>
@@ -193,39 +68,38 @@
 
                 <!-- User Dropdown -->
                 <div id="userDropdown"
-                    class="absolute right-0 mt-2 w-56 bg-dark-800 rounded-lg shadow-xl border border-dark-700 hidden z-10">
-                    <div class="p-4 border-b border-dark-700">
+                    class="absolute right-0 mt-2 w-56 bg-darker rounded-lg shadow-xl border border-gray-700 hidden z-10">
+                    <div class="p-4 border-b border-gray-700">
                         <div class="flex items-center space-x-3">
                             <div id="dropdownAvatar"
-                                class="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                                class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-medium">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div>
                                 <h3 id="dropdownName" class="font-medium text-white">Loading...</h3>
-                                <p id="dropdownEmail" class="text-xs text-gray-400 truncate max-w-[150px]">Loading...
-                                </p>
+                                <p id="dropdownEmail" class="text-xs text-gray-400 truncate max-w-[150px]">Loading...</p>
                             </div>
                         </div>
                     </div>
                     <div class="py-2">
-                        <a href="profile.html"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
-                            <i class="fas fa-user-circle mr-3 text-primary-500"></i>
+                        <a href="/profile"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-accent transition-colors flex items-center">
+                            <i class="fas fa-user-circle mr-3 text-primary"></i>
                             Profile
                         </a>
-                        <a href="settings.html"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
+                        <a href="/settings"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-accent transition-colors flex items-center">
                             <i class="fas fa-cog mr-3 text-gray-400"></i>
                             Settings
                         </a>
-                        <a href="billing.html"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-dark-700 transition-colors flex items-center">
-                            <i class="fas fa-credit-card mr-3 text-gray-400"></i>
-                            Billing
+                        <a href="/app"
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-accent transition-colors flex items-center">
+                            <i class="fas fa-chart-line mr-3 text-gray-400"></i>
+                            Trading App
                         </a>
-                        <div class="border-t border-dark-700 my-1"></div>
+                        <div class="border-t border-gray-700 my-1"></div>
                         <a href="#" id="logoutButton"
-                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-red-500 hover:bg-dark-700 transition-colors flex items-center">
+                            class="profile-dropdown-item block px-4 py-2.5 text-sm text-red-500 hover:bg-accent transition-colors flex items-center">
                             <i class="fas fa-sign-out-alt mr-3"></i>Logout
                         </a>
                     </div>
@@ -234,342 +108,157 @@
         </div>
     </nav>
 
-    <div class="flex">
-        <!-- Sidebar Navigation -->
-        <div class="hidden md:flex md:w-64 md:flex-col">
-            <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-dark-800 border-r border-dark-700">
-                <div class="flex-grow flex flex-col">
-                    <nav class="flex-1 px-4 space-y-2 py-4">
-                        <a href="./app"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-tachometer-alt mr-3"></i>
-                            Dashboard
-                        </a>
-                        <a href="my-bots.html"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-robot mr-3"></i>
-                            My Bots
-                        </a>
-                        <a href="marketplace.html"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-store mr-3"></i>
-                            AI Bots Marketplace
-                        </a>
-                        <a href="trade-history.html"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-history mr-3"></i>
-                            Trade History
-                        </a>
-                        <div class="border-t border-dark-700 my-2"></div>
-                        <a href="./profile"
-                            class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg group">
-                            <i class="fas fa-user-circle mr-3 text-primary-500"></i>
-                            Profile
-                        </a>
-                        <a href="./settings"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-cog mr-3"></i>
-                            Settings
-                        </a>
-                        <a href="./support"
-                            class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-400 rounded-lg hover:bg-dark-700 hover:text-white transition-colors group">
-                            <i class="fas fa-question-circle mr-3"></i>
-                            Support
-                        </a>
-                    </nav>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto p-3 sm:p-6">
+        <!-- Profile Header -->
+        <div class="mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6">
+                <div class="mb-4 sm:mb-0">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">User Profile</h1>
+                    <p class="text-gray-400 text-sm sm:text-base">Manage your personal information</p>
+                </div>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                    <button id="editProfileBtn"
+                        class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
+                        <i class="fas fa-edit mr-2"></i> Edit Profile
+                    </button>
+                    <button id="saveProfileBtn" style="display: none;"
+                        class="bg-success hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                    <button id="cancelEditBtn" style="display: none;"
+                        class="bg-accent hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center border border-gray-600">
+                        <i class="fas fa-times mr-2"></i> Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-700 mb-6 sm:mb-8 overflow-x-auto">
+                <button
+                    class="tab-button active px-3 sm:px-4 py-3 font-medium text-sm border-b-2 border-primary text-primary whitespace-nowrap">
+                    <i class="fas fa-user mr-2"></i> Personal Info
+                </button>
+                <button id="securityTab"
+                    class="tab-button px-3 sm:px-4 py-3 font-medium text-sm text-gray-400 hover:text-white whitespace-nowrap">
+                    <i class="fas fa-shield-alt mr-2"></i> Security
+                </button>
+            </div>
+        </div>
+
+        <!-- Personal Info Section -->
+        <div id="personalInfoSection" class="fade-in">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Left Column: Account Info -->
+                <div class="xl:col-span-1">
+                    <div class="bg-darker rounded-xl border border-gray-700 p-4 sm:p-6">
+                        <div class="flex flex-col items-center mb-4 sm:mb-6">
+                            <div id="profileInitials"
+                                class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-primary flex items-center justify-center text-white text-2xl sm:text-4xl font-bold mb-3 sm:mb-4 shadow-lg">
+                                <!-- Initials will be loaded here -->
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-white text-center" id="displayFullName">Loading...</h3>
+                            <p class="text-gray-400 text-sm mt-1 text-center break-all" id="displayEmail">Loading...</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-medium text-white mb-2 text-sm sm:text-base">Account Status</h3>
+                                <div class="flex items-center">
+                                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                                    <span class="text-green-500 text-sm">Active</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="font-medium text-white mb-2 text-sm sm:text-base">Member Since</h3>
+                                <p id="memberSince" class="text-gray-400 text-sm">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Profile Form -->
+                <div class="xl:col-span-2">
+                    <div class="bg-darker rounded-xl border border-gray-700 p-4 sm:p-6 mb-6">
+                        <h2 class="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Personal Information</h2>
+
+                        <form id="profileForm">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <div class="sm:col-span-2 sm:col-span-1">
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
+                                    <input type="text" id="profileFullName" name="full_name"
+                                        class="w-full form-input px-3 sm:px-4 py-2 rounded-lg text-white bg-accent border-gray-600 text-sm sm:text-base"
+                                        placeholder="Enter your full name" readonly>
+                                </div>
+
+                                <div class="sm:col-span-2 sm:col-span-1">
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
+                                    <div class="flex items-center">
+                                        <p id="profileEmail" class="text-white font-medium text-sm sm:text-base break-all">Loading...</p>
+                                    </div>
+                                </div>
+
+                                <div class="sm:col-span-2 sm:col-span-1">
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Phone Number</label>
+                                    <input type="tel" id="profilePhone" name="phone"
+                                        class="w-full form-input px-3 sm:px-4 py-2 rounded-lg text-white bg-accent border-gray-600 text-sm sm:text-base"
+                                        placeholder="Enter phone number" readonly>
+                                </div>
+
+                                <div class="sm:col-span-2 sm:col-span-1">
+                                    <label class="block text-sm font-medium text-gray-400 mb-2">Country</label>
+                                    <div class="flex items-center">
+                                        <p id="profileCountry" class="text-white font-medium text-sm sm:text-base">Loading...</p>
+                                        <span class="ml-2 text-xs text-gray-500">(Auto-detected)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Account Summary -->
+                    <div class="bg-darker rounded-xl border border-gray-700 p-4 sm:p-6">
+                        <h2 class="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Account Summary</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-accent rounded-lg">
+                                <div class="text-xl sm:text-2xl font-bold text-success" id="activeBotCount">0</div>
+                                <div class="text-xs sm:text-sm text-gray-400">Active Bots</div>
+                            </div>
+                            <div class="text-center p-4 bg-accent rounded-lg">
+                                <div class="text-xl sm:text-2xl font-bold text-primary" id="totalProfit">$0</div>
+                                <div class="text-xs sm:text-sm text-gray-400">Total Profit</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 overflow-x-hidden">
-            <main class="p-6 fade-in">
-                <!-- Profile Header -->
-                <div class="mb-8">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-                        <div>
-                            <h1 class="text-3xl font-bold text-white mb-2">User Profile</h1>
-                            <p class="text-gray-400">Manage your personal information and account settings</p>
-                        </div>
-                        <div class="flex space-x-3 mt-4 md:mt-0">
-                            <button id="editProfileBtn"
-                                class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fas fa-edit mr-2"></i> Edit Profile
-                            </button>
-                            <button id="saveProfileBtn" style="display: none;"
-                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fas fa-save mr-2"></i> Save Changes
-                            </button>
-                            <button id="cancelEditBtn" style="display: none;"
-                                class="bg-dark-700 hover:bg-dark-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center border border-dark-600">
-                                <i class="fas fa-times mr-2"></i> Cancel
-                            </button>
-                        </div>
+        <!-- Security Section -->
+        <div id="securitySection" class="hidden fade-in">
+            <div class="bg-darker rounded-xl border border-gray-700 p-4 sm:p-6">
+                <h2 class="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Security Settings</h2>
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-700 rounded-lg space-y-3 sm:space-y-0">
+                    <div>
+                        <h3 class="font-medium text-white text-sm sm:text-base">Password</h3>
+                        <p class="text-gray-400 text-xs sm:text-sm">Change your account password</p>
                     </div>
-
-                    <!-- Tabs -->
-                    <div class="flex border-b border-dark-700 mb-8">
-                        <button
-                            class="tab-button active px-4 py-3 font-medium text-sm border-b-2 border-primary-500 text-primary-500">
-                            <i class="fas fa-user mr-2"></i> Personal Info
-                        </button>
-                        <button id="securityTab"
-                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
-                            <i class="fas fa-shield-alt mr-2"></i> Security
-                        </button>
-                        <button id="activityTab"
-                            class="tab-button px-4 py-3 font-medium text-sm text-gray-400 hover:text-white">
-                            <i class="fas fa-chart-line mr-2"></i> Activity
-                        </button>
-                    </div>
+                    <button id="changePasswordBtn"
+                        class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto">
+                        Change Password
+                    </button>
                 </div>
-
-                <!-- Personal Info Section -->
-                <div id="personalInfoSection" class="fade-in">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- Left Column: Account Info -->
-                        <div class="lg:col-span-1">
-                            <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                                <div class="flex flex-col items-center mb-6">
-                                    <div id="profileInitials"
-                                        class="w-32 h-32 rounded-full bg-primary-500 flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg">
-                                        <!-- Initials will be loaded here -->
-                                    </div>
-                                    <h3 class="text-xl font-bold text-white" id="displayFullName">Loading...</h3>
-                                    <p class="text-gray-400 text-sm mt-1" id="displayEmail">Loading...</p>
-                                </div>
-
-                                <div class="space-y-4">
-                                    <div>
-                                        <h3 class="font-medium text-white mb-2">Account Status</h3>
-                                        <div class="flex items-center">
-                                            <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
-                                            <span class="text-green-500 text-sm">Active</span>
-                                            <span class="badge badge-success ml-2">Verified</span>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h3 class="font-medium text-white mb-2">Member Since</h3>
-                                        <p id="memberSince" class="text-gray-400 text-sm">Loading...</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 class="font-medium text-white mb-2">User ID</h3>
-                                        <p id="userId" class="text-gray-400 text-sm font-mono">Loading...</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 class="font-medium text-white mb-2">Account Tier</h3>
-                                        <div class="flex items-center">
-                                            <span class="badge badge-warning mr-2">Pro Trader</span>
-                                            <a href="billing.html"
-                                                class="text-primary-500 hover:text-primary-400 text-xs">Upgrade</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right Column: Detailed Info -->
-                        <div class="lg:col-span-2">
-                            <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 mb-6">
-                                <h2 class="text-xl font-bold text-white mb-6">Personal Information</h2>
-
-                                <form id="profileForm">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400 mb-2">Full
-                                                Name</label>
-                                            <input type="text" id="profileFullName" name="full_name"
-                                                class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                                placeholder="Enter your full name" readonly>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400 mb-2">Email
-                                                Address</label>
-                                            <div class="flex items-center">
-                                                <p id="profileEmail" class="text-white font-medium">Loading...</p>
-                                                <span class="badge badge-success ml-2">Verified</span>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400 mb-2">Phone
-                                                Number</label>
-                                            <input type="tel" id="profilePhone" name="phone"
-                                                class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                                placeholder="Enter phone number" readonly>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400 mb-2">Country</label>
-                                            <select id="profileCountry" name="country"
-                                                class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                                disabled>
-                                                <option value="">Select a country</option>
-                                                <!-- Countries will be populated by JavaScript -->
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400 mb-2">Timezone</label>
-                                            <select id="profileTimezone" name="timezone"
-                                                class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                                disabled>
-                                                <option value="">Select timezone</option>
-                                                <!-- Timezones will be populated by JavaScript -->
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-400 mb-2">Language</label>
-                                            <select id="profileLanguage" name="language"
-                                                class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                                disabled>
-                                                <option value="en">English</option>
-                                                <option value="es">Spanish</option>
-                                                <option value="fr">French</option>
-                                                <option value="de">German</option>
-                                                <option value="zh">Chinese</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-8">
-                                        <label class="block text-sm font-medium text-gray-400 mb-2">Bio</label>
-                                        <textarea id="profileBio" name="bio" rows="3"
-                                            class="w-full form-input px-4 py-2 rounded-lg text-white bg-dark-700 border-dark-600"
-                                            placeholder="Tell us about yourself" readonly></textarea>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <!-- Trading Preferences -->
-                            <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                                <h2 class="text-xl font-bold text-white mb-6">Trading Preferences</h2>
-
-                                <div class="space-y-6">
-                                    <div>
-                                        <div class="flex justify-between items-center mb-2">
-                                            <label class="text-sm font-medium text-gray-400">Risk Tolerance</label>
-                                            <span class="text-primary-500 font-medium">Medium</span>
-                                        </div>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" style="width: 60%"></div>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-between items-center mb-2">
-                                            <label class="text-sm font-medium text-gray-400">Preferred Trading
-                                                Style</label>
-                                            <span class="text-primary-500 font-medium">Swing Trading</span>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-between items-center mb-2">
-                                            <label class="text-sm font-medium text-gray-400">Daily Trade Limit</label>
-                                            <span class="text-primary-500 font-medium">10 trades</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Security Section -->
-                <div id="securitySection" class="hidden fade-in">
-                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 mb-6">
-                        <h2 class="text-xl font-bold text-white mb-6">Security Settings</h2>
-
-                        <div class="space-y-6">
-                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
-                                <div>
-                                    <h3 class="font-medium text-white">Password</h3>
-                                    <p class="text-gray-400 text-sm">Last changed <span
-                                            id="passwordLastChanged">--</span> days ago</p>
-                                </div>
-                                <button id="changePasswordBtn"
-                                    class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                    Change Password
-                                </button>
-                            </div>
-
-                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
-                                <div>
-                                    <h3 class="font-medium text-white">Two-Factor Authentication</h3>
-                                    <p class="text-gray-400 text-sm">Add an extra layer of security</p>
-                                </div>
-                                <button id="enable2faBtn"
-                                    class="bg-dark-700 hover:bg-dark-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-dark-600">
-                                    Enable 2FA
-                                </button>
-                            </div>
-
-                            <div class="flex justify-between items-center p-4 border border-dark-700 rounded-lg">
-                                <div>
-                                    <h3 class="font-medium text-white">Active Sessions</h3>
-                                    <p class="text-gray-400 text-sm"><span id="activeSessions">1</span> device connected
-                                    </p>
-                                </div>
-                                <button id="viewSessionsBtn"
-                                    class="text-primary-500 hover:text-primary-400 text-sm font-medium">
-                                    View All
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Activity Section -->
-                <div id="activitySection" class="hidden fade-in">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                            <h2 class="text-xl font-bold text-white mb-6">Recent Activity</h2>
-                            <div class="space-y-4" id="recentActivity">
-                                <!-- Activity items will be loaded here -->
-                            </div>
-                        </div>
-
-                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
-                            <h2 class="text-xl font-bold text-white mb-6">Performance Metrics</h2>
-                            <div class="space-y-4" id="performanceMetrics">
-                                <!-- Performance metrics will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-
-            <!-- Footer -->
-            <footer class="bg-dark-800 border-t border-dark-700 py-6 px-6">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="mb-4 md:mb-0">
-                        <p class="text-gray-400 text-sm">&copy; <span id="currentYear"></span> AlgoCDK. All rights
-                            reserved.</p>
-                    </div>
-                    <div class="flex space-x-6">
-                        <a href="terms.html" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
-                        <a href="privacy.html"
-                            class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
-                        <a href="support.html"
-                            class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
-                    </div>
-                </div>
-            </footer>
+            </div>
         </div>
     </div>
 
     <!-- Change Password Modal -->
-    <div id="changePasswordModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div class="bg-dark-800 rounded-xl p-6 w-full max-w-md border border-dark-600">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">Change Password</h3>
-                <button id="closePasswordModal" class="text-gray-400 hover:text-white">
+    <div id="changePasswordModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div class="bg-darker rounded-xl p-4 sm:p-6 w-full max-w-md border border-gray-600">
+            <div class="flex justify-between items-center mb-4 sm:mb-6">
+                <h3 class="text-lg sm:text-xl font-bold text-white">Change Password</h3>
+                <button id="closePasswordModal" class="text-gray-400 hover:text-white p-1">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -579,30 +268,29 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Current Password</label>
                         <input type="password" id="currentPassword"
-                            class="w-full form-input px-4 py-2 rounded-lg text-white" required>
+                            class="w-full form-input px-3 sm:px-4 py-2 rounded-lg text-white text-sm sm:text-base" required>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">New Password</label>
                         <input type="password" id="newPassword"
-                            class="w-full form-input px-4 py-2 rounded-lg text-white" required>
-                        <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with letters and numbers</p>
+                            class="w-full form-input px-3 sm:px-4 py-2 rounded-lg text-white text-sm sm:text-base" required>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Confirm New Password</label>
                         <input type="password" id="confirmPassword"
-                            class="w-full form-input px-4 py-2 rounded-lg text-white" required>
+                            class="w-full form-input px-3 sm:px-4 py-2 rounded-lg text-white text-sm sm:text-base" required>
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-3 mt-8">
+                <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-6 sm:mt-8">
                     <button type="button" id="cancelPassword"
-                        class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white">
+                        class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white order-2 sm:order-1">
                         Cancel
                     </button>
                     <button type="submit"
-                        class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                        class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm font-medium order-1 sm:order-2">
                         Update Password
                     </button>
                 </div>
@@ -610,75 +298,7 @@
         </div>
     </div>
 
-    <!-- Loading Spinner -->
-    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-dark-800 rounded-xl p-6 flex flex-col items-center border border-dark-600">
-            <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
-            </div>
-            <p class="text-white">Loading profile...</p>
-        </div>
-    </div>
-
     <script>
-        // Comprehensive list of countries with ISO codes
-        const COUNTRIES = [
-            { code: 'US', name: 'United States' },
-            { code: 'GB', name: 'United Kingdom' },
-            { code: 'CA', name: 'Canada' },
-            { code: 'AU', name: 'Australia' },
-            { code: 'DE', name: 'Germany' },
-            { code: 'FR', name: 'France' },
-            { code: 'IT', name: 'Italy' },
-            { code: 'ES', name: 'Spain' },
-            { code: 'JP', name: 'Japan' },
-            { code: 'CN', name: 'China' },
-            { code: 'IN', name: 'India' },
-            { code: 'BR', name: 'Brazil' },
-            { code: 'RU', name: 'Russia' },
-            { code: 'ZA', name: 'South Africa' },
-            { code: 'NG', name: 'Nigeria' },
-            { code: 'KE', name: 'Kenya' },
-            { code: 'GH', name: 'Ghana' },
-            { code: 'EG', name: 'Egypt' },
-            { code: 'SA', name: 'Saudi Arabia' },
-            { code: 'AE', name: 'United Arab Emirates' },
-            { code: 'SG', name: 'Singapore' },
-            { code: 'MY', name: 'Malaysia' },
-            { code: 'ID', name: 'Indonesia' },
-            { code: 'PH', name: 'Philippines' },
-            { code: 'TH', name: 'Thailand' },
-            { code: 'VN', name: 'Vietnam' },
-            { code: 'KR', name: 'South Korea' },
-            { code: 'MX', name: 'Mexico' },
-            { code: 'AR', name: 'Argentina' },
-            { code: 'CL', name: 'Chile' },
-            { code: 'CO', name: 'Colombia' },
-            { code: 'PE', name: 'Peru' },
-            { code: 'NL', name: 'Netherlands' },
-            { code: 'BE', name: 'Belgium' },
-            { code: 'CH', name: 'Switzerland' },
-            { code: 'SE', name: 'Sweden' },
-            { code: 'NO', name: 'Norway' },
-            { code: 'DK', name: 'Denmark' },
-            { code: 'FI', name: 'Finland' },
-            { code: 'PL', name: 'Poland' },
-            { code: 'PT', name: 'Portugal' },
-            { code: 'GR', name: 'Greece' },
-            { code: 'TR', name: 'Turkey' },
-            { code: 'IL', name: 'Israel' },
-            { code: 'NZ', name: 'New Zealand' }
-        ];
-
-        // Timezones list
-        const TIMEZONES = [
-            'UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
-            'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Europe/Moscow', 'Asia/Dubai',
-            'Asia/Kolkata', 'Asia/Singapore', 'Asia/Tokyo', 'Australia/Sydney', 'Pacific/Auckland'
-        ];
-
-        // Set current year in footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-
         // Authentication check
         if (!localStorage.getItem('token')) {
             window.location.href = '/';
@@ -725,78 +345,20 @@
             return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
         }
 
-        // Populate country dropdown
-        function populateCountryDropdown(selectedCountry = '') {
-            const countrySelect = document.getElementById('profileCountry');
-            countrySelect.innerHTML = '<option value="">Select a country</option>';
-
-            COUNTRIES.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country.code;
-                option.textContent = country.name;
-                if (selectedCountry && (country.code === selectedCountry || country.name === selectedCountry)) {
-                    option.selected = true;
-                }
-                countrySelect.appendChild(option);
-            });
-
-            // Initialize Select2
-            $(countrySelect).select2({
-                width: '100%',
-                theme: 'dark',
-                placeholder: 'Select a country',
-                allowClear: true
-            });
-        }
-
-        // Populate timezone dropdown
-        function populateTimezoneDropdown(selectedTimezone = '') {
-            const timezoneSelect = document.getElementById('profileTimezone');
-            timezoneSelect.innerHTML = '<option value="">Select timezone</option>';
-
-            TIMEZONES.forEach(tz => {
-                const option = document.createElement('option');
-                option.value = tz;
-                option.textContent = tz;
-                if (selectedTimezone && tz === selectedTimezone) {
-                    option.selected = true;
-                }
-                timezoneSelect.appendChild(option);
-            });
-
-            // Initialize Select2 for timezone
-            $(timezoneSelect).select2({
-                width: '100%',
-                theme: 'dark',
-                placeholder: 'Select timezone',
-                allowClear: true
-            });
-        }
-
         // Load user profile data
         async function loadUserProfile() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            loadingSpinner.classList.remove('hidden');
-
             try {
                 const response = await authFetch('/api/user/profile');
                 const userData = response.data || response.user || response;
 
-                // Populate dropdowns first
-                populateCountryDropdown(userData.country);
-                populateTimezoneDropdown(userData.timezone);
-
-                // Update UI elements
                 updateProfileUI(userData);
-
-                // Store user data in localStorage
                 localStorage.setItem('userData', JSON.stringify(userData));
+                
+                // Load user stats
+                await loadUserStats();
 
             } catch (error) {
                 console.error('Failed to load profile:', error);
-                showNotification('Failed to load profile data: ' + error.message, 'error');
-
-                // Try to use cached data
                 const cachedData = localStorage.getItem('userData');
                 if (cachedData) {
                     try {
@@ -806,8 +368,26 @@
                         console.error('Failed to parse cached data:', e);
                     }
                 }
-            } finally {
-                loadingSpinner.classList.add('hidden');
+            }
+        }
+        
+        // Load user statistics
+        async function loadUserStats() {
+            try {
+                // Get user's bots with real profit data
+                const response = await authFetch('/api/user/bots');
+                const data = response.bots || response.data || response || [];
+                
+                const activeBots = data.filter(bot => bot.status === 'active').length;
+                const totalProfit = response.total_profit || 0;
+                
+                document.getElementById('activeBotCount').textContent = activeBots;
+                document.getElementById('totalProfit').textContent = `$${totalProfit.toLocaleString()}`;
+                
+            } catch (error) {
+                // Fallback to 0 values if API fails
+                document.getElementById('activeBotCount').textContent = '0';
+                document.getElementById('totalProfit').textContent = '$0';
             }
         }
 
@@ -833,19 +413,7 @@
             document.getElementById('profileFullName').value = userName;
             document.getElementById('profileEmail').textContent = userEmail;
             document.getElementById('profilePhone').value = userData.phone || '';
-            document.getElementById('profileBio').value = userData.bio || '';
-
-            // Update select fields (fixed to handle code or name for country)
-            if (userData.country) {
-                const countryCode = COUNTRIES.find(c => c.code === userData.country || c.name === userData.country)?.code || '';
-                $('#profileCountry').val(countryCode).trigger('change');
-            }
-            if (userData.timezone) {
-                $('#profileTimezone').val(userData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone).trigger('change');
-            }
-            if (userData.language) {
-                document.getElementById('profileLanguage').value = userData.language || 'en';
-            }
+            document.getElementById('profileCountry').textContent = userData.country || 'Unknown';
 
             // Format join date
             if (userData.created_at || userData.createdAt) {
@@ -858,61 +426,29 @@
             } else {
                 document.getElementById('memberSince').textContent = 'Not available';
             }
-
-            // Set user ID
-            document.getElementById('userId').textContent = userData.id || userData._id || 'N/A';
         }
 
         // Enable/disable form fields for editing
         function setEditMode(enabled) {
-            const formFields = [
-                'profileFullName',
-                'profilePhone',
-                'profileCountry',
-                'profileTimezone',
-                'profileLanguage',
-                'profileBio'
-            ];
-
+            const formFields = ['profileFullName', 'profilePhone'];
+            
             formFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
-                if (field.tagName === 'SELECT') {
-                    $(field).prop('disabled', !enabled);
-                } else {
-                    field.readOnly = !enabled;
-                }
+                field.readOnly = !enabled;
             });
 
-            // Show/hide buttons
+            // Show/hide buttons with responsive display
             document.getElementById('editProfileBtn').style.display = enabled ? 'none' : 'flex';
             document.getElementById('saveProfileBtn').style.display = enabled ? 'flex' : 'none';
             document.getElementById('cancelEditBtn').style.display = enabled ? 'flex' : 'none';
-
-            // Add visual feedback for edit mode
-            if (enabled) {
-                document.querySelectorAll('.form-input').forEach(input => {
-                    input.classList.add('border-primary-500');
-                });
-            } else {
-                document.querySelectorAll('.form-input').forEach(input => {
-                    input.classList.remove('border-primary-500');
-                });
-            }
         }
 
         // Save profile data
         async function saveProfile() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            loadingSpinner.classList.remove('hidden');
-
             try {
                 const formData = {
                     full_name: document.getElementById('profileFullName').value,
-                    phone: document.getElementById('profilePhone').value,
-                    country: $('#profileCountry').val(),
-                    timezone: $('#profileTimezone').val(),
-                    language: document.getElementById('profileLanguage').value,
-                    bio: document.getElementById('profileBio').value
+                    phone: document.getElementById('profilePhone').value
                 };
 
                 const response = await authFetch('/api/user/profile', {
@@ -922,7 +458,6 @@
 
                 showNotification('Profile updated successfully', 'success');
 
-                // Update UI with new data
                 if (response.user) {
                     updateProfileUI(response.user);
                 }
@@ -932,129 +467,98 @@
             } catch (error) {
                 console.error('Failed to save profile:', error);
                 showNotification('Failed to update profile: ' + error.message, 'error');
-            } finally {
-                loadingSpinner.classList.add('hidden');
             }
         }
 
         // Tab switching functionality
         const tabs = {
             personal: document.getElementById('personalInfoSection'),
-            security: document.getElementById('securitySection'),
-            activity: document.getElementById('activitySection')
+            security: document.getElementById('securitySection')
         };
 
         const tabButtons = document.querySelectorAll('.tab-button');
 
         tabButtons.forEach(button => {
             button.addEventListener('click', function () {
-                // Remove active class from all tabs and buttons
                 tabButtons.forEach(btn => {
-                    btn.classList.remove('active', 'border-primary-500', 'text-primary-500');
+                    btn.classList.remove('active', 'border-primary', 'text-primary');
                     btn.classList.add('text-gray-400');
                 });
 
-                // Hide all tab sections
                 Object.values(tabs).forEach(section => {
                     section.classList.add('hidden');
                 });
 
-                // Add active class to clicked button
                 this.classList.remove('text-gray-400');
-                this.classList.add('active', 'border-primary-500', 'text-primary-500');
+                this.classList.add('active', 'border-primary', 'text-primary');
 
-                // Show corresponding section
                 const tabText = this.textContent.toLowerCase();
                 if (tabText.includes('personal')) {
                     tabs.personal.classList.remove('hidden');
                 } else if (tabText.includes('security')) {
                     tabs.security.classList.remove('hidden');
-                } else if (tabText.includes('activity')) {
-                    tabs.activity.classList.remove('hidden');
-                    loadActivityData();
                 }
             });
         });
 
-        // Load activity data
-        async function loadActivityData() {
-            try {
-                // Simulate loading activity data
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                // Update recent activity
-                const activityContainer = document.getElementById('recentActivity');
-                activityContainer.innerHTML = `
-                    <div class="flex items-center justify-between p-3 border border-dark-700 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center mr-3">
-                                <i class="fas fa-robot text-green-500"></i>
-                            </div>
-                            <div>
-                                <p class="text-white text-sm">Bot "Crypto King" started trading</p>
-                                <p class="text-gray-400 text-xs">2 hours ago</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between p-3 border border-dark-700 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mr-3">
-                                <i class="fas fa-chart-line text-blue-500"></i>
-                            </div>
-                            <div>
-                                <p class="text-white text-sm">Successful trade on BTC/USD</p>
-                                <p class="text-gray-400 text-xs">5 hours ago</p>
-                            </div>
-                        </div>
-                        <span class="text-green-500 text-sm font-medium">+$245.50</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 border border-dark-700 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center mr-3">
-                                <i class="fas fa-cog text-purple-500"></i>
-                            </div>
-                            <div>
-                                <p class="text-white text-sm">Updated profile information</p>
-                                <p class="text-gray-400 text-xs">Yesterday</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Update performance metrics
-                const metricsContainer = document.getElementById('performanceMetrics');
-                metricsContainer.innerHTML = `
-                    <div class="p-3 border border-dark-700 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-400 text-sm">Win Rate</span>
-                            <span class="text-green-500 font-medium">78.5%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 78.5%"></div>
-                        </div>
-                    </div>
-                    <div class="p-3 border border-dark-700 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-400 text-sm">Total Profit</span>
-                            <span class="text-green-500 font-medium">$1,245.30</span>
-                        </div>
-                    </div>
-                    <div class="p-3 border border-dark-700 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-400 text-sm">Active Bots</span>
-                            <span class="text-primary-500 font-medium">3</span>
-                        </div>
-                    </div>
-                `;
-
-            } catch (error) {
-                console.error('Failed to load activity data:', error);
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.notification-toast');
+            if (existingNotification) {
+                existingNotification.remove();
             }
+
+            const notification = document.createElement('div');
+            notification.className = `notification-toast fixed top-4 right-4 p-4 rounded-lg shadow-lg border z-50 transform transition-all duration-300`;
+
+            let bgColor = 'bg-darker';
+            let borderColor = 'border-gray-700';
+            let icon = 'fas fa-info-circle';
+
+            if (type === 'success') {
+                bgColor = 'bg-green-500/20';
+                borderColor = 'border-green-500/30';
+                icon = 'fas fa-check-circle text-green-500';
+            } else if (type === 'error') {
+                bgColor = 'bg-red-500/20';
+                borderColor = 'border-red-500/30';
+                icon = 'fas fa-exclamation-circle text-red-500';
+            }
+
+            notification.className += ` ${bgColor} ${borderColor}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="${icon} mr-3"></i>
+                    <p class="text-white">${message}</p>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
         }
 
         // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function () {
             loadUserProfile();
+
+            // User dropdown
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userDropdown = document.getElementById('userDropdown');
+
+            userMenuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
 
             // Edit profile button
             document.getElementById('editProfileBtn').addEventListener('click', () => {
@@ -1070,7 +574,6 @@
             // Cancel edit button
             document.getElementById('cancelEditBtn').addEventListener('click', () => {
                 setEditMode(false);
-                // Reload original data
                 const cachedData = localStorage.getItem('userData');
                 if (cachedData) {
                     try {
@@ -1080,17 +583,6 @@
                         console.error('Failed to reload cached data:', e);
                     }
                 }
-            });
-
-            // Tab button handlers
-            document.getElementById('securityTab').addEventListener('click', () => {
-                tabButtons.forEach(btn => btn.classList.remove('active', 'border-primary-500', 'text-primary-500'));
-                document.getElementById('securityTab').classList.add('active', 'border-primary-500', 'text-primary-500');
-            });
-
-            document.getElementById('activityTab').addEventListener('click', () => {
-                tabButtons.forEach(btn => btn.classList.remove('active', 'border-primary-500', 'text-primary-500'));
-                document.getElementById('activityTab').classList.add('active', 'border-primary-500', 'text-primary-500');
             });
 
             // Password change functionality
@@ -1155,51 +647,6 @@
                 window.location.href = '/';
             });
         });
-
-        // Notification system
-        function showNotification(message, type = 'info') {
-            const existingNotification = document.querySelector('.notification-toast');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.className = `notification-toast fixed top-4 right-4 p-4 rounded-lg shadow-lg border z-50 transform transition-all duration-300 fade-in`;
-
-            let bgColor = 'bg-dark-800';
-            let borderColor = 'border-dark-700';
-            let icon = 'fas fa-info-circle';
-
-            if (type === 'success') {
-                bgColor = 'bg-green-500/20';
-                borderColor = 'border-green-500/30';
-                icon = 'fas fa-check-circle text-green-500';
-            } else if (type === 'error') {
-                bgColor = 'bg-red-500/20';
-                borderColor = 'border-red-500/30';
-                icon = 'fas fa-exclamation-circle text-red-500';
-            } else if (type === 'warning') {
-                bgColor = 'bg-yellow-500/20';
-                borderColor = 'border-yellow-500/30';
-                icon = 'fas fa-exclamation-triangle text-yellow-500';
-            }
-
-            notification.className += ` ${bgColor} ${borderColor}`;
-            notification.innerHTML = `
-                <div class="flex items-center">
-                    <i class="${icon} mr-3"></i>
-                    <p class="text-white">${message}</p>
-                </div>
-            `;
-
-            document.body.appendChild(notification);
-
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                notification.classList.add('opacity-0', 'translate-x-full');
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
-        }
     </script>
 </body>
 

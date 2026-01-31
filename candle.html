@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Deriv Candlestick Chart (Scroll & Zoom)</title>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0e1117;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: #d1d4dc;
+        }
+
+        #controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        select {
+            background: #0e1117;
+            color: #d1d4dc;
+            border: 1px solid #2b2f3a;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .indicator-tag {
+            background: #2b2f3a;
+            color: #d1d4dc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .indicator-tag:hover {
+            background: #ff4d4f;
+        }
+
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+
+        canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="controls">
+        <select id="symbol">
+            <option value="R_50">Vol 50</option>
+            <option value="R_75">Vol 75</option>
+            <option value="R_100" selected>Vol 100</option>
+            <option value="frxEURUSD">EUR/USD</option>
+            <option value="cryBTCUSD">BTC/USD</option>
+        </select>
+
+        <select id="timeframe">
+            <option value="10">10s</option>
+            <option value="30">30s</option>
+            <option value="60" selected>1m</option>
+            <option value="300">5m</option>
+        </select>
+        
+        <select id="indicators">
+            <option value="">Add Indicator</option>
+            <option value="sma20">SMA 20</option>
+            <option value="sma50">SMA 50</option>
+            <option value="ema20">EMA 20</option>
+            <option value="bb">Bollinger Bands</option>
+            <option value="rsi">RSI</option>
+        </select>
+        
+        <div id="activeIndicators"></div>
+    </div>
+
+    <canvas id="chart"></canvas>
+
+    <script>
+        /* ================= CONFIG ================= */
+        let SYMBOL = "R_100";
+        let TIMEFRAME = 60;
+        const MAX_CANDLES = 500;
+
+        /* ================= STATE ================= */
+        let candles = [];
+        let currentCandle = null;
+        let ws = null;
+        let indicators = new Map();
+
+        /* ================= VIEWPORT ================= */
+        let zoom = 1;              // candle width multiplier
+        let offset = 0;            // scroll offset (candles)
+        let isDragging = false;
+        let lastX = 0;
+
+        /* ================= CANVAS ================= */
+        const canvas = document.getElementById("chart");
+        const ctx = canvas.getContext("2d");
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        /* ================= CONTROLS ================= */
+        document.getElementById("symbol").onchange = e => {
+            SYMBOL = e.target.value;
+            restart();
+        };
+
+        document.getElementById("timeframe").onchange = e => {
+            TIMEFRAME = +e.target.value;
+            restart();
+        };
+        
+        document.getElementById("indicators").onchange = e => {
+            if (e.target.value) {
+                addIndicator(e.target.value);
+                e.target.value = "";
+            }
+        };
+
+        /* ================= WS ================= */
+        function connect() {
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    ticks_history: SYMBOL,
+                    style: "candles",
+                    granularity: TIMEFRAME,
+                    count: MAX_CANDLES,
+                    end: "latest"
+                }));
+                ws.send(JSON.stringify({ ticks: SYMBOL, subscribe: 1 }));
+            };
+
+            ws.onmessage = e => {
+                const d = JSON.parse(e.data);
+                if (d.error) return;
+
+                if (d.candles) {
+                    candles = d.candles.map(c => ({
+                        time: Math.floor(c.epoch / TIMEFRAME) * TIMEFRAME,
+                        open: +c.open,
+                        high: +c.high,
+                        low: +c.low,
+                        close: +c.close
+                    }));
+                    currentCandle = null;
+                    offset = 0;
+                    draw();
+                }
+
+                if (d.tick) {
+                    updateCandle(+d.tick.quote, d.tick.epoch);
+                }
+            };
+        }
+
+        function restart() {
+            if (ws) ws.close();
+            candles = [];
+            currentCandle = null;
+            zoom = 1;
+            offset = 0;
+            connect();
+        }
+
+        /* ================= CANDLE ENGINE ================= */
+        function updateCandle(price, epoch) {
+            const t = Math.floor(epoch / TIMEFRAME) * TIMEFRAME;
+
+            if (!currentCandle || currentCandle.time !== t) {
+                if (currentCandle) {
+                    candles.push(currentCandle);
+                    if (candles.length > MAX_CANDLES) candles.shift();
+                }
+                currentCandle = { time: t, open: price, high: price, low: price, close: price };
+            } else {
+                currentCandle.high = Math.max(currentCandle.high, price);
+                currentCandle.low = Math.min(currentCandle.low, price);
+                currentCandle.close = price;
+            }
+            draw();
+        }
+
+        /* ================= INTERACTION ================= */
+        // Scroll (drag)
+        canvas.addEventListener("mousedown", e => {
+            isDragging = true;
+            lastX = e.clientX;
+        });
+        window.addEventListener("mouseup", () => isDragging = false);
+        window.addEventListener("mousemove", e => {
+            if (!isDragging) return;
+            offset += (e.clientX - lastX) / 10;
+            lastX = e.clientX;
+            draw();
+        });
+
+        // Zoom (wheel)
+        canvas.addEventListener("wheel", e => {
+            zoom += e.deltaY * -0.001;
+            zoom = Math.max(0.5, Math.min(3, zoom));
+            draw();
+        });
+
+        /* ================= INDICATORS ================= */
+        function addIndicator(type) {
+            if (indicators.has(type)) return;
+            indicators.set(type, { type, color: getIndicatorColor(type) });
+            updateIndicatorTags();
+            draw();
+        }
+        
+        function removeIndicator(type) {
+            indicators.delete(type);
+            updateIndicatorTags();
+            draw();
+        }
+        
+        function updateIndicatorTags() {
+            const container = document.getElementById("activeIndicators");
+            container.innerHTML = "";
+            indicators.forEach((ind, type) => {
+                const tag = document.createElement("span");
+                tag.className = "indicator-tag";
+                tag.textContent = getIndicatorName(type);
+                tag.onclick = () => removeIndicator(type);
+                container.appendChild(tag);
+            });
+        }
+        
+        function getIndicatorName(type) {
+            const names = {
+                sma20: "SMA 20", sma50: "SMA 50", ema20: "EMA 20",
+                bb: "BB", rsi: "RSI"
+            };
+            return names[type] || type;
+        }
+        
+        function getIndicatorColor(type) {
+            const colors = {
+                sma20: "#ffa500", sma50: "#00bfff", ema20: "#ff69b4",
+                bb: "#9370db", rsi: "#32cd32"
+            };
+            return colors[type] || "#ffffff";
+        }
+        
+        function calculateSMA(data, period) {
+            return data.map((_, i) => {
+                if (i < period - 1) return null;
+                const sum = data.slice(i - period + 1, i + 1).reduce((a, b) => a + b.close, 0);
+                return sum / period;
+            });
+        }
+        
+        function calculateEMA(data, period) {
+            const k = 2 / (period + 1);
+            const ema = [data[0]?.close || 0];
+            for (let i = 1; i < data.length; i++) {
+                ema[i] = data[i].close * k + ema[i - 1] * (1 - k);
+            }
+            return ema;
+        }
+        
+        function calculateBB(data, period = 20, std = 2) {
+            const sma = calculateSMA(data, period);
+            return data.map((_, i) => {
+                if (i < period - 1) return null;
+                const slice = data.slice(i - period + 1, i + 1);
+                const mean = sma[i];
+                const variance = slice.reduce((sum, c) => sum + Math.pow(c.close - mean, 2), 0) / period;
+                const stdDev = Math.sqrt(variance);
+                return {
+                    upper: mean + stdDev * std,
+                    middle: mean,
+                    lower: mean - stdDev * std
+                };
+            });
+        }
+        
+        function calculateRSI(data, period = 14) {
+            const changes = data.slice(1).map((c, i) => c.close - data[i].close);
+            const gains = changes.map(c => c > 0 ? c : 0);
+            const losses = changes.map(c => c < 0 ? -c : 0);
+            
+            let avgGain = gains.slice(0, period).reduce((a, b) => a + b, 0) / period;
+            let avgLoss = losses.slice(0, period).reduce((a, b) => a + b, 0) / period;
+            
+            const rsi = [null];
+            for (let i = 0; i < period; i++) rsi.push(null);
+            
+            for (let i = period; i < changes.length; i++) {
+                avgGain = (avgGain * (period - 1) + gains[i]) / period;
+                avgLoss = (avgLoss * (period - 1) + losses[i]) / period;
+                const rs = avgGain / (avgLoss || 0.001);
+                rsi.push(100 - (100 / (1 + rs)));
+            }
+            return rsi;
+        }
+        
+        /* ================= DRAW ================= */
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let data = [...candles];
+            if (currentCandle) data.push(currentCandle);
+            if (!data.length) return;
+
+            const pad = 70;
+            const w = canvas.width - pad * 2;
+            const h = canvas.height - pad * 2;
+
+            const candleSpacing = 6 * zoom;
+            const visible = Math.floor(w / candleSpacing);
+            const start = Math.max(0, data.length - visible - Math.floor(offset));
+            const view = data.slice(start, start + visible);
+
+            const max = Math.max(...view.map(c => c.high));
+            const min = Math.min(...view.map(c => c.low));
+            const range = max - min || 1;
+            const y = p => pad + h - ((p - min) / range) * h;
+
+            // Grid
+            ctx.strokeStyle = "#1f2430";
+            for (let i = 0; i <= 5; i++) {
+                const gy = pad + (h / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(pad, gy);
+                ctx.lineTo(canvas.width - pad, gy);
+                ctx.stroke();
+            }
+
+            // Draw candles
+            view.forEach((c, i) => {
+                const x = pad + i * candleSpacing + candleSpacing / 2;
+                const up = c.close >= c.open;
+                ctx.strokeStyle = ctx.fillStyle = up ? "#00c176" : "#ff4d4f";
+
+                ctx.beginPath();
+                ctx.moveTo(x, y(c.high));
+                ctx.lineTo(x, y(c.low));
+                ctx.stroke();
+
+                ctx.fillRect(
+                    x - candleSpacing * 0.3,
+                    Math.min(y(c.open), y(c.close)),
+                    candleSpacing * 0.6,
+                    Math.max(1, Math.abs(y(c.close) - y(c.open)))
+                );
+            });
+            
+            // Draw indicators
+            if (indicators.size > 0) {
+                const fullData = [...candles];
+                if (currentCandle) fullData.push(currentCandle);
+                
+                indicators.forEach((ind, type) => {
+                    ctx.strokeStyle = ind.color;
+                    ctx.lineWidth = 2;
+                    
+                    if (type === 'sma20') {
+                        const sma = calculateSMA(fullData, 20);
+                        drawLine(sma.slice(start, start + visible), candleSpacing, y, pad);
+                    }
+                    else if (type === 'sma50') {
+                        const sma = calculateSMA(fullData, 50);
+                        drawLine(sma.slice(start, start + visible), candleSpacing, y, pad);
+                    }
+                    else if (type === 'ema20') {
+                        const ema = calculateEMA(fullData, 20);
+                        drawLine(ema.slice(start, start + visible), candleSpacing, y, pad);
+                    }
+                    else if (type === 'bb') {
+                        const bb = calculateBB(fullData);
+                        drawBB(bb.slice(start, start + visible), candleSpacing, y, ind.color, pad);
+                    }
+                    else if (type === 'rsi') {
+                        const rsi = calculateRSI(fullData);
+                        drawRSI(rsi.slice(start, start + visible), candleSpacing, pad);
+                    }
+                });
+            }
+        }
+        
+        function drawLine(values, spacing, yFunc, pad) {
+            ctx.beginPath();
+            let first = true;
+            values.forEach((val, i) => {
+                if (val === null || val === undefined) return;
+                const x = pad + i * spacing + spacing / 2;
+                if (first) {
+                    ctx.moveTo(x, yFunc(val));
+                    first = false;
+                } else {
+                    ctx.lineTo(x, yFunc(val));
+                }
+            });
+            ctx.stroke();
+        }
+        
+        function drawBB(bb, spacing, yFunc, color, pad) {
+            const alpha = ctx.globalAlpha;
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = color;
+            
+            ctx.beginPath();
+            let hasData = false;
+            bb.forEach((b, i) => {
+                if (!b) return;
+                const x = pad + i * spacing + spacing / 2;
+                if (!hasData) {
+                    ctx.moveTo(x, yFunc(b.upper));
+                    hasData = true;
+                } else {
+                    ctx.lineTo(x, yFunc(b.upper));
+                }
+            });
+            
+            for (let i = bb.length - 1; i >= 0; i--) {
+                const b = bb[i];
+                if (!b) continue;
+                const x = pad + i * spacing + spacing / 2;
+                ctx.lineTo(x, yFunc(b.lower));
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            drawLine(bb.map(b => b?.middle), spacing, yFunc, pad);
+        }
+        
+        function drawRSI(rsi, spacing, pad) {
+            const rsiH = 60;
+            const rsiY = canvas.height - rsiH - 10;
+            
+            ctx.fillStyle = "#161b22";
+            ctx.fillRect(pad, rsiY, canvas.width - pad * 2, rsiH);
+            
+            ctx.strokeStyle = "#1f2430";
+            [30, 50, 70].forEach(level => {
+                const y = rsiY + rsiH - (level / 100) * rsiH;
+                ctx.beginPath();
+                ctx.moveTo(pad, y);
+                ctx.lineTo(canvas.width - pad, y);
+                ctx.stroke();
+            });
+            
+            ctx.strokeStyle = "#32cd32";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let first = true;
+            rsi.forEach((val, i) => {
+                if (val === null || val === undefined) return;
+                const x = pad + i * spacing + spacing / 2;
+                const y = rsiY + rsiH - (val / 100) * rsiH;
+                if (first) {
+                    ctx.moveTo(x, y);
+                    first = false;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            ctx.fillStyle = "#d1d4dc";
+            ctx.font = "10px Arial";
+            ctx.fillText("RSI", pad + 5, rsiY + 12);
+        }
+
+        /* ================= START ================= */
+        connect();
+    </script>
+
+</body>
+
+</html>

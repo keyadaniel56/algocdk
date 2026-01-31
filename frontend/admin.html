@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | AlgoCDK - Support Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0e1117;
+            color: #d1d4dc;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(14, 17, 23, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #2b2f3a;
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #d1d4dc;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #FF4500;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FF4500;
+        }
+
+        .admin-badge {
+            background: #FF4500;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 40px 0;
+            border-bottom: 1px solid #2b2f3a;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #8b949e;
+            font-size: 16px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FF4500;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        /* Demo Message */
+        .demo-message {
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .demo-message h2 {
+            color: #FF4500;
+            margin-bottom: 16px;
+        }
+
+        .demo-message p {
+            color: #8b949e;
+            margin-bottom: 24px;
+        }
+
+        .demo-tickets {
+            background: #161b22;
+            border: 1px solid #2b2f3a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .ticket-item {
+            border-bottom: 1px solid #2b2f3a;
+            padding: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .ticket-item:hover {
+            background: rgba(255, 69, 0, 0.05);
+        }
+
+        .ticket-item:last-child {
+            border-bottom: none;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .ticket-info {
+            flex: 1;
+        }
+
+        .ticket-subject {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 8px;
+        }
+
+        .ticket-preview {
+            color: #8b949e;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .ticket-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .status-new {
+            background: rgba(255, 69, 0, 0.2);
+            color: #FF4500;
+        }
+
+        .status-open {
+            background: rgba(0, 193, 118, 0.2);
+            color: #00c176;
+        }
+
+        .status-closed {
+            background: rgba(139, 148, 158, 0.2);
+            color: #8b949e;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .ticket-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .ticket-meta {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="app" class="logo">
+                <div class="logo-icon">A</div>
+                <div class="logo-text">Algocdk</div>
+            </a>
+            <div class="admin-badge">ADMIN DEMO</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>Support Management</h1>
+                <p>Demo admin panel for managing customer support tickets</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">New Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Open Tickets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Closed Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1.2h</div>
+                    <div class="stat-label">Avg Response</div>
+                </div>
+            </div>
+
+            <!-- Demo Message -->
+            <div class="demo-message">
+                <h2>Demo Admin Panel</h2>
+                <p>This is a demonstration of the admin interface. In production, this would connect to your Go Gin backend to manage real support tickets with email notifications.</p>
+            </div>
+
+            <!-- Sample Tickets -->
+            <div class="demo-tickets">
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="ticket-info">
+                            <div class="ticket-subject">Unable to connect Deriv account</div>
+                            <div class="ticket-meta">
+                                <span>John Smith</span>
+                                <span>john@example.com</span>
+                                <span>2024-01-15 10:30</span>
+                            </div>
+                            <div class="ticket-preview">I'm having trouble connecting my Deriv account. The API token keeps saying 'Invalid token'...</div>
+                        </div>
+                        <div class="ticket-status status-new">NEW</div>
+                    </div>
+                </div>
+
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="ticket-info">
+                            <div class="ticket-subject">Bot stopped working after update</div>
+                            <div class="ticket-meta">
+                                <span>Sarah Johnson</span>
+                                <span>sarah@example.com</span>
+                                <span>2024-01-15 09:15</span>
+                            </div>
+                            <div class="ticket-preview">My trading bot was working fine until yesterday's update. Now it shows 'Bot Inactive' status...</div>
+                        </div>
+                        <div class="ticket-status status-open">OPEN</div>
+                    </div>
+                </div>
+
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="ticket-info">
+                            <div class="ticket-subject">Refund request for premium bot</div>
+                            <div class="ticket-meta">
+                                <span>Mike Davis</span>
+                                <span>mike@example.com</span>
+                                <span>2024-01-15 08:45</span>
+                            </div>
+                            <div class="ticket-preview">I purchased the 'Advanced Scalper Pro' bot 3 days ago but it's not performing as advertised...</div>
+                        </div>
+                        <div class="ticket-status status-new">NEW</div>
+                    </div>
+                </div>
+
+                <div class="ticket-item">
+                    <div class="ticket-header">
+                        <div class="ticket-info">
+                            <div class="ticket-subject">Account verification issue</div>
+                            <div class="ticket-meta">
+                                <span>Lisa Wilson</span>
+                                <span>lisa@example.com</span>
+                                <span>2024-01-14 16:20</span>
+                            </div>
+                            <div class="ticket-preview">I'm trying to verify my account but the verification email is not arriving...</div>
+                        </div>
+                        <div class="ticket-status status-closed">CLOSED</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple demo functionality
+        document.querySelectorAll('.ticket-item').forEach(item => {
+            item.addEventListener('click', () => {
+                alert('Demo: In production, this would open the ticket details modal where the superadmin can respond to the customer and manage the ticket status.');
+            });
+        });
+    </script>
+</body>
+
+</html>

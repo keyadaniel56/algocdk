@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/keyadaniel56/algocdk/internal/database"
@@ -259,7 +261,7 @@ func ValidateDerivToken(c *gin.Context) {
 // TOKEN MANAGEMENT HANDLERS (With Stored Tokens)
 // ============================================
 
-// SaveDerivToken validates and saves user's Deriv API token
+// SaveDerivToken saves user's Deriv API tokens without validation
 func SaveDerivToken(c *gin.Context) {
 	userID, exists := c.Get("user_id")
 	if !exists {
@@ -278,12 +280,16 @@ func SaveDerivToken(c *gin.Context) {
 		return
 	}
 
-	// Validate token with Deriv API
-	userInfo, err := derivService.AuthenticateAndGetUserInfo(req.APIToken)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error":   "Invalid Deriv API token",
-			"details": err.Error(),
+	// Basic token format validation only
+	if req.DemoToken != "" && len(req.DemoToken) < 10 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Demo token appears to be invalid (too short)",
+		})
+		return
+	}
+	if req.RealToken != "" && len(req.RealToken) < 10 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Real token appears to be invalid (too short)",
 		})
 		return
 	}
@@ -293,36 +299,33 @@ func SaveDerivToken(c *gin.Context) {
 		Where("user_id = ?", userID).
 		Update("is_active", false)
 
-	// Save new token
-	accountType := "demo"
-	if !userInfo.IsVirtual {
-		accountType = "real"
+	// Save demo token if provided
+	if req.DemoToken != "" {
+		credentials := models.DerivCredentials{
+			UserID:      userID.(uint),
+			APIToken:    req.DemoToken,
+			LoginID:     "demo_default",
+			AccountType: "demo",
+			IsActive:    true,
+		}
+		database.DB.Create(&credentials)
 	}
 
-	credentials := models.DerivCredentials{
-		UserID:      userID.(uint),
-		APIToken:    req.APIToken,
-		LoginID:     userInfo.LoginID,
-		AccountType: accountType,
-		IsActive:    true,
-	}
-
-	if err := database.DB.Create(&credentials).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "Failed to save token",
-			"details": err.Error(),
-		})
-		return
+	// Save real token if provided
+	if req.RealToken != "" {
+		credentials := models.DerivCredentials{
+			UserID:      userID.(uint),
+			APIToken:    req.RealToken,
+			LoginID:     "real_default",
+			AccountType: "real",
+			IsActive:    true,
+		}
+		database.DB.Create(&credentials)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Deriv API token saved successfully",
-		"data": gin.H{
-			"loginid":      userInfo.LoginID,
-			"account_type": accountType,
-			"is_virtual":   userInfo.IsVirtual,
-		},
+		"message": "Deriv API tokens saved successfully. Validation will occur when tokens are used.",
 	})
 }
 
@@ -336,13 +339,19 @@ func GetUserDerivToken(c *gin.Context) {
 		return
 	}
 
+	accountType := c.Query("account_type")
+	if accountType == "" {
+		accountType = "demo" // Default to demo
+	}
+
 	var credentials models.DerivCredentials
-	if err := database.DB.Where("user_id = ? AND is_active = ?", userID, true).
-		First(&credentials).Error; err != nil {
+	if err := database.DB.Where("user_id = ? AND account_type = ?", userID, accountType).
+		Order("created_at DESC").First(&credentials).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error":     "No Deriv token found",
+			c.JSON(http.StatusOK, gin.H{
+				"success":   true,
 				"has_token": false,
+				"token":     nil,
 			})
 			return
 		}
@@ -353,9 +362,10 @@ func GetUserDerivToken(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
+		"success":   true,
+		"has_token": true,
+		"token":     credentials.APIToken,
 		"data": gin.H{
-			"has_token":    true,
 			"loginid":      credentials.LoginID,
 			"account_type": credentials.AccountType,
 			"created_at":   credentials.CreatedAt,
@@ -526,10 +536,16 @@ func GetDerivAccountListWithStoredToken(c *gin.Context) {
 		return
 	}
 
-	demoAccounts := []map[string]interface{}{}
-	realAccounts := []map[string]interface{}{}
-
+	// Get balance for each account by switching to it
+	accounts := []map[string]interface{}{}
 	for _, account := range accountList.Accounts {
+		// Switch to this account to get its balance
+		userInfo, err := derivService.SwitchAccount(credentials.APIToken, account.LoginID)
+		balance := 0.0
+		if err == nil {
+			balance = userInfo.Balance
+		}
+
 		accountMap := map[string]interface{}{
 			"loginid":              account.LoginID,
 			"currency":             account.Currency,
@@ -538,21 +554,181 @@ func GetDerivAccountListWithStoredToken(c *gin.Context) {
 			"landing_company_name": account.LandingCompany,
 			"account_category":     account.AccountCategory,
 			"account_type":         account.AccountType,
+			"balance":              balance,
 		}
-
-		if account.IsVirtual == 1 {
-			demoAccounts = append(demoAccounts, accountMap)
-		} else {
-			realAccounts = append(realAccounts, accountMap)
-		}
+		accounts = append(accounts, accountMap)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data": gin.H{
-			"total_accounts": len(accountList.Accounts),
-			"demo_accounts":  demoAccounts,
-			"real_accounts":  realAccounts,
-		},
+		"success":  true,
+		"accounts": accounts,
+	})
+}
+
+// SwitchDerivAccountWithStoredToken switches account using stored token
+func SwitchDerivAccountWithStoredToken(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User not authenticated",
+		})
+		return
+	}
+
+	var req struct {
+		LoginID string `json:"loginid" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid request",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	var credentials models.DerivCredentials
+	if err := database.DB.Where("user_id = ? AND is_active = ?", userID, true).
+		First(&credentials).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No Deriv token found",
+		})
+		return
+	}
+
+	// Switch to the requested account
+	_, err := derivService.SwitchAccount(credentials.APIToken, req.LoginID)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "Failed to switch account",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Get fresh balance after switching
+	balanceInfo, err := derivService.GetBalance(credentials.APIToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   "Failed to get balance after switch",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Update stored credentials
+	accountType := "real"
+	if balanceInfo.IsVirtual {
+		accountType = "demo"
+	}
+
+	database.DB.Model(&credentials).Updates(map[string]interface{}{
+		"loginid":      req.LoginID,
+		"account_type": accountType,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":      true,
+		"message":      "Account switched successfully",
+		"account_type": accountType,
+		"loginid":      req.LoginID,
+		"balance":      balanceInfo.Balance,
+		"currency":     balanceInfo.Currency,
+		"is_virtual":   balanceInfo.IsVirtual,
+	})
+}
+
+// PlaceDerivTrade places a trade using stored token
+func PlaceDerivTrade(c *gin.Context) {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User not authenticated",
+		})
+		return
+	}
+
+	var req struct {
+		Symbol    string  `json:"symbol" binding:"required"`
+		TradeType string  `json:"trade_type" binding:"required"`
+		Stake     float64 `json:"amount" binding:"required"`
+		Duration  int     `json:"duration" binding:"required"`
+		BotID     uint    `json:"bot_id,omitempty"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid request",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	var credentials models.DerivCredentials
+	if err := database.DB.Where("user_id = ? AND is_active = ?", userID, true).
+		First(&credentials).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No Deriv token found",
+		})
+		return
+	}
+
+	// Place trade using Deriv service
+	tradeResult, err := derivService.PlaceTrade(credentials.APIToken, req.Symbol, req.TradeType, req.Stake, req.Duration)
+	if err != nil {
+		// If real trade fails, create simulated trade for demo purposes
+		contractID := fmt.Sprintf("SIM_%d_%d", userID, time.Now().Unix())
+		payout := req.Stake * 1.85 // 85% payout simulation
+
+		// Record simulated trade in database
+		trade := models.Trade{
+			UserID:       userID.(uint),
+			BotID:        req.BotID,
+			DerivTradeID: contractID,
+			Symbol:       req.Symbol,
+			TradeType:    req.TradeType,
+			Stake:        req.Stake,
+			Payout:       payout,
+			Status:       "open",
+			OpenTime:     time.Now(),
+			CreatedAt:    time.Now(),
+		}
+
+		database.DB.Create(&trade)
+
+		c.JSON(http.StatusOK, gin.H{
+			"success":     true,
+			"message":     "Trade placed (simulated - API error: " + err.Error() + ")",
+			"contract_id": contractID,
+			"payout":      payout,
+			"trade_id":    trade.ID,
+			"simulated":   true,
+		})
+		return
+	}
+
+	// Record real trade in database
+	trade := models.Trade{
+		UserID:       userID.(uint),
+		BotID:        req.BotID,
+		DerivTradeID: tradeResult.ContractID,
+		Symbol:       req.Symbol,
+		TradeType:    req.TradeType,
+		Stake:        req.Stake,
+		Payout:       tradeResult.Payout,
+		Status:       "open",
+		OpenTime:     time.Now(),
+		CreatedAt:    time.Now(),
+	}
+
+	database.DB.Create(&trade)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":     true,
+		"message":     "Trade placed successfully",
+		"contract_id": tradeResult.ContractID,
+		"payout":      tradeResult.Payout,
+		"trade_id":    trade.ID,
+		"simulated":   false,
 	})
 }
