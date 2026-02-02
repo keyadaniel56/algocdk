@@ -778,6 +778,10 @@
                             <i class="fas fa-user"></i>
                             <span>Profile</span>
                         </a>
+                        <a href="#" onclick="navigateToDashboard()" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span id="dashboardText">Dashboard</span>
+                        </a>
                         <a href="/settings" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
                             <i class="fas fa-cog"></i>
                             <span>Settings</span>
@@ -794,9 +798,14 @@
                             <i class="fas fa-exchange-alt"></i>
                             <span>Advanced Trading</span>
                         </a>
-                        <a href="/marketchart" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
-                            <i class="fas fa-chart-area"></i>
-                            <span>Market Chart</span>
+                        <a href="/app" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Trading App</span>
+                        </a>
+                        <a href="/notifications" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                            <span id="notifications-badge" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto hidden">0</span>
                         </a>
                         <a href="/support" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
                             <i class="fas fa-life-ring"></i>
@@ -1198,6 +1207,19 @@
                 <div id="recentTradesList" class="space-y-2 text-xs">
                     <div class="text-gray-400 text-center py-4">
                         No recent trades.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications Panel -->
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="font-semibold text-sm">Notifications</h4>
+                    <a href="/notifications" class="text-primary-500 text-xs hover:underline">View All</a>
+                </div>
+                <div id="notifications-container" class="space-y-2 text-xs max-h-32 overflow-y-auto">
+                    <div class="text-gray-400 text-center py-2">
+                        No notifications
                     </div>
                 </div>
             </div>
@@ -3890,6 +3912,106 @@
             window.location.href = '/';
         }
         
+        /* ================= DASHBOARD NAVIGATION ================= */
+        function navigateToDashboard() {
+            const token = localStorage.getItem('token') || localStorage.getItem('jwt_token') || localStorage.getItem('authToken');
+            
+            if (!token) {
+                showNotification('Please login to access dashboard', 'error');
+                window.location.href = '/auth';
+                return;
+            }
+            
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const userRole = payload.role;
+                
+                // Route based on user role
+                if (userRole === 'superadmin') {
+                    window.location.href = '/superadmin';
+                } else if (userRole === 'admin' || userRole === 'Admin' || userRole === 'ADMIN') {
+                    window.location.href = '/admin';
+                } else {
+                    // Check if user has approved admin request and refresh token
+                    checkAndRefreshAdminStatus();
+                }
+            } catch (error) {
+                console.error('Token parsing error:', error);
+                showNotification('Invalid session, please login again', 'error');
+                window.location.href = '/auth';
+            }
+        }
+        
+        /* ================= ADMIN STATUS CHECK ================= */
+        async function checkAndRefreshAdminStatus() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('jwt_token') || localStorage.getItem('authToken');
+                
+                // Check admin request status
+                const response = await fetch('/api/user/admin-request-status', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // If user has approved admin request, refresh token
+                    if (data.has_request && data.request.status === 'approved') {
+                        await refreshUserToken();
+                        return;
+                    }
+                }
+                
+                // Default to profile if no admin access
+                window.location.href = '/profile';
+            } catch (error) {
+                console.error('Error checking admin status:', error);
+                window.location.href = '/profile';
+            }
+        }
+        
+        async function refreshUserToken() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('jwt_token') || localStorage.getItem('authToken');
+                
+                const response = await fetch('/api/user/refresh-token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update stored token
+                    localStorage.setItem('token', data.token);
+                    if (localStorage.getItem('jwt_token')) {
+                        localStorage.setItem('jwt_token', data.token);
+                    }
+                    if (localStorage.getItem('authToken')) {
+                        localStorage.setItem('authToken', data.token);
+                    }
+                    
+                    showNotification('Admin access granted! Redirecting to admin panel...', 'success');
+                    
+                    // Now navigate to admin dashboard
+                    setTimeout(() => {
+                        window.location.href = '/admin';
+                    }, 1500);
+                } else {
+                    window.location.href = '/profile';
+                }
+            } catch (error) {
+                console.error('Error refreshing token:', error);
+                window.location.href = '/profile';
+            }
+        }
+        
         /* ================= START ================= */
         async function initializeApp() {
             initMarketData();
@@ -3899,10 +4021,57 @@
             startBackgroundUpdates();
             await initializeAccountDisplay(); // Initialize account display with proper token handling
             initProfessionalFeatures(); // Initialize professional features
+            updateDashboardText(); // Update dashboard text based on user role
             
             // Request notification permission
             if ('Notification' in window && Notification.permission === 'default') {
                 Notification.requestPermission();
+            }
+        }
+        
+        /* ================= DASHBOARD TEXT UPDATE ================= */
+        async function updateDashboardText() {
+            const token = localStorage.getItem('token') || localStorage.getItem('jwt_token') || localStorage.getItem('authToken');
+            const dashboardTextElement = document.getElementById('dashboardText');
+            
+            if (!token || !dashboardTextElement) return;
+            
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                let userRole = payload.role;
+                
+                // If no role in token or role is 'user', check if admin request was approved
+                if (!userRole || userRole === 'user') {
+                    try {
+                        const response = await fetch('/api/user/admin-request-status', {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.has_request && data.request.status === 'approved') {
+                                // User has approved admin request, show admin panel option
+                                dashboardTextElement.textContent = 'Admin Panel';
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error checking admin status:', error);
+                    }
+                }
+                
+                if (userRole === 'superadmin') {
+                    dashboardTextElement.textContent = 'SuperAdmin Panel';
+                } else if (userRole === 'admin' || userRole === 'Admin' || userRole === 'ADMIN') {
+                    dashboardTextElement.textContent = 'Admin Panel';
+                } else {
+                    dashboardTextElement.textContent = 'Dashboard';
+                }
+            } catch (error) {
+                dashboardTextElement.textContent = 'Dashboard';
             }
         }
         

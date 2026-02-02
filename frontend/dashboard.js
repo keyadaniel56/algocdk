@@ -34,6 +34,9 @@ class Dashboard {
       const favorites = await api.user.getFavorites();
       this.updateFavoritesDisplay(favorites);
 
+      // Load notifications
+      await this.loadNotifications();
+
       // Load Deriv account info if available
       try {
         this.derivAccount = await api.deriv.getMyInfo();
@@ -261,6 +264,54 @@ class Dashboard {
         console.error('Failed to update real-time data:', error);
       }
     }, 30000);
+  }
+
+  async loadNotifications() {
+    try {
+      const response = await api.user.getNotifications();
+      this.updateNotificationsDisplay(response.notifications);
+    } catch (error) {
+      console.error('Failed to load notifications:', error);
+    }
+  }
+
+  updateNotificationsDisplay(notifications) {
+    const container = document.getElementById('notifications-container');
+    const badge = document.getElementById('notifications-badge');
+    
+    if (!container) return;
+
+    const unreadCount = notifications.filter(n => n.status === 'sent').length;
+    
+    if (badge) {
+      badge.textContent = unreadCount;
+      badge.style.display = unreadCount > 0 ? 'block' : 'none';
+    }
+
+    if (!notifications || notifications.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-400">
+          <i class="fas fa-bell text-4xl mb-4"></i>
+          <p>No notifications yet</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = notifications.slice(0, 10).map(notification => `
+      <div class="glass-effect p-4 rounded-lg mb-3 ${notification.status === 'sent' ? 'border-l-4 border-primary-500' : ''}">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="font-semibold text-sm">${notification.title}</h4>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs px-2 py-1 rounded ${
+              notification.category === 'trade' ? 'bg-success-500/20 text-success-500' : 'bg-blue-500/20 text-blue-500'
+            }">${notification.category}</span>
+            <span class="text-xs text-gray-400">${new Date(notification.created_at).toLocaleDateString()}</span>
+          </div>
+        </div>
+        <p class="text-gray-300 text-sm">${notification.message}</p>
+      </div>
+    `).join('');
   }
 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/keyadaniel56/algocdk/internal/database"
 	"github.com/keyadaniel56/algocdk/internal/models"
 	"github.com/keyadaniel56/algocdk/internal/utils"
+	"github.com/keyadaniel56/algocdk/service"
 	"gorm.io/gorm"
 )
 
@@ -95,7 +96,7 @@ func SignupHandler(ctx *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, user.Email)
+	token, err := utils.GenerateToken(user.ID, user.Email, "user")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "could not generate token",
@@ -146,7 +147,7 @@ func LoginHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
 		return
 	}
-	token, _ := utils.GenerateToken(user.ID, user.Email)
+	token, _ := utils.GenerateToken(user.ID, user.Email, user.Role)
 	payload.RefreshToken, _ = utils.RefreshToken(user.Email)
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":       "login succesful",
@@ -694,5 +695,25 @@ func GetUserTradesHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"trades":       trades,
 		"total_profit": totalProfit,
+	})
+}
+
+// GetUserNotificationsHandler gets user's notifications
+func GetUserNotificationsHandler(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	notificationService := service.GetNotificationService()
+	notifications, err := notificationService.GetUserNotifications(userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch notifications"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"notifications": notifications,
 	})
 }

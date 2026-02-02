@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - AlgoCDK</title>
+    <link rel="stylesheet" href="/output.css">
+    <link rel="stylesheet" href="/theme.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-white">Notifications</h1>
+                <a href="/app" class="bg-orange-500 px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold">Recent Notifications</h2>
+                    <button id="refresh-btn" class="text-orange-500 hover:text-orange-400 flex items-center">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+                
+                <div id="notifications-list" class="space-y-4">
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-4"></i>
+                        <p>Loading notifications...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/api.js"></script>
+    <script src="/notifications.js"></script>
+    <script>
+        class NotificationsPage {
+            constructor() {
+                this.init();
+            }
+
+            async init() {
+                if (!TokenManager.isValid()) {
+                    window.location.href = '/auth';
+                    return;
+                }
+                
+                await this.loadNotifications();
+                this.setupEventListeners();
+            }
+
+            async loadNotifications() {
+                try {
+                    const response = await api.user.getNotifications();
+                    this.displayNotifications(response.notifications);
+                } catch (error) {
+                    this.displayError('Failed to load notifications');
+                }
+            }
+
+            displayNotifications(notifications) {
+                const container = document.getElementById('notifications-list');
+                
+                if (!notifications || notifications.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-400">
+                            <i class="fas fa-bell text-4xl mb-4"></i>
+                            <p>No notifications yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = notifications.map(notification => `
+                    <div class="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:border-orange-500 transition-colors">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center ${
+                                    notification.category === 'trade' ? 'bg-green-600' : 'bg-orange-600'
+                                }">
+                                    <i class="fas ${notification.category === 'trade' ? 'fa-chart-line' : 'fa-bell'} text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white">${notification.title}</h3>
+                                    <p class="text-sm text-gray-400">${new Date(notification.created_at).toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs px-2 py-1 rounded ${
+                                    notification.priority === 'high' ? 'bg-red-600 text-white' : 'bg-gray-600 text-gray-300'
+                                }">${notification.priority}</span>
+                                <span class="text-xs px-2 py-1 rounded ${
+                                    notification.category === 'trade' ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'
+                                }">${notification.category}</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-300">${notification.message}</p>
+                    </div>
+                `).join('');
+            }
+
+            displayError(message) {
+                const container = document.getElementById('notifications-list');
+                container.innerHTML = `
+                    <div class="text-center py-8 text-red-400">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+
+            setupEventListeners() {
+                document.getElementById('refresh-btn').addEventListener('click', () => {
+                    this.loadNotifications();
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new NotificationsPage();
+        });
+    </script>
+</body>
+</html>

@@ -72,9 +72,14 @@ func SuperAdminRegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	// Check for existing email
-	var existing models.User
-	if err := database.DB.Where("email = ?", payload.Email).First(&existing).Error; err == nil {
+	// Check for existing email in both User and SuperAdmin tables
+	var existingUser models.User
+	var existingSuperAdmin models.SuperAdmin
+	if err := database.DB.Where("email = ?", payload.Email).First(&existingUser).Error; err == nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email already exists"})
+		return
+	}
+	if err := database.DB.Where("email = ?", payload.Email).First(&existingSuperAdmin).Error; err == nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email already exists"})
 		return
 	}
@@ -105,7 +110,7 @@ func SuperAdminRegisterHandler(ctx *gin.Context) {
 	}
 
 	// Generate token
-	token, err := utils.GenerateToken(superAdmin.ID, superAdmin.Email)
+	token, err := utils.GenerateToken(superAdmin.ID, superAdmin.Email, "superadmin")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
@@ -158,7 +163,7 @@ func SuperAdminLoginHandler(ctx *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(superadmin.ID, superadmin.Email)
+	token, err := utils.GenerateToken(superadmin.ID, superadmin.Email, superadmin.Role)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
 		return
@@ -1262,4 +1267,41 @@ func RecordTransaction(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, transaction)
+}
+
+// GetSuperAdminNotificationsHandler gets superadmin-specific notifications
+func GetSuperAdminNotificationsHandler(ctx *gin.Context) {
+	userID := ctx.GetUint("user_id")
+	if userID == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	// Verify superadmin role
+	var user models.SuperAdmin
+	if err := database.DB.First(&user, userID).Error; err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	if user.Role != "superadmin" {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	// Get system-wide notifications for superadmin
+	var notifications []models.Notification
+	err := database.DB.Where("category IN (?) OR user_id = ?", []string{"system", "security", "admin"}, userID).
+		Order("created_at DESC").
+		Limit(50).
+		Find(&notifications).Error
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch notifications"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"notifications": notifications,
+	})
 }

@@ -1,13 +1,15 @@
-// notifications.js - Toast notification system
+// notifications.js - Enhanced Toast notification system
 class NotificationSystem {
   constructor() {
     this.container = null;
+    this.notifications = new Set();
     this.init();
   }
 
   init() {
     this.createContainer();
     this.addStyles();
+    console.log('NotificationSystem initialized');
   }
 
   addStyles() {
@@ -20,28 +22,40 @@ class NotificationSystem {
         position: fixed;
         top: 1rem;
         right: 1rem;
-        z-index: 1000;
+        z-index: 9999;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
         pointer-events: none;
+        max-width: 400px;
+      }
+      
+      @media (max-width: 640px) {
+        .notification-container {
+          top: 0.5rem;
+          right: 0.5rem;
+          left: 0.5rem;
+          max-width: none;
+        }
       }
       
       .notification {
         pointer-events: auto;
-        max-width: 400px;
         background: rgba(26, 26, 26, 0.95);
         border: 1px solid rgba(255, 69, 0, 0.3);
         border-radius: 12px;
         padding: 1rem;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         gap: 0.75rem;
         transform: translateX(100%);
         opacity: 0;
-        transition: all 0.3s ease-in-out;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        word-wrap: break-word;
+        min-height: 60px;
       }
       
       .notification.show {
@@ -57,6 +71,7 @@ class NotificationSystem {
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        color: white;
       }
       
       .notification-content {
@@ -64,6 +79,7 @@ class NotificationSystem {
         color: #ffffff;
         font-size: 0.875rem;
         font-weight: 500;
+        line-height: 1.4;
       }
       
       .notification-close {
@@ -77,7 +93,8 @@ class NotificationSystem {
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: color 0.2s;
+        transition: all 0.2s;
+        flex-shrink: 0;
       }
       
       .notification-close:hover {
@@ -85,16 +102,32 @@ class NotificationSystem {
         background: rgba(255, 255, 255, 0.1);
       }
       
+      .notification-success {
+        border-color: rgba(34, 197, 94, 0.5);
+      }
+      
       .notification-success .notification-icon {
         background: linear-gradient(135deg, #22c55e, #16a34a);
+      }
+      
+      .notification-error {
+        border-color: rgba(239, 68, 68, 0.5);
       }
       
       .notification-error .notification-icon {
         background: linear-gradient(135deg, #ef4444, #dc2626);
       }
       
+      .notification-warning {
+        border-color: rgba(245, 158, 11, 0.5);
+      }
+      
       .notification-warning .notification-icon {
         background: linear-gradient(135deg, #f59e0b, #d97706);
+      }
+      
+      .notification-info {
+        border-color: rgba(255, 69, 0, 0.5);
       }
       
       .notification-info .notification-icon {
@@ -105,7 +138,10 @@ class NotificationSystem {
   }
 
   createContainer() {
-    if (document.getElementById('notification-container')) return;
+    if (document.getElementById('notification-container')) {
+      this.container = document.getElementById('notification-container');
+      return;
+    }
 
     this.container = document.createElement('div');
     this.container.id = 'notification-container';
@@ -114,20 +150,39 @@ class NotificationSystem {
   }
 
   show(message, type = 'info', duration = 5000) {
-    const notification = this.createNotification(message, type);
-    this.container.appendChild(notification);
+    try {
+      if (!this.container) {
+        console.warn('Notification container not found, recreating...');
+        this.createContainer();
+      }
+      
+      const notification = this.createNotification(message, type);
+      this.container.appendChild(notification);
+      this.notifications.add(notification);
 
-    // Animate in
-    setTimeout(() => {
-      notification.classList.add('show');
-    }, 10);
+      // Animate in
+      requestAnimationFrame(() => {
+        notification.classList.add('show');
+      });
 
-    // Auto remove
-    setTimeout(() => {
-      this.remove(notification);
-    }, duration);
+      // Auto remove
+      const timeoutId = setTimeout(() => {
+        this.remove(notification);
+      }, duration);
 
-    return notification;
+      // Store timeout ID for potential cancellation
+      notification.timeoutId = timeoutId;
+
+      console.log(`✓ Notification shown: [${type.toUpperCase()}] ${message}`);
+      return notification;
+    } catch (error) {
+      console.error('Failed to show notification:', error);
+      // Fallback to browser alert for critical errors
+      if (type === 'error') {
+        alert(`Error: ${message}`);
+      }
+      return null;
+    }
   }
 
   createNotification(message, type) {
@@ -135,20 +190,28 @@ class NotificationSystem {
     notification.className = `notification notification-${type}`;
 
     const icon = this.getIcon(type);
+    const notificationId = Date.now() + Math.random();
 
     notification.innerHTML = `
       <div class="notification-icon">
         ${icon}
       </div>
-      <div class="notification-content">${message}</div>
-      <button class="notification-close" onclick="notifications.remove(this.parentElement)">
+      <div class="notification-content">${this.escapeHtml(message)}</div>
+      <button class="notification-close" onclick="window.notifications.remove(this.parentElement)">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     `;
 
+    notification.dataset.id = notificationId;
     return notification;
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   getIcon(type) {
@@ -170,7 +233,16 @@ class NotificationSystem {
   }
 
   remove(notification) {
+    if (!notification || !notification.parentElement) return;
+    
+    // Clear timeout if exists
+    if (notification.timeoutId) {
+      clearTimeout(notification.timeoutId);
+    }
+    
+    this.notifications.delete(notification);
     notification.classList.remove('show');
+    
     setTimeout(() => {
       if (notification.parentElement) {
         notification.parentElement.removeChild(notification);
@@ -178,49 +250,72 @@ class NotificationSystem {
     }, 300);
   }
 
-  success(message, duration) {
+  success(message, duration = 5000) {
     return this.show(message, 'success', duration);
   }
 
-  error(message, duration) {
+  error(message, duration = 7000) {
     return this.show(message, 'error', duration);
   }
 
-  warning(message, duration) {
+  warning(message, duration = 6000) {
     return this.show(message, 'warning', duration);
   }
 
-  info(message, duration) {
+  info(message, duration = 5000) {
     return this.show(message, 'info', duration);
   }
 
   clear() {
-    const notifications = this.container.querySelectorAll('.notification');
+    const notifications = Array.from(this.notifications);
     notifications.forEach(notification => {
       this.remove(notification);
     });
   }
 }
 
-// Initialize notification system
+// Initialize notification system immediately
 const notifications = new NotificationSystem();
 
-// Override utils.notify to use the notification system
-if (window.utils) {
+// Setup utils.notify integration
+function setupUtilsNotify() {
+  // Ensure utils object exists
+  if (!window.utils) {
+    window.utils = {};
+  }
+  
+  // Override utils.notify
   window.utils.notify = (message, type = 'info') => {
     notifications.show(message, type);
   };
-} else {
-  // If utils isn't loaded yet, set it up when it is
-  document.addEventListener('DOMContentLoaded', () => {
-    if (window.utils) {
-      window.utils.notify = (message, type = 'info') => {
-        notifications.show(message, type);
-      };
-    }
-  });
+  
+  console.log('✓ Notification system integrated with utils.notify');
 }
+
+// Set up immediately
+setupUtilsNotify();
+
+// Also set up on DOMContentLoaded as fallback
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupUtilsNotify);
+} else {
+  setupUtilsNotify();
+}
+
+// Provide global fallback functions
+window.showNotification = (message, type = 'info') => {
+  notifications.show(message, type);
+};
+
+window.notify = (message, type = 'info') => {
+  notifications.show(message, type);
+};
 
 // Export for global use
 window.notifications = notifications;
 window.NotificationSystem = NotificationSystem;
+
+// Debug helper
+window.testNotification = () => {
+  notifications.show('Test notification working!', 'success');
+};

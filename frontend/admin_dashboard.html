@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - AlgoCDK</title>
+    <title>Admin Dashboard - Algocdk</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -63,12 +63,19 @@
         <div class="flex flex-col h-full">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 border-b border-gray-700">
-                <h1 class="text-xl font-bold text-primary">AlgoCDK</h1>
-                <span class="ml-2 px-2 py-1 bg-primary text-xs rounded text-white">ADMIN</span>
+                <a href="/app" class="flex items-center">
+                    <h1 class="text-xl font-bold text-primary">Algocdk</h1>
+                    <span class="ml-2 px-2 py-1 bg-primary text-xs rounded text-white">ADMIN</span>
+                </a>
             </div>
             
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="/app" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors text-gray-300">
+                    <i class="fas fa-arrow-left mr-3"></i>
+                    Back to Trading App
+                </a>
+                <div class="border-t border-gray-700 my-2"></div>
                 <a href="#dashboard" class="nav-link active flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
@@ -516,21 +523,55 @@
     <script src="admin-dashboard.js"></script>
 
     <script>
-        // Navigation handling
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const view = link.getAttribute('href').substring(1);
-                switchView(view);
-            });
+        // Ensure notification system is ready
+        function ensureNotificationSystem() {
+            if (!window.notifications) {
+                console.warn('Notification system not loaded, initializing...');
+                window.notifications = new NotificationSystem();
+            }
+            if (!window.utils || !window.utils.notify) {
+                console.warn('Utils.notify not available, setting up fallback...');
+                if (window.utils) {
+                    window.utils.notify = (message, type = 'info') => {
+                        window.notifications.show(message, type);
+                    };
+                } else {
+                    window.utils = {
+                        notify: (message, type = 'info') => {
+                            window.notifications.show(message, type);
+                        },
+                        formatCurrency: (amount) => `$${amount.toFixed(2)}`,
+                        handleError: (error) => {
+                            console.error('Error:', error);
+                            window.notifications.show('An error occurred', 'error');
+                        }
+                    };
+                }
+            }
+        }
+        
+        // Initialize notification system
+        document.addEventListener('DOMContentLoaded', () => {
+            ensureNotificationSystem();
+            
+            // Test notification on load
+            setTimeout(() => {
+                if (window.utils && window.utils.notify) {
+                    utils.notify('Admin dashboard loaded successfully', 'success');
+                }
+            }, 1000);
         });
+
 
         function switchView(view) {
             // Update navigation
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active', 'bg-primary');
             });
-            document.querySelector(`[href="#${view}"]`).classList.add('active', 'bg-primary');
+            const targetLink = document.querySelector(`[href="#${view}"]`);
+            if (targetLink) {
+                targetLink.classList.add('active', 'bg-primary');
+            }
 
             // Update page title
             const titles = {
@@ -548,8 +589,11 @@
             document.querySelectorAll('.view-content').forEach(content => {
                 content.classList.add('hidden');
             });
-            document.getElementById(`${view}View`).classList.remove('hidden');
-            document.getElementById(`${view}View`).classList.add('fade-in');
+            const targetView = document.getElementById(`${view}View`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('fade-in');
+            }
 
             // Load data for specific views
             if (view === 'transactions') loadTransactions();
@@ -804,10 +848,26 @@
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
             if (!TokenManager.isValid()) {
                 window.location.href = '/auth';
                 return;
             }
+            
+            // Handle sidebar navigation clicks
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const href = link.getAttribute('href');
+                    
+                    // Handle hash-based navigation (dashboard sections)
+                    if (href && href.startsWith('#')) {
+                        e.preventDefault();
+                        const view = href.substring(1);
+                        switchView(view);
+                    }
+                    // Let regular links (like /app) work normally - don't prevent default
+                });
+            });
         });
     </script>
 </body>

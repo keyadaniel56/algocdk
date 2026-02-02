@@ -76,6 +76,22 @@ const api = {
     resetPassword: (data) => apiRequest('/user/reset-password', 'POST', data, {}, true),
     toggleFavorite: (botId) => apiRequest(`/user/favorite/${botId}`, 'POST', null, {}, true),
     getFavorites: () => apiRequest('/user/favorite', 'GET', null, {}, true),
+    getNotifications: () => {
+      // Check user role from token to determine endpoint
+      const token = TokenManager.get();
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const userRole = payload.role || 'user';
+          if (userRole === 'superadmin') {
+            return apiRequest('/superadmin/notifications', 'GET', null, {}, true);
+          }
+        } catch (e) {
+          console.warn('Failed to parse token for role detection');
+        }
+      }
+      return apiRequest('/user/notifications', 'GET', null, {}, true);
+    },
   },
 
   superadmin: {
@@ -98,6 +114,7 @@ const api = {
     updateAdminPassword: (data) => apiRequest('/superadmin/update_admin_password', 'POST', data, {}, true),
     getBots: () => apiRequest('/superadmin/bots', 'GET', null, {}, true),
     scanBots: () => apiRequest('/superadmin/scan_bots', 'GET', null, {}, true),
+    getNotifications: () => apiRequest('/superadmin/notifications', 'GET', null, {}, true),
     
     // Sales and Performance Analytics
     getSales: () => apiRequest('/superadmin/sales', 'GET', null, {}, true),

@@ -54,6 +54,8 @@ func SetUpRouter(router *gin.Engine) {
 			user.GET("/bots", handlers.GetUserBotsHandler)
 			user.POST("/trades", handlers.RecordTradeHandler)
 			user.GET("/trades", handlers.GetUserTradesHandler)
+			user.GET("/notifications", handlers.GetUserNotificationsHandler)
+			user.POST("/refresh-token", handlers.RefreshTokenHandler)
 
 			user.POST("/favorite/:bot_id", handlers.ToggleFavorite)
 			user.GET("/favorite", handlers.GetUserFavorites)
@@ -105,6 +107,7 @@ func SetUpRouter(router *gin.Engine) {
 			superadmin.GET("/admin-requests", handlers.GetPendingAdminRequests)
 			superadmin.GET("/admin-requests/all", handlers.GetAllAdminRequests)
 			superadmin.POST("/admin-requests/:id/review", handlers.ReviewAdminRequest)
+			superadmin.GET("/notifications", handlers.GetSuperAdminNotificationsHandler)
 		}
 
 		admin := api.Group("/admin")
@@ -264,6 +267,12 @@ func SetUpRouter(router *gin.Engine) {
 	})
 	router.GET("/sites", func(c *gin.Context) {
 		c.File(frontendPath + "/sites.html")
+	})
+	router.GET("/superadmin/signup", func(c *gin.Context) {
+		c.File(frontendPath + "/superadmin_signup.html")
+	})
+	router.GET("/notifications", func(c *gin.Context) {
+		c.File(frontendPath + "/notifications.html")
 	})
 
 	// Site viewer route

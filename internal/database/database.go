@@ -11,6 +11,10 @@ import (
 
 var DB *gorm.DB
 
+func GetDB() *gorm.DB {
+	return DB
+}
+
 func InitDB() {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("app.db"), &gorm.Config{})
@@ -32,6 +36,9 @@ func InitDB() {
 		&models.Sale{},
 		&models.DerivCredentials{},
 		&models.SuperAdmin{},
+		&models.Notification{},
+		&models.NotificationPreference{},
+		&models.Trade{},
 	)
 	fmt.Println("database connected")
 }

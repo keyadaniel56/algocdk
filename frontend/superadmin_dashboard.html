@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuperAdmin Dashboard - AlgoCDK</title>
+    <title>SuperAdmin Dashboard - Algocdk</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -63,12 +63,19 @@
         <div class="flex flex-col h-full">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 border-b border-gray-700">
-                <h1 class="text-xl font-bold text-primary">AlgoCDK</h1>
-                <span class="ml-2 px-2 py-1 bg-primary text-xs rounded text-white">SUPER</span>
+                <a href="/app" class="flex items-center">
+                    <h1 class="text-xl font-bold text-primary">Algocdk</h1>
+                    <span class="ml-2 px-2 py-1 bg-primary text-xs rounded text-white">SUPER</span>
+                </a>
             </div>
             
             <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="/app" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors text-gray-300">
+                    <i class="fas fa-arrow-left mr-3"></i>
+                    Back to Trading App
+                </a>
+                <div class="border-t border-gray-700 my-2"></div>
                 <a href="#dashboard" class="nav-link active flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
                     <i class="fas fa-tachometer-alt mr-3"></i>
                     Dashboard
@@ -145,10 +152,10 @@
                             Refresh
                         </button>
                         <div class="relative">
-                            <button class="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg">
+                            <a href="/notifications" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg block">
                                 <i class="fas fa-bell"></i>
                                 <span class="absolute -top-1 -right-1 bg-danger w-3 h-3 rounded-full"></span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -522,6 +529,44 @@
     <script src="superadmin-dashboard.js"></script>
 
     <script>
+        // Ensure notification system is ready
+        function ensureNotificationSystem() {
+            if (!window.notifications) {
+                console.warn('Notification system not loaded, initializing...');
+                window.notifications = new NotificationSystem();
+            }
+            if (!window.utils || !window.utils.notify) {
+                console.warn('Utils.notify not available, setting up fallback...');
+                if (window.utils) {
+                    window.utils.notify = (message, type = 'info') => {
+                        window.notifications.show(message, type);
+                    };
+                } else {
+                    window.utils = {
+                        notify: (message, type = 'info') => {
+                            window.notifications.show(message, type);
+                        },
+                        formatCurrency: (amount) => `$${amount.toFixed(2)}`,
+                        handleError: (error) => {
+                            console.error('Error:', error);
+                            window.notifications.show('An error occurred', 'error');
+                        }
+                    };
+                }
+            }
+        }
+        
+        // Initialize notification system
+        document.addEventListener('DOMContentLoaded', () => {
+            ensureNotificationSystem();
+            
+            // Test notification on load
+            setTimeout(() => {
+                if (window.utils && window.utils.notify) {
+                    utils.notify('SuperAdmin dashboard loaded successfully', 'success');
+                }
+            }, 1000);
+        });
         // Navigation handling
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {

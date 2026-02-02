@@ -723,6 +723,14 @@ func PlaceDerivTrade(c *gin.Context) {
 
 	database.DB.Create(&trade)
 
+	// Send trade notification
+	notificationService := services.GetNotificationService()
+	notificationService.SendTradeAlert(
+		userID.(uint),
+		"Trade Placed Successfully",
+		fmt.Sprintf("Your %s trade on %s for $%.2f has been placed", req.TradeType, req.Symbol, req.Stake),
+	)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success":     true,
 		"message":     "Trade placed successfully",
