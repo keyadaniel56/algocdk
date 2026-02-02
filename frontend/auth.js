@@ -141,18 +141,10 @@ class AuthHandler {
         password: data.password
       });
 
-      if (response.token) {
-        TokenManager.set(response.token);
-        utils.notify('Account created successfully!', 'success');
-        setTimeout(() => {
-          window.location.href = '/app';
-        }, 1000);
-      } else {
-        utils.notify('Account created! Please login.', 'success');
-        setTimeout(() => {
-          this.showForm('login');
-        }, 1500);
-      }
+      utils.notify('Account created successfully! Please login.', 'success');
+      setTimeout(() => {
+        this.showForm('login');
+      }, 1500);
     } catch (error) {
       utils.notify(error.message || 'Signup failed', 'error');
       this.setLoading(event.target, false);
@@ -263,15 +255,33 @@ class AuthHandler {
   }
 
   showForm(formType) {
-    const forms = document.querySelectorAll('.auth-form');
-    forms.forEach(form => {
-      form.classList.add('hidden');
-    });
-
-    const targetForm = document.getElementById(`${formType}-form-container`);
+    // Hide all forms
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    
+    if (loginForm) loginForm.classList.add('hidden');
+    if (signupForm) signupForm.classList.add('hidden');
+    
+    // Show target form
+    const targetForm = document.getElementById(`${formType}-form`);
     if (targetForm) {
       targetForm.classList.remove('hidden');
     }
+    
+    // Update tab buttons
+    const tabButtons = document.querySelectorAll('[data-toggle-form]');
+    tabButtons.forEach(btn => {
+      const btnFormType = btn.dataset.toggleForm;
+      if (btnFormType === formType) {
+        // Active tab
+        btn.classList.add('bg-primary-500', 'text-white');
+        btn.classList.remove('text-gray-400', 'hover:text-white');
+      } else {
+        // Inactive tab
+        btn.classList.remove('bg-primary-500', 'text-white');
+        btn.classList.add('text-gray-400', 'hover:text-white');
+      }
+    });
 
     // Update URL without page reload
     const newUrl = `${window.location.pathname}?form=${formType}`;

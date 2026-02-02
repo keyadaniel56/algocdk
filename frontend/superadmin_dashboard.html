@@ -83,6 +83,11 @@
                     Admins
                     <span id="adminsBadge" class="ml-auto bg-primary px-2 py-1 rounded-full text-xs">0</span>
                 </a>
+                <a href="#admin-requests" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-crown mr-3"></i>
+                    Admin Requests
+                    <span id="adminRequestsBadge" class="ml-auto bg-warning px-2 py-1 rounded-full text-xs">0</span>
+                </a>
                 <a href="#bots" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
                     <i class="fas fa-robot mr-3"></i>
                     Bots
@@ -421,6 +426,50 @@
                 </div>
             </div>
 
+            <!-- Admin Requests View -->
+            <div id="admin-requestsView" class="view-content hidden">
+                <div class="bg-gray-800 rounded-xl p-6 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold">Admin Requests</h3>
+                        <div class="flex space-x-3">
+                            <button onclick="loadPendingRequests()" class="bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg">
+                                <i class="fas fa-clock mr-2"></i>Pending Only
+                            </button>
+                            <button onclick="loadAllRequests()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
+                                <i class="fas fa-list mr-2"></i>All Requests
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-medium mb-2">Total Requests</h4>
+                            <p class="text-2xl font-bold text-primary" id="totalRequestsCount">0</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-medium mb-2">Pending</h4>
+                            <p class="text-2xl font-bold text-warning" id="pendingRequestsCount">0</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-medium mb-2">Approved</h4>
+                            <p class="text-2xl font-bold text-success" id="approvedRequestsCount">0</p>
+                        </div>
+                        <div class="bg-gray-700 p-4 rounded-lg">
+                            <h4 class="font-medium mb-2">Rejected</h4>
+                            <p class="text-2xl font-bold text-danger" id="rejectedRequestsCount">0</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Requests List -->
+                    <div id="adminRequestsContainer">
+                        <div class="flex items-center justify-center py-8">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Settings View -->
             <div id="settingsView" class="view-content hidden">
                 <div class="bg-gray-800 rounded-xl p-6">
@@ -494,6 +543,7 @@
                 dashboard: 'Dashboard',
                 users: 'Users Management',
                 admins: 'Admins Management',
+                'admin-requests': 'Admin Requests',
                 bots: 'Bots Management',
                 sales: 'Sales Overview',
                 analytics: 'Platform Analytics',
@@ -614,6 +664,144 @@
                 utils.notify('Failed to scan bots', 'error');
             }
         }
+        
+        // Admin requests functions
+        async function loadPendingRequests() {
+            try {
+                const response = await fetch('/api/superadmin/admin-requests', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                displayAdminRequests(data.requests || []);
+            } catch (error) {
+                console.error('Failed to load pending requests:', error);
+            }
+        }
+        
+        async function loadAllRequests() {
+            try {
+                const response = await fetch('/api/superadmin/admin-requests/all', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                displayAdminRequests(data.requests || []);
+                updateRequestStats(data.stats || {});
+            } catch (error) {
+                console.error('Failed to load all requests:', error);
+            }
+        }
+        
+        function displayAdminRequests(requests) {
+            const container = document.getElementById('adminRequestsContainer');
+            
+            if (requests.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-inbox text-gray-500 text-4xl mb-4"></i>
+                        <p class="text-gray-400">No admin requests found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = requests.map(request => {
+                const statusColor = {
+                    'pending': 'text-warning',
+                    'approved': 'text-success',
+                    'rejected': 'text-danger'
+                }[request.status] || 'text-gray-400';
+                
+                const statusIcon = {
+                    'pending': 'fas fa-clock',
+                    'approved': 'fas fa-check-circle',
+                    'rejected': 'fas fa-times-circle'
+                }[request.status] || 'fas fa-question-circle';
+                
+                return `
+                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center mb-2">
+                                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
+                                        <span class="text-white font-medium">${request.user.name.charAt(0).toUpperCase()}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-white">${request.user.name}</h4>
+                                        <p class="text-sm text-gray-400">${request.user.email}</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-300 text-sm mb-3">${request.reason}</p>
+                                <div class="flex items-center text-xs text-gray-400">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    Submitted: ${new Date(request.created_at).toLocaleDateString()}
+                                    ${request.reviewed_at ? `• Reviewed: ${new Date(request.reviewed_at).toLocaleDateString()}` : ''}
+                                </div>
+                                ${request.review_notes ? `<p class="text-xs text-gray-400 mt-2">Notes: ${request.review_notes}</p>` : ''}
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <div class="flex items-center mb-3">
+                                    <i class="${statusIcon} ${statusColor} mr-1"></i>
+                                    <span class="${statusColor} font-medium capitalize">${request.status}</span>
+                                </div>
+                                ${request.status === 'pending' ? `
+                                    <div class="flex space-x-2">
+                                        <button onclick="reviewRequest(${request.id}, 'approve')" 
+                                                class="bg-success hover:bg-green-600 px-3 py-1 rounded text-xs">
+                                            <i class="fas fa-check mr-1"></i>Approve
+                                        </button>
+                                        <button onclick="reviewRequest(${request.id}, 'reject')" 
+                                                class="bg-danger hover:bg-red-600 px-3 py-1 rounded text-xs">
+                                            <i class="fas fa-times mr-1"></i>Reject
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateRequestStats(stats) {
+            document.getElementById('totalRequestsCount').textContent = stats.Total || 0;
+            document.getElementById('pendingRequestsCount').textContent = stats.Pending || 0;
+            document.getElementById('approvedRequestsCount').textContent = stats.Approved || 0;
+            document.getElementById('rejectedRequestsCount').textContent = stats.Rejected || 0;
+            document.getElementById('adminRequestsBadge').textContent = stats.Pending || 0;
+        }
+        
+        async function reviewRequest(requestId, action) {
+            const notes = prompt(`${action === 'approve' ? 'Approval' : 'Rejection'} notes (optional):`);
+            
+            try {
+                const response = await fetch(`/api/superadmin/admin-requests/${requestId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        notes: notes || ''
+                    })
+                });
+                
+                if (response.ok) {
+                    utils.notify(`Request ${action}d successfully`, 'success');
+                    loadAllRequests(); // Refresh the list
+                } else {
+                    throw new Error('Failed to review request');
+                }
+            } catch (error) {
+                utils.notify(`Failed to ${action} request`, 'error');
+            }
+        }
 
         function refreshData() {
             console.log('Refresh data called');
@@ -631,7 +819,7 @@
             window.location.href = '/auth';
         }
 
-        // Initialize on load
+            // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             if (!TokenManager.isValid()) {
                 window.location.href = '/auth';
@@ -641,6 +829,9 @@
             // Add debug info
             console.log('SuperAdmin dashboard loaded');
             console.log('Token valid:', TokenManager.isValid());
+            
+            // Load initial admin requests count
+            loadAllRequests();
             
             // Test API connection
             setTimeout(() => {

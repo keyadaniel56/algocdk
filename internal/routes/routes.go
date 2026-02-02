@@ -14,7 +14,7 @@ import (
 
 func SetUpRouter(router *gin.Engine) {
 	router.Use(middleware.CORSMiddleware())
-	router.Static("/uploads", "./uploads")
+	router.Static("/sites", "./sites")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := router.Group("/api")
 	api.GET("/marketplace", handlers.MarketplaceHandler)
@@ -57,6 +57,10 @@ func SetUpRouter(router *gin.Engine) {
 
 			user.POST("/favorite/:bot_id", handlers.ToggleFavorite)
 			user.GET("/favorite", handlers.GetUserFavorites)
+
+			// Admin requests
+			user.POST("/request-admin", handlers.RequestAdminStatus)
+			user.GET("/admin-request-status", handlers.GetUserAdminRequestStatus)
 		}
 
 		// ================= SUPERADMIN AUTH (PUBLIC) =================
@@ -96,6 +100,11 @@ func SetUpRouter(router *gin.Engine) {
 			superadmin.GET("/sales", handlers.GetAllSales)
 			superadmin.GET("/performance", handlers.GetPlatformPerformance)
 			superadmin.GET("/transactions", handlers.GetAllTransactions)
+
+			// Admin Requests Management
+			superadmin.GET("/admin-requests", handlers.GetPendingAdminRequests)
+			superadmin.GET("/admin-requests/all", handlers.GetAllAdminRequests)
+			superadmin.POST("/admin-requests/:id/review", handlers.ReviewAdminRequest)
 		}
 
 		admin := api.Group("/admin")
@@ -113,6 +122,15 @@ func SetUpRouter(router *gin.Engine) {
 			admin.GET("/bots/:id/users", handlers.BotUsersHandler)
 			admin.DELETE("/bots/:bot_id/users/:user_id", handlers.RemoveUserFromBotHandler)
 			admin.POST("/reset_password/:id", handlers.ResetPasswordHandler)
+
+			// Sites Management
+			admin.POST("/create-site", handlers.CreateSiteHandler)
+			admin.GET("/sites", handlers.GetAdminSitesHandler)
+			admin.PUT("/update-site/:id", handlers.UpdateSiteHandler)
+			admin.DELETE("/delete-site/:id", handlers.DeleteSiteHandler)
+			admin.GET("/sites/:id/members", handlers.GetSiteMembersHandler)
+			admin.POST("/sites/:id/members", handlers.AddSiteMemberHandler)
+			admin.DELETE("/sites/:site_id/members/:user_id", handlers.RemoveSiteMemberHandler)
 		}
 
 		paystackGroup := api.Group("/payment")
@@ -220,9 +238,36 @@ func SetUpRouter(router *gin.Engine) {
 	router.GET("/marketchart", func(c *gin.Context) {
 		c.File(frontendPath + "/marketchart.html")
 	})
+	router.GET("/trading", func(c *gin.Context) {
+		c.File(frontendPath + "/trading.html")
+	})
+	router.GET("/digits", func(c *gin.Context) {
+		c.File(frontendPath + "/digits.html")
+	})
+	router.GET("/updown", func(c *gin.Context) {
+		c.File(frontendPath + "/updown.html")
+	})
+	router.GET("/barriers", func(c *gin.Context) {
+		c.File(frontendPath + "/barriers.html")
+	})
+	router.GET("/multipliers", func(c *gin.Context) {
+		c.File(frontendPath + "/multipliers.html")
+	})
+	router.GET("/accumulators", func(c *gin.Context) {
+		c.File(frontendPath + "/accumulators.html")
+	})
+	router.GET("/options", func(c *gin.Context) {
+		c.File(frontendPath + "/options.html")
+	})
 	router.GET("/admin", func(c *gin.Context) {
 		c.File(frontendPath + "/admin_dashboard.html")
 	})
+	router.GET("/sites", func(c *gin.Context) {
+		c.File(frontendPath + "/sites.html")
+	})
+
+	// Site viewer route
+	router.GET("/site/:slug", handlers.ViewSiteHandler)
 	// SPA fallback
 	// router.NoRoute(func(c *gin.Context) {
 	// 	c.File(frontendPath + "/index.html")

@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algocdk | Digits Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF4500',
+                        secondary: '#FF6347',
+                        success: '#00C851',
+                        danger: '#FF4444',
+                        warning: '#FFBB33',
+                        dark: '#0D1421',
+                        darker: '#0A0E1A',
+                        accent: '#1E293B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0D1421;
+            color: #E2E8F0;
+            min-height: 100vh;
+        }
+        
+        .panel {
+            background: #0A0E1A;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .trade-button {
+            background: #FF4500;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 69, 0, 0.3);
+        }
+        
+        .trade-button:hover {
+            background: #E63900;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 69, 0, 0.4);
+        }
+        
+        .trade-button.even {
+            background: #00C851;
+            box-shadow: 0 4px 20px rgba(0, 200, 81, 0.3);
+        }
+        
+        .trade-button.even:hover {
+            background: #00A843;
+            box-shadow: 0 8px 30px rgba(0, 200, 81, 0.4);
+        }
+        
+        .trade-button.odd {
+            background: #FF4444;
+            box-shadow: 0 4px 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        .trade-button.odd:hover {
+            background: #CC3333;
+            box-shadow: 0 8px 30px rgba(255, 68, 68, 0.4);
+        }
+        
+        .trade-button.over {
+            background: #00C851;
+            box-shadow: 0 4px 20px rgba(0, 200, 81, 0.3);
+        }
+        
+        .trade-button.over:hover {
+            background: #00A843;
+            box-shadow: 0 8px 30px rgba(0, 200, 81, 0.4);
+        }
+        
+        .trade-button.under {
+            background: #FF4444;
+            box-shadow: 0 4px 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        .trade-button.under:hover {
+            background: #CC3333;
+            box-shadow: 0 8px 30px rgba(255, 68, 68, 0.4);
+        }
+        
+        .input-field {
+            background: #1E293B;
+            border: 2px solid #475569;
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            color: #E2E8F0;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #FF4500;
+            background: #1E293B;
+        }
+        
+        .price-display {
+            background: #1E293B;
+            color: #E2E8F0;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(28px, 6vw, 42px);
+            font-weight: bold;
+            text-align: center;
+            padding: 24px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            transition: all 0.3s ease;
+        }
+        
+        .price-update {
+            border-color: #FF4500;
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
+            transform: scale(1.02);
+        }
+        
+        .digit-box {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+        }
+        
+        .digit-even { 
+            background: #00C851;
+            color: white;
+        }
+        
+        .digit-odd { 
+            background: #FF4444;
+            color: white;
+        }
+        
+        .digit-new { 
+            transform: scale(1.15);
+            border-color: #FF4500;
+            box-shadow: 0 0 25px rgba(255, 69, 0, 0.6);
+            z-index: 10;
+        }
+        
+        .stat-card {
+            background: #1E293B;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: #FF4500;
+            transform: translateY(-2px);
+        }
+        
+        .tab-button {
+            background: #1E293B;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #E2E8F0;
+        }
+        
+        .tab-button:hover {
+            border-color: #FF4500;
+            transform: translateY(-1px);
+        }
+        
+        .tab-button.active {
+            background: #FF4500;
+            color: white;
+            border-color: #FF4500;
+        }
+        
+        .prediction-card {
+            background: #1E293B;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 12px 0;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: #374151;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: #FF4500;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .heat-cell {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            margin: 3px;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+        }
+        
+        .digit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+            gap: 12px;
+            max-width: 100%;
+            overflow-x: auto;
+            padding: 8px;
+        }
+        
+        .mobile-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .desktop-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .digit-box {
+                width: 42px;
+                height: 42px;
+                font-size: 16px;
+            }
+            
+            .trade-button {
+                padding: 16px 20px;
+                font-size: 14px;
+            }
+            
+            .analysis-tabs {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .analysis-tabs .tab-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .price-display {
+                padding: 20px;
+                font-size: 24px;
+            }
+            
+            .digit-box {
+                width: 38px;
+                height: 38px;
+                font-size: 14px;
+            }
+            
+            .trade-button {
+                padding: 14px 18px;
+                font-size: 13px;
+            }
+            
+            .input-field {
+                padding: 14px 18px;
+                font-size: 14px;
+            }
+            
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 12px;
+            }
+            
+            .panel {
+                padding: 16px !important;
+            }
+        }
+        
+        .analysis-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="panel mx-4 mt-4 px-6 py-4 sticky top-4 z-50">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='/trading'" class="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-accent">
+                    <i class="fas fa-arrow-left mr-2"></i>Back
+                </button>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hashtag text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold text-white">Digits Trading</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 flex-wrap">
+                <button onclick="toggleAccountType()" class="px-4 py-2 text-sm rounded-lg font-semibold transition-all bg-success text-white" id="accountTypeBtn">
+                    Demo
+                </button>
+                <div class="text-right">
+                    <div class="text-xs text-gray-400" id="balanceLabel">Demo Balance</div>
+                    <div class="font-bold text-lg text-white" id="accountBalance">10,000.00 USD</div>
+                </div>
+                <div class="flex items-center space-x-2 text-sm">
+                    <div class="w-3 h-3 rounded-full bg-success" id="connectionStatus"></div>
+                    <span class="text-gray-400" id="connectionText">Live</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Trading Controls -->
+            <div class="panel p-6">
+                <h3 class="text-xl font-bold text-white mb-6">Choose Trade Type</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <button onclick="selectTradeType('evenodd')" class="tab-button text-base py-3 active" id="btn-evenodd">
+                        <i class="fas fa-balance-scale mb-2"></i><br>
+                        Even / Odd
+                    </button>
+                    <button onclick="selectTradeType('matches')" class="tab-button text-base py-3" id="btn-matches">
+                        <i class="fas fa-bullseye mb-2"></i><br>
+                        Matches / Differs
+                    </button>
+                    <button onclick="selectTradeType('overunder')" class="tab-button text-base py-3" id="btn-overunder">
+                        <i class="fas fa-arrows-alt-v mb-2"></i><br>
+                        Over / Under
+                    </button>
+                </div>
+                <div id="tradingInterface">
+                    <!-- Content will be dynamically loaded -->
+                </div>
+            </div>
+
+            <!-- Market Panel -->
+            <div class="panel p-6">
+                <h3 class="text-lg font-bold text-white mb-4">Market</h3>
+                <select id="marketSelect" class="input-field mb-4" onchange="changeMarket()">
+                    <option value="R_10">Volatility 10 Index</option>
+                    <option value="R_25">Volatility 25 Index</option>
+                    <option value="R_50">Volatility 50 Index</option>
+                    <option value="R_75">Volatility 75 Index</option>
+                    <option value="R_100" selected>Volatility 100 Index</option>
+                </select>
+                <div class="price-display mb-4" id="currentPrice">1234.567</div>
+                <div class="text-center">
+                    <div class="text-sm text-gray-400 mb-2">Last digit</div>
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-2xl font-bold" id="lastDigit">7</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            <div class="panel p-6">
+                <h3 class="text-lg font-bold text-white mb-4">Live Analytics</h3>
+                <div id="analyticsContent">
+                    <!-- Dynamic analytics content -->
+                </div>
+            </div>
+            
+            <div class="panel p-6">
+                <h3 class="text-lg font-bold text-white mb-4">Streak Detector</h3>
+                <div id="streakDetector">
+                    <!-- Streak content -->
+                </div>
+            </div>
+            
+            <div class="panel p-6">
+                <h3 class="text-lg font-bold text-white mb-4">Quick Stats</h3>
+                <div id="quickStats">
+                    <!-- Quick stats content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Tools -->
+        <div class="panel p-6 mt-6">
+            <h3 class="text-lg font-bold text-white mb-4">Analysis Tools</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Analysis Range</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setTickRange(20)" class="tab-button" id="tick-20">20</button>
+                        <button onclick="setTickRange(50)" class="tab-button active" id="tick-50">50</button>
+                        <button onclick="setTickRange(100)" class="tab-button" id="tick-100">100</button>
+                        <input type="number" id="customTicks" placeholder="Custom" min="10" max="500" class="input-field w-20 text-sm" onchange="setTickRange(this.value)">
+                    </div>
+                </div>
+                <div>
+                    <div class="analysis-tabs">
+                        <button class="tab-button active" onclick="selectAlgorithm('frequency')" id="btn-frequency">
+                            <i class="fas fa-chart-bar mr-1"></i>Frequency
+                        </button>
+                        <button class="tab-button" onclick="selectAlgorithm('markov')" id="btn-markov">
+                            <i class="fas fa-project-diagram mr-1"></i>Markov
+                        </button>
+                        <button class="tab-button" onclick="selectAlgorithm('pattern')" id="btn-pattern">
+                            <i class="fas fa-puzzle-piece mr-1"></i>Pattern
+                        </button>
+                        <button class="tab-button" onclick="selectAlgorithm('trend')" id="btn-trend">
+                            <i class="fas fa-trending-up mr-1"></i>Trend
+                        </button>
+                        <button class="tab-button" onclick="selectAlgorithm('streak')" id="btn-streak">
+                            <i class="fas fa-fire mr-1"></i>Streaks
+                        </button>
+                        <button class="tab-button" onclick="selectAlgorithm('heatmap')" id="btn-heatmap">
+                            <i class="fas fa-th mr-1"></i>Heat Map
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="analysisResults" class="mt-6">
+                <!-- Analysis results -->
+            </div>
+        </div>
+            
+            <!-- Trading Controls -->
+            <div class="lg:col-span-3">
+                <div class="panel p-6">
+                    <!-- Trade Type Selector -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-white mb-6">Choose Trade Type</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <button onclick="selectTradeType('evenodd')" class="tab-button text-base py-3 active" id="btn-evenodd">
+                                <i class="fas fa-balance-scale mb-2"></i><br>
+                                Even / Odd
+                            </button>
+                            <button onclick="selectTradeType('matches')" class="tab-button text-base py-3" id="btn-matches">
+                                <i class="fas fa-bullseye mb-2"></i><br>
+                                Matches / Differs
+                            </button>
+                            <button onclick="selectTradeType('overunder')" class="tab-button text-base py-3" id="btn-overunder">
+                                <i class="fas fa-arrows-alt-v mb-2"></i><br>
+                                Over / Under
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trading Interface -->
+                    <div id="tradingInterface">
+                        <!-- Content will be dynamically loaded -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market & Analytics Panel -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Market Panel -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Market</h3>
+                    <select id="marketSelect" class="input-field mb-4" onchange="changeMarket()">
+                        <option value="R_10">Volatility 10 Index</option>
+                        <option value="R_25">Volatility 25 Index</option>
+                        <option value="R_50">Volatility 50 Index</option>
+                        <option value="R_75">Volatility 75 Index</option>
+                        <option value="R_100" selected>Volatility 100 Index</option>
+                    </select>
+                    
+                    <div class="price-display mb-4" id="currentPrice">1234.567</div>
+                    
+                    <div class="text-center">
+                        <div class="text-sm text-gray-400 mb-2">Last digit</div>
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-2xl font-bold" id="lastDigit">7</div>
+                    </div>
+                </div>
+
+                <!-- Streak Detector -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Streak Detector</h3>
+                    <div id="streakDetector">
+                        <!-- Streak content -->
+                    </div>
+                </div>
+
+                <!-- Live Analytics -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Live Analytics</h3>
+                    <div id="analyticsContent">
+                        <!-- Dynamic analytics content -->
+                    </div>
+                </div>
+
+                <!-- Analysis Tools -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Analysis Tools</h3>
+                    
+                    <!-- Tick Range Selector -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-3">Analysis Range</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="setTickRange(20)" class="tab-button" id="tick-20">20</button>
+                            <button onclick="setTickRange(50)" class="tab-button active" id="tick-50">50</button>
+                            <button onclick="setTickRange(100)" class="tab-button" id="tick-100">100</button>
+                            <input type="number" id="customTicks" placeholder="Custom" min="10" max="500" class="input-field w-20 text-sm" onchange="setTickRange(this.value)">
+                        </div>
+                    </div>
+                    
+                        <div class="analysis-tabs">
+                            <button class="tab-button active" onclick="selectAlgorithm('frequency')" id="btn-frequency">
+                                <i class="fas fa-chart-bar mr-1"></i>Frequency
+                            </button>
+                            <button class="tab-button" onclick="selectAlgorithm('markov')" id="btn-markov">
+                                <i class="fas fa-project-diagram mr-1"></i>Markov
+                            </button>
+                            <button class="tab-button" onclick="selectAlgorithm('pattern')" id="btn-pattern">
+                                <i class="fas fa-puzzle-piece mr-1"></i>Pattern
+                            </button>
+                            <button class="tab-button" onclick="selectAlgorithm('trend')" id="btn-trend">
+                                <i class="fas fa-trending-up mr-1"></i>Trend
+                            </button>
+                            <button class="tab-button" onclick="selectAlgorithm('streak')" id="btn-streak">
+                                <i class="fas fa-fire mr-1"></i>Streaks
+                            </button>
+                            <button class="tab-button" onclick="selectAlgorithm('heatmap')" id="btn-heatmap">
+                                <i class="fas fa-th mr-1"></i>Heat Map
+                            </button>
+                        </div>
+                    <div id="analysisResults">
+                        <!-- Analysis results -->
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Quick Stats</h3>
+                    <div id="quickStats">
+                        <!-- Quick stats content -->
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPrice = 1234.567;
+        let digitHistory = [];
+        let digitCounts = Array(10).fill(0);
+        let ws = null;
+        let currentSymbol = 'R_100';
+        let currentTradeType = 'evenodd';
+        let currentAlgorithm = 'frequency';
+        let markovChain = {};
+        let patternHistory = [];
+        let lastUpdateTime = 0;
+        let analysisTickRange = 50;
+        let streakData = { current: 0, type: null, history: [], longest: { even: 0, odd: 0, over: 0, under: 0 } };
+        let isDemo = true;
+        let derivWS = null;
+        let authToken = null;
+        let isDerivConnected = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            connectWebSocket();
+            connectDeriv();
+            // Check account type from localStorage
+            const savedAccountType = localStorage.getItem('accountType');
+            if (savedAccountType === 'real') {
+                isDemo = false;
+            }
+            updateAccountDisplay();
+            // Initialize streak detector on first load
+            updateStreakDetector();
+            selectTradeType('evenodd');
+            selectAlgorithm('frequency');
+            setTickRange(50);
+        });
+
+        function initializeData() {
+            // Generate initial digit history
+            for (let i = 0; i < 20; i++) {
+                const digit = Math.floor(Math.random() * 10);
+                digitHistory.push(digit);
+                digitCounts[digit]++;
+            }
+            updateDigitDisplay();
+        }
+
+        function connectWebSocket() {
+            const statusEl = document.getElementById('connectionStatus');
+            const textEl = document.getElementById('connectionText');
+            
+            statusEl.className = 'w-3 h-3 rounded-full bg-warning';
+            textEl.textContent = 'Connecting...';
+            
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+            
+            ws.onopen = () => {
+                statusEl.className = 'w-3 h-3 rounded-full bg-success';
+                textEl.textContent = 'Live';
+                ws.send(JSON.stringify({ ticks: currentSymbol, subscribe: 1 }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.tick && data.tick.epoch > lastUpdateTime) {
+                    lastUpdateTime = data.tick.epoch;
+                    updatePrice(parseFloat(data.tick.quote));
+                }
+            };
+            
+            ws.onclose = () => {
+                statusEl.className = 'w-3 h-3 rounded-full bg-danger';
+                textEl.textContent = 'Disconnected';
+                setTimeout(connectWebSocket, 2000);
+            };
+            
+            ws.onerror = () => {
+                statusEl.className = 'w-3 h-3 rounded-full bg-danger';
+                textEl.textContent = 'Error';
+            };
+        }
+
+        function updatePrice(price) {
+            currentPrice = price;
+            const lastDigit = parseInt(price.toString().slice(-1));
+            
+            // Animate price update
+            const priceEl = document.getElementById('currentPrice');
+            priceEl.classList.add('price-update');
+            priceEl.textContent = price.toFixed(3);
+            setTimeout(() => priceEl.classList.remove('price-update'), 300);
+            
+            document.getElementById('lastDigit').textContent = lastDigit;
+            
+            // Update history with animation
+            digitHistory.push(lastDigit);
+            if (digitHistory.length > 500) {
+                const removedDigit = digitHistory.shift();
+                digitCounts[removedDigit]--;
+            }
+            digitCounts[lastDigit]++;
+            
+            // Update streak data
+            updateStreakData(lastDigit);
+            
+            // Update Markov chain
+            updateMarkovChain(lastDigit);
+            
+            // Update pattern history
+            if (digitHistory.length >= 3) {
+                const pattern = digitHistory.slice(-3).join('');
+                patternHistory.push(pattern);
+                if (patternHistory.length > 100) patternHistory.shift();
+            }
+            
+            updateDigitDisplay();
+            updateAnalytics();
+            updateQuickStats();
+            updateStreakDetector();
+            updatePerformanceTracker();
+            runAnalysis();
+            
+            // Add slide-in animation to new elements
+            setTimeout(() => {
+                const newElements = document.querySelectorAll('.slide-in');
+                newElements.forEach(el => el.classList.remove('slide-in'));
+            }, 500);
+        }
+
+        function updateDigitDisplay() {
+            const evenCount = digitHistory.filter(d => d % 2 === 0).length;
+            const oddCount = digitHistory.length - evenCount;
+            
+            // Animate new digits
+            setTimeout(() => {
+                const digitBoxes = document.querySelectorAll('.digit-box');
+                digitBoxes.forEach(box => box.classList.remove('digit-new'));
+                if (digitBoxes.length > 0) {
+                    digitBoxes[digitBoxes.length - 1].classList.add('digit-new');
+                    setTimeout(() => digitBoxes[digitBoxes.length - 1].classList.remove('digit-new'), 1000);
+                }
+            }, 100);
+        }
+
+        function updateMarkovChain(digit) {
+            if (digitHistory.length >= 2) {
+                const prevDigit = digitHistory[digitHistory.length - 2];
+                if (!markovChain[prevDigit]) markovChain[prevDigit] = {};
+                if (!markovChain[prevDigit][digit]) markovChain[prevDigit][digit] = 0;
+                markovChain[prevDigit][digit]++;
+            }
+        }
+
+        function selectAlgorithm(algorithm) {
+            currentAlgorithm = algorithm;
+            
+            document.querySelectorAll('.algorithm-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`btn-${algorithm}`).classList.add('active');
+            
+            runAnalysis();
+        }
+
+        function runAnalysis() {
+            const container = document.getElementById('analysisResults');
+            if (digitHistory.length < 5) {
+                container.innerHTML = '<div class="text-gray-400 text-sm">Collecting data...</div>';
+                return;
+            }
+            
+            let analysisContent = '';
+            
+            switch(currentAlgorithm) {
+                case 'frequency':
+                    analysisContent = generateFrequencyAnalysis();
+                    break;
+                case 'markov':
+                    analysisContent = generateMarkovAnalysis();
+                    break;
+                case 'pattern':
+                    analysisContent = generatePatternAnalysis();
+                    break;
+                case 'trend':
+                    analysisContent = generateTrendAnalysis();
+                    break;
+                case 'streak':
+                    analysisContent = generateStreakAnalysis();
+                    break;
+                case 'heatmap':
+                    analysisContent = generateHeatmapAnalysis();
+                    break;
+            }
+            
+            container.innerHTML = analysisContent;
+        }
+
+        function setTickRange(ticks) {
+            analysisTickRange = parseInt(ticks);
+            
+            document.querySelectorAll('.tick-range-btn').forEach(btn => btn.classList.remove('active'));
+            const btnId = `tick-${ticks}`;
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.add('active');
+            
+            runAnalysis();
+            updateQuickStats();
+        }
+
+        function updateStreakData(digit) {
+            const isEven = digit % 2 === 0;
+            const currentType = isEven ? 'even' : 'odd';
+            const isOver5 = digit > 5;
+            const overUnderType = isOver5 ? 'over' : 'under';
+            
+            // Update even/odd streak
+            if (streakData.type === currentType) {
+                streakData.current++;
+            } else {
+                if (streakData.type !== null) {
+                    streakData.history.push({ type: streakData.type, length: streakData.current });
+                    if (streakData.history.length > 50) streakData.history.shift();
+                    
+                    // Update longest streaks
+                    if (streakData.current > streakData.longest[streakData.type]) {
+                        streakData.longest[streakData.type] = streakData.current;
+                    }
+                }
+                streakData.type = currentType;
+                streakData.current = 1;
+            }
+            
+            // Track over/under streaks separately
+            if (!streakData.overUnder) {
+                streakData.overUnder = { current: 1, type: overUnderType };
+            } else if (streakData.overUnder.type === overUnderType) {
+                streakData.overUnder.current++;
+            } else {
+                if (streakData.overUnder.current > streakData.longest[streakData.overUnder.type]) {
+                    streakData.longest[streakData.overUnder.type] = streakData.overUnder.current;
+                }
+                streakData.overUnder = { current: 1, type: overUnderType };
+            }
+        }
+
+        function updateStreakDetector() {
+            const container = document.getElementById('streakDetector');
+            if (!streakData.type) {
+                container.innerHTML = '<div class="text-gray-400 text-sm">Building streak data...</div>';
+                return;
+            }
+            
+            // Calculate break probability (simple heuristic based on streak length)
+            const breakProb = Math.min(95, 50 + (streakData.current * 5));
+            const continueProb = 100 - breakProb;
+            
+            // Get longest streaks for context
+            const longestEven = streakData.longest.even || 0;
+            const longestOdd = streakData.longest.odd || 0;
+            const longestOver = streakData.longest.over || 0;
+            const longestUnder = streakData.longest.under || 0;
+            
+            const overUnderCurrent = streakData.overUnder ? streakData.overUnder.current : 0;
+            const overUnderType = streakData.overUnder ? streakData.overUnder.type : 'unknown';
+            
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <!-- Current Streaks -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="stat-card bg-gradient-to-r from-${streakData.type === 'even' ? 'green' : 'red'}-500/20 to-transparent border-${streakData.type === 'even' ? 'green' : 'red'}-500/30">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-${streakData.type === 'even' ? 'success' : 'danger'}">${streakData.current}</div>
+                                <div class="text-xs text-gray-400 uppercase tracking-wide">${streakData.type} streak</div>
+                                <div class="text-xs text-gray-500 mt-1">Record: ${streakData.type === 'even' ? longestEven : longestOdd}</div>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-gradient-to-r from-${overUnderType === 'over' ? 'blue' : 'purple'}-500/20 to-transparent border-${overUnderType === 'over' ? 'blue' : 'purple'}-500/30">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-${overUnderType === 'over' ? 'primary' : 'warning'}">${overUnderCurrent}</div>
+                                <div class="text-xs text-gray-400 uppercase tracking-wide">${overUnderType} 5 streak</div>
+                                <div class="text-xs text-gray-500 mt-1">Record: ${overUnderType === 'over' ? longestOver : longestUnder}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Break Probability Indicator -->
+                    <div class="stat-card">
+                        <div class="text-sm font-medium text-gray-300 mb-2">Streak Analysis</div>
+                        <div class="flex justify-between text-xs mb-2">
+                            <span class="text-danger">Break: ${breakProb.toFixed(0)}%</span>
+                            <span class="text-success">Continue: ${continueProb.toFixed(0)}%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-red-500 to-green-500 h-2 rounded-full" style="width: 100%"></div>
+                            <div class="bg-red-500 h-2 rounded-full -mt-2 transition-all duration-500" style="width: ${breakProb}%"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2 text-center">
+                            ${streakData.current >= 5 ? '⚠️ Extended streak' : streakData.current >= 3 ? '📊 Notable streak' : '📈 Building'}
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Streak History -->
+                    <div class="stat-card">
+                        <div class="text-sm font-medium text-gray-300 mb-2">Recent History</div>
+                        <div class="flex flex-wrap gap-1">
+                            ${streakData.history.slice(-8).map(s => `
+                                <div class="px-2 py-1 rounded text-xs font-medium ${
+                                    s.type === 'even' ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger'
+                                }">
+                                    ${s.type.charAt(0).toUpperCase()}${s.length}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateQuickStats() {
+            const container = document.getElementById('quickStats');
+            const range = Math.min(analysisTickRange, digitHistory.length);
+            const recentDigits = digitHistory.slice(-range);
+            
+            if (recentDigits.length === 0) {
+                container.innerHTML = '<div class="text-gray-400 text-sm">No data available</div>';
+                return;
+            }
+            
+            const evenCount = recentDigits.filter(d => d % 2 === 0).length;
+            const oddCount = recentDigits.length - evenCount;
+            const highCount = recentDigits.filter(d => d >= 5).length;
+            const lowCount = recentDigits.length - highCount;
+            const avgDigit = (recentDigits.reduce((sum, d) => sum + d, 0) / recentDigits.length).toFixed(1);
+            const mostFrequent = recentDigits.reduce((a, b, i, arr) => 
+                arr.filter(v => v === a).length >= arr.filter(v => v === b).length ? a : b
+            );
+            
+            container.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="stat-card">
+                        <div class="text-xl font-bold text-success">${evenCount}</div>
+                        <div class="text-xs text-gray-400 mt-1">Even</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xl font-bold text-danger">${oddCount}</div>
+                        <div class="text-xs text-gray-400 mt-1">Odd</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xl font-bold text-primary">${highCount}</div>
+                        <div class="text-xs text-gray-400 mt-1">High (5-9)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xl font-bold text-success">${lowCount}</div>
+                        <div class="text-xs text-gray-400 mt-1">Low (0-4)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xl font-bold text-warning">${avgDigit}</div>
+                        <div class="text-xs text-gray-400 mt-1">Average</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xl font-bold text-primary">${mostFrequent}</div>
+                        <div class="text-xs text-gray-400 mt-1">Most Frequent</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updatePerformanceTracker() {
+            const container = document.getElementById('performanceResults');
+            const trackTicks = parseInt(document.getElementById('performanceTicks').value);
+            const range = Math.min(trackTicks, digitHistory.length);
+            const recentDigits = digitHistory.slice(-range);
+            
+            if (recentDigits.length < 5) {
+                container.innerHTML = '<div class="text-gray-500 text-sm">Need at least 5 ticks</div>';
+                return;
+            }
+            
+            let performanceContent = '';
+            
+            switch(currentTradeType) {
+                case 'evenodd':
+                    const evenWinRate = (recentDigits.filter(d => d % 2 === 0).length / recentDigits.length * 100).toFixed(1);
+                    const oddWinRate = (100 - evenWinRate).toFixed(1);
+                    
+                    performanceContent = `
+                        <div class="space-y-2">
+                            <div class="performance-item">
+                                <span>Even Win Rate:</span>
+                                <span class="font-bold ${evenWinRate > 50 ? 'text-green-600' : 'text-red-600'}">${evenWinRate}%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Odd Win Rate:</span>
+                                <span class="font-bold ${oddWinRate > 50 ? 'text-green-600' : 'text-red-600'}">${oddWinRate}%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Current Streak:</span>
+                                <span class="font-bold text-purple-600">${streakData.current} ${streakData.type || 'N/A'}</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'matches':
+                    const digitFreq = {};
+                    recentDigits.forEach(d => digitFreq[d] = (digitFreq[d] || 0) + 1);
+                    const bestDigit = Object.entries(digitFreq).sort((a, b) => b[1] - a[1])[0];
+                    const worstDigit = Object.entries(digitFreq).sort((a, b) => a[1] - b[1])[0];
+                    const matchRate = (10 / recentDigits.length * 100).toFixed(1); // Expected 10% match rate
+                    const differRate = (100 - matchRate).toFixed(1);
+                    
+                    performanceContent = `
+                        <div class="space-y-2">
+                            <div class="performance-item">
+                                <span>Match Rate (Expected):</span>
+                                <span class="font-bold text-blue-600">${matchRate}%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Differ Rate:</span>
+                                <span class="font-bold text-green-600">${differRate}%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Hot Digit:</span>
+                                <span class="font-bold text-orange-600">${bestDigit[0]} (${bestDigit[1]}x)</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Cold Digit:</span>
+                                <span class="font-bold text-blue-600">${worstDigit[0]} (${worstDigit[1]}x)</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'overunder':
+                    const barrier5Over = recentDigits.filter(d => d > 5).length;
+                    const barrier5Under = recentDigits.filter(d => d < 5).length;
+                    const overRate = (barrier5Over / recentDigits.length * 100).toFixed(1);
+                    const underRate = (barrier5Under / recentDigits.length * 100).toFixed(1);
+                    const avgDigit = (recentDigits.reduce((sum, d) => sum + d, 0) / recentDigits.length).toFixed(1);
+                    
+                    // Calculate performance for different barriers
+                    const barrier3Over = recentDigits.filter(d => d > 3).length;
+                    const barrier3Under = recentDigits.filter(d => d < 3).length;
+                    const barrier7Over = recentDigits.filter(d => d > 7).length;
+                    const barrier7Under = recentDigits.filter(d => d < 7).length;
+                    
+                    performanceContent = `
+                        <div class="space-y-2">
+                            <div class="performance-item">
+                                <span>Over 5 Rate:</span>
+                                <span class="font-bold ${overRate > 50 ? 'text-green-600' : 'text-red-600'}">${overRate}%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Under 5 Rate:</span>
+                                <span class="font-bold ${underRate > 50 ? 'text-green-600' : 'text-red-600'}">${underRate}%</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Average Digit:</span>
+                                <span class="font-bold text-blue-600">${avgDigit}</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Over 3: ${barrier3Over} | Under 3: ${barrier3Under}</span>
+                            </div>
+                            <div class="performance-item">
+                                <span>Over 7: ${barrier7Over} | Under 7: ${barrier7Under}</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = performanceContent;
+        }
+
+        function generateStreakAnalysis() {
+            if (streakData.history.length === 0) {
+                return '<div class="text-gray-400 text-sm">Building streak history...</div>';
+            }
+            
+            const avgStreakLength = (streakData.history.reduce((sum, s) => sum + s.length, 0) / streakData.history.length).toFixed(1);
+            const longestStreak = Math.max(...streakData.history.map(s => s.length));
+            const evenStreaks = streakData.history.filter(s => s.type === 'even');
+            const oddStreaks = streakData.history.filter(s => s.type === 'odd');
+            
+            return `
+                <div class="space-y-3">
+                    <div class="prediction-card">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600">${streakData.current}</div>
+                            <div class="text-sm text-gray-600">Current ${streakData.type} streak</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="stat-card">
+                            <div class="text-lg font-bold">${avgStreakLength}</div>
+                            <div class="text-xs text-gray-600">Avg Length</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-lg font-bold">${longestStreak}</div>
+                            <div class="text-xs text-gray-600">Longest</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        Even streaks: ${evenStreaks.length} | Odd streaks: ${oddStreaks.length}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleAccountType() {
+            isDemo = !isDemo;
+            localStorage.setItem('accountType', isDemo ? 'demo' : 'real');
+            
+            // Reset Deriv connection for new account type
+            isDerivConnected = false;
+            if (derivWS) {
+                derivWS.close();
+                derivWS = null;
+            }
+            
+            updateAccountDisplay();
+            
+            // Reconnect with new account type
+            setTimeout(() => {
+                connectDeriv();
+            }, 500);
+        }
+
+        function updateAccountDisplay() {
+            const btn = document.getElementById('accountTypeBtn');
+            const label = document.getElementById('balanceLabel');
+            const balance = document.getElementById('accountBalance');
+            
+            if (isDemo) {
+                btn.textContent = 'Demo';
+                btn.className = 'px-4 py-2 text-sm rounded-lg font-semibold transition-all bg-success text-white';
+                label.textContent = 'Demo Balance';
+                balance.textContent = 'Loading...';
+                balance.className = 'font-bold text-lg text-white';
+            } else {
+                btn.textContent = 'Real';
+                btn.className = 'px-4 py-2 text-sm rounded-lg font-semibold transition-all bg-danger text-white';
+                label.textContent = 'Real Balance';
+                balance.textContent = 'Loading...';
+                balance.className = 'font-bold text-lg text-white';
+            }
+        }
+
+        function generateFrequencyAnalysis() {
+            const range = Math.min(analysisTickRange, digitHistory.length);
+            const recentDigits = digitHistory.slice(-range);
+            const recentCounts = Array(10).fill(0);
+            recentDigits.forEach(d => recentCounts[d]++);
+            
+            const predictions = [];
+            
+            for (let i = 0; i < 10; i++) {
+                const frequency = recentCounts[i] / recentDigits.length;
+                const expected = 0.1;
+                const deviation = Math.abs(frequency - expected);
+                const confidence = Math.max(0, (1 - deviation * 5) * 100);
+                
+                if (confidence > 60) {
+                    predictions.push({
+                        digit: i,
+                        confidence: confidence,
+                        reason: frequency > expected ? 'Hot digit' : 'Due digit'
+                    });
+                }
+            }
+            
+            predictions.sort((a, b) => b.confidence - a.confidence);
+            
+            return predictions.slice(0, 3).map(p => `
+                <div class="prediction-card">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">Digit ${p.digit}</span>
+                        <span class="text-sm text-gray-600">${p.reason}</span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${p.confidence}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">${p.confidence.toFixed(1)}% confidence</div>
+                </div>
+            `).join('');
+        }
+
+        function generateMarkovAnalysis() {
+            if (digitHistory.length < 3) return '<div class="text-gray-400 text-sm">Need more data for Markov analysis</div>';
+            
+            const lastDigit = digitHistory[digitHistory.length - 1];
+            const transitions = markovChain[lastDigit] || {};
+            const total = Object.values(transitions).reduce((sum, count) => sum + count, 0);
+            
+            if (total === 0) return '<div class="text-gray-400 text-sm">No transition data available</div>';
+            
+            const predictions = Object.entries(transitions)
+                .map(([digit, count]) => ({
+                    digit: parseInt(digit),
+                    probability: count / total,
+                    confidence: (count / total) * 100
+                }))
+                .sort((a, b) => b.probability - a.probability)
+                .slice(0, 3);
+            
+            return predictions.map(p => `
+                <div class="prediction-card">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">Digit ${p.digit}</span>
+                        <span class="text-sm text-gray-600">After ${lastDigit}</span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${p.confidence}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">${p.confidence.toFixed(1)}% probability</div>
+                </div>
+            `).join('');
+        }
+
+        function generatePatternAnalysis() {
+            if (patternHistory.length < 5) return '<div class="text-gray-400 text-sm">Collecting pattern data...</div>';
+            
+            const patternCounts = {};
+            patternHistory.forEach(pattern => {
+                patternCounts[pattern] = (patternCounts[pattern] || 0) + 1;
+            });
+            
+            const recentPattern = digitHistory.slice(-2).join('');
+            const matchingPatterns = Object.entries(patternCounts)
+                .filter(([pattern]) => pattern.startsWith(recentPattern))
+                .map(([pattern, count]) => ({
+                    nextDigit: parseInt(pattern[2]),
+                    count: count,
+                    confidence: (count / patternHistory.length) * 100
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 3);
+            
+            if (matchingPatterns.length === 0) {
+                return '<div class="text-gray-400 text-sm">No matching patterns found</div>';
+            }
+            
+            return matchingPatterns.map(p => `
+                <div class="prediction-card">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">Digit ${p.nextDigit}</span>
+                        <span class="text-sm text-gray-600">Pattern match</span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${p.confidence * 2}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">${p.count} occurrences</div>
+                </div>
+            `).join('');
+        }
+
+        function generateTrendAnalysis() {
+            if (digitHistory.length < 10) return '<div class="text-gray-400 text-sm">Need more data for trend analysis</div>';
+            
+            const recent = digitHistory.slice(-10);
+            const evenTrend = recent.filter(d => d % 2 === 0).length / recent.length;
+            const highTrend = recent.filter(d => d >= 5).length / recent.length;
+            const avgDigit = recent.reduce((sum, d) => sum + d, 0) / recent.length;
+            
+            const trends = [];
+            
+            if (evenTrend > 0.7) trends.push({ type: 'Even digits trending', confidence: evenTrend * 100 });
+            if (evenTrend < 0.3) trends.push({ type: 'Odd digits trending', confidence: (1 - evenTrend) * 100 });
+            if (highTrend > 0.7) trends.push({ type: 'High digits (5-9) trending', confidence: highTrend * 100 });
+            if (highTrend < 0.3) trends.push({ type: 'Low digits (0-4) trending', confidence: (1 - highTrend) * 100 });
+            
+            if (trends.length === 0) {
+                return '<div class="text-gray-400 text-sm">No clear trends detected</div>';
+            }
+            
+            return trends.map(t => `
+                <div class="prediction-card">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-sm">${t.type}</span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${t.confidence}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">${t.confidence.toFixed(1)}% strength</div>
+                </div>
+            `).join('');
+        }
+
+        function selectTradeType(tradeType) {
+            currentTradeType = tradeType;
+            
+            // Update button states
+            document.querySelectorAll('#btn-evenodd, #btn-matches, #btn-overunder').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${tradeType}`);
+            activeBtn.classList.add('active');
+            
+            // Load trade type interface
+            loadTradeInterface(tradeType);
+            updateAnalytics();
+        }
+
+        function loadTradeInterface(tradeType) {
+            const container = document.getElementById('tradingInterface');
+            
+            const baseControls = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-3">Stake Amount</label>
+                        <input type="number" id="stakeAmount" value="1" min="0.35" step="0.01" 
+                               class="input-field" onchange="updatePayouts()" placeholder="Enter stake amount">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-3">Duration (Ticks)</label>
+                        <input type="number" id="duration" value="5" min="1" max="10" class="input-field" placeholder="5">
+                    </div>
+                </div>
+            `;
+            
+            let specificInterface = '';
+            
+            switch(tradeType) {
+                case 'evenodd':
+                    specificInterface = `
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold text-white mb-6">Choose Your Prediction</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <button class="trade-button even" style="padding: 12px 16px;" onclick="placeTrade('DIGITEVEN')">
+                                    <div class="text-center">
+                                        <i class="fas fa-equals text-base mb-1"></i>
+                                        <div class="text-sm font-bold">Even</div>
+                                        <div class="text-xs opacity-80">0, 2, 4, 6, 8</div>
+                                    </div>
+                                </button>
+                                <button class="trade-button odd" style="padding: 12px 16px;" onclick="placeTrade('DIGITODD')">
+                                    <div class="text-center">
+                                        <i class="fas fa-not-equal text-base mb-1"></i>
+                                        <div class="text-sm font-bold">Odd</div>
+                                        <div class="text-xs opacity-80">1, 3, 5, 7, 9</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'matches':
+                    specificInterface = `
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-300 mb-3">Predict Digit</label>
+                            <select id="digitPrediction" class="input-field mb-6" onchange="updatePayouts()">
+                                ${Array.from({length: 10}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold text-white mb-6">Choose Your Prediction</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <button class="trade-button" style="padding: 12px 16px;" onclick="placeTrade('DIGITMATCH')">
+                                    <div class="text-center">
+                                        <i class="fas fa-bullseye text-base mb-1"></i>
+                                        <div class="text-sm font-bold">Matches</div>
+                                        <div class="text-xs opacity-80">Exact digit match</div>
+                                    </div>
+                                </button>
+                                <button class="trade-button" style="padding: 12px 16px;" onclick="placeTrade('DIGITDIFF')">
+                                    <div class="text-center">
+                                        <i class="fas fa-times text-base mb-1"></i>
+                                        <div class="text-sm font-bold">Differs</div>
+                                        <div class="text-xs opacity-80">Any other digit</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'overunder':
+                    specificInterface = `
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-300 mb-3">Barrier</label>
+                            <select id="overUnderBarrier" class="input-field mb-6" onchange="updatePayouts()">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5" selected>5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold text-white mb-4">Choose Your Prediction</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <button class="trade-button over" style="padding: 12px 16px;" onclick="placeTrade('DIGITOVER')">
+                                    <div class="text-center">
+                                        <i class="fas fa-arrow-up text-base mb-1"></i>
+                                        <div class="text-sm font-bold">Over</div>
+                                        <div class="text-xs opacity-80">Higher than barrier</div>
+                                    </div>
+                                </button>
+                                <button class="trade-button under" style="padding: 12px 16px;" onclick="placeTrade('DIGITUNDER')">
+                                    <div class="text-center">
+                                        <i class="fas fa-arrow-down text-base mb-1"></i>
+                                        <div class="text-sm font-bold">Under</div>
+                                        <div class="text-xs opacity-80">Lower than barrier</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = baseControls + specificInterface;
+            updatePayouts();
+        }
+
+        function updateAnalytics() {
+            const container = document.getElementById('analyticsContent');
+            const evenCount = digitHistory.filter(d => d % 2 === 0).length;
+            const oddCount = digitHistory.length - evenCount;
+            
+            let analyticsContent = '';
+            
+            switch(currentTradeType) {
+                case 'evenodd':
+                    analyticsContent = `
+                        <div class="mb-6">
+                            <div class="text-sm text-gray-400 mb-4">Recent Digits</div>
+                            <div class="digit-grid">
+                                ${digitHistory.slice(-20).map(d => `<div class="digit-box ${d % 2 === 0 ? 'digit-even' : 'digit-odd'}">${d}</div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat-card">
+                                <div class="text-2xl font-bold text-success">${evenCount}</div>
+                                <div class="text-sm text-gray-400 mt-1">Even</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                    <div class="bg-success h-2 rounded-full transition-all duration-500" style="width: ${(evenCount / digitHistory.length) * 100}%"></div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="text-2xl font-bold text-danger">${oddCount}</div>
+                                <div class="text-sm text-gray-400 mt-1">Odd</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                                    <div class="bg-danger h-2 rounded-full transition-all duration-500" style="width: ${(oddCount / digitHistory.length) * 100}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'matches':
+                    analyticsContent = `
+                        <div class="mb-6">
+                            <div class="text-sm text-gray-400 mb-4">Digit Frequency</div>
+                            <div class="grid grid-cols-5 gap-3">
+                                ${Array.from({length: 10}, (_, i) => `
+                                    <div class="stat-card">
+                                        <div class="text-lg font-bold text-primary">${i}</div>
+                                        <div class="text-xs text-gray-400 mt-1">${digitCounts[i]}x</div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
+                                            <div class="bg-primary h-1 rounded-full transition-all duration-500" style="width: ${(digitCounts[i] / digitHistory.length) * 100}%"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'overunder':
+                    const overCounts = Array(9).fill(0);
+                    const underCounts = Array(9).fill(0);
+                    
+                    for (let barrier = 1; barrier <= 8; barrier++) {
+                        digitHistory.forEach(digit => {
+                            if (digit > barrier) overCounts[barrier]++;
+                            if (digit < barrier) underCounts[barrier]++;
+                        });
+                    }
+                    
+                    analyticsContent = `
+                        <div class="mb-6">
+                            <div class="text-sm text-gray-400 mb-4">Over/Under Analysis</div>
+                            <div class="space-y-3">
+                                ${Array.from({length: 8}, (_, i) => {
+                                    const barrier = i + 1;
+                                    const overCount = overCounts[barrier];
+                                    const underCount = underCounts[barrier];
+                                    return `
+                                        <div class="stat-card">
+                                            <div class="flex items-center justify-between text-sm">
+                                                <span class="font-medium">Barrier ${barrier}</span>
+                                                <div class="flex space-x-4">
+                                                    <span class="text-success">Over: ${overCount}</span>
+                                                    <span class="text-warning">Under: ${underCount}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = analyticsContent;
+        }
+
+        function changeMarket() {
+            currentSymbol = document.getElementById('marketSelect').value;
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ forget_all: "ticks" }));
+                ws.send(JSON.stringify({ ticks: currentSymbol, subscribe: 1 }));
+            }
+        }
+
+        function updatePayouts() {
+            // Function kept for compatibility but no longer updates payout displays
+        }
+
+        function generateHeatmapAnalysis() {
+            const range = Math.min(analysisTickRange, digitHistory.length);
+            const recentDigits = digitHistory.slice(-range);
+            const digitFreq = Array(10).fill(0);
+            
+            recentDigits.forEach(d => digitFreq[d]++);
+            const maxFreq = Math.max(...digitFreq);
+            
+            const heatmapHtml = digitFreq.map((freq, digit) => {
+                const intensity = maxFreq > 0 ? freq / maxFreq : 0;
+                const color = intensity > 0.7 ? '#ef4444' : intensity > 0.4 ? '#f59e0b' : intensity > 0.1 ? '#10b981' : '#6b7280';
+                return `<div class="heat-cell" style="background: ${color}">${digit}<br><span style="font-size:10px">${freq}</span></div>`;
+            }).join('');
+            
+            return `
+                <div class="text-center">
+                    <div class="text-sm text-gray-400 mb-3">Digit Frequency Heat Map (Last ${range} ticks)</div>
+                    <div class="flex flex-wrap justify-center">${heatmapHtml}</div>
+                    <div class="text-xs text-gray-400 mt-2">
+                        <span class="inline-block w-3 h-3 bg-red-500 mr-1"></span>Hot
+                        <span class="inline-block w-3 h-3 bg-yellow-500 mx-2"></span>Warm
+                        <span class="inline-block w-3 h-3 bg-green-500 mx-1"></span>Cool
+                        <span class="inline-block w-3 h-3 bg-gray-500 ml-2"></span>Cold
+                    </div>
+            `;
+        }
+
+        function placeTrade(tradeType) {
+            const stake = parseFloat(document.getElementById('stakeAmount')?.value) || 1;
+            const duration = parseInt(document.getElementById('duration')?.value) || 5;
+            
+            // Check if user has sufficient balance
+            const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
+            if (stake > currentBalance) {
+                alert('Insufficient balance for this trade.');
+                return;
+            }
+            
+            // Update balance immediately (deduct stake)
+            const newBalance = currentBalance - stake;
+            document.getElementById('accountBalance').textContent = `${newBalance.toFixed(2)} USD`;
+            
+            // Save updated balance to localStorage
+            if (isDemo) {
+                localStorage.setItem('demoBalance', newBalance.toFixed(2));
+            } else {
+                localStorage.setItem('realBalance', newBalance.toFixed(2));
+            }
+            
+            if (!derivWS || derivWS.readyState !== WebSocket.OPEN || !isDerivConnected) {
+                // Try to reconnect if not connected
+                if (!isDerivConnected) {
+                    connectDeriv();
+                    setTimeout(() => {
+                        if (isDerivConnected) {
+                            placeTrade(tradeType);
+                        } else {
+                            simulateTrade(tradeType, stake, duration);
+                        }
+                    }, 2000);
+                    return;
+                }
+                // Fallback to simulation if no Deriv connection
+                simulateTrade(tradeType, stake, duration);
+                return;
+            }
+            
+            // Real Deriv trade
+            const tradeRequest = {
+                buy: 1,
+                price: stake,
+                parameters: {
+                    contract_type: tradeType,
+                    symbol: currentSymbol,
+                    duration: duration,
+                    duration_unit: 't',
+                    currency: 'USD',
+                    amount: stake,
+                    basis: 'stake'
+                }
+            };
+            
+            // Add specific parameters
+            if (tradeType === 'DIGITMATCH' || tradeType === 'DIGITDIFF') {
+                const digit = document.getElementById('digitPrediction')?.value || '0';
+                tradeRequest.parameters.last_digit_prediction = parseInt(digit);
+            } else if (tradeType === 'DIGITOVER' || tradeType === 'DIGITUNDER') {
+                const barrier = document.getElementById('overUnderBarrier')?.value || '5';
+                tradeRequest.parameters.barrier = parseInt(barrier);
+            }
+            
+            derivWS.send(JSON.stringify(tradeRequest));
+        }
+        
+        function simulateTrade(tradeType, stake, duration) {
+            let tradeDetails = `${tradeType} trade placed for ${stake} USD`;
+            
+            if (tradeType === 'DIGITMATCH' || tradeType === 'DIGITDIFF') {
+                const digit = document.getElementById('digitPrediction')?.value || '0';
+                tradeDetails += ` (Digit: ${digit})`;
+            } else if (tradeType === 'DIGITOVER' || tradeType === 'DIGITUNDER') {
+                const barrier = document.getElementById('overUnderBarrier')?.value || '5';
+                tradeDetails += ` (Barrier: ${barrier})`;
+            }
+            
+            tradeDetails += ` for ${duration} ticks`;
+            
+            alert(`Trade placed: ${tradeDetails}`);
+            
+            // Simulate trade outcome
+            setTimeout(() => {
+                simulateTradeOutcome({
+                    id: Date.now(),
+                    type: tradeType,
+                    stake: stake,
+                    duration: duration
+                });
+            }, Math.min(duration * 1000, 10000));
+        }
+        
+        function connectDeriv() {
+            const token = localStorage.getItem('authToken') || localStorage.getItem('jwt_token') || localStorage.getItem('token');
+            if (!token) {
+                console.log('No auth token found');
+                return;
+            }
+            
+            // Use same endpoint as main app
+            fetch(`/api/deriv/token?account_type=${isDemo ? 'demo' : 'real'}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.has_token && data.token) {
+                    // Connect with the Deriv token
+                    derivWS = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+                    
+                    derivWS.onopen = () => {
+                        derivWS.send(JSON.stringify({ authorize: data.token }));
+                    };
+                    
+                    derivWS.onmessage = (event) => {
+                        const data = JSON.parse(event.data);
+                        
+                        if (data.authorize) {
+                            authToken = data.authorize.token;
+                            isDerivConnected = true;
+                            console.log('Connected to Deriv - Real trades enabled');
+                            // Subscribe to balance updates
+                            derivWS.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+                        }
+                        
+                        if (data.balance) {
+                            const balance = data.balance.balance;
+                            const isVirtual = data.balance.is_virtual === 1;
+                            
+                            // Update balance display
+                            document.getElementById('accountBalance').textContent = `${parseFloat(balance).toFixed(2)} USD`;
+                            
+                            // Save to localStorage
+                            if (isVirtual) {
+                                localStorage.setItem('demoBalance', balance.toFixed(2));
+                            } else {
+                                localStorage.setItem('realBalance', balance.toFixed(2));
+                            }
+                        }
+                        
+                        if (data.buy) {
+                            alert(`Real trade placed! Contract ID: ${data.buy.contract_id}`);
+                        }
+                        
+                        if (data.error) {
+                            alert('Trade Error: ' + data.error.message);
+                        }
+                    };
+                } else {
+                    console.log('No Deriv token available');
+                }
+            })
+            .catch(error => {
+                console.log('Failed to get Deriv token:', error);
+            });
+        }
+        
+        function simulateTradeOutcome(trade) {
+            // Random outcome for normal trades (60% win rate)
+            const isWin = Math.random() > 0.4;
+            const multiplier = isWin ? 1.85 : 0;
+            const payout = trade.stake * multiplier;
+            const profit = payout - trade.stake;
+            
+            if (isWin && payout > 0) {
+                const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
+                const newBalance = currentBalance + payout;
+                document.getElementById('accountBalance').textContent = `${newBalance.toFixed(2)} USD`;
+                
+                // Save updated balance to localStorage
+                if (isDemo) {
+                    localStorage.setItem('demoBalance', newBalance.toFixed(2));
+                } else {
+                    localStorage.setItem('realBalance', newBalance.toFixed(2));
+                }
+                
+                alert(`Trade Won! Profit: $${profit.toFixed(2)}`);
+            } else {
+                alert(`Trade Lost: -$${trade.stake.toFixed(2)}`);
+            }
+        }
+    </script>
+</body>
+</html>

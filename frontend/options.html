@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Options Trading | Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0D1421;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .panel {
+            background: #0A0E1A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+        }
+        .btn-primary { background: #FF4500; }
+        .btn-primary:hover { background: #e63e00; }
+        .btn-success { background: #00C851; }
+        .btn-success:hover { background: #00a844; }
+        .btn-danger { background: #FF4444; }
+        .btn-danger:hover { background: #e63939; }
+        .input-field {
+            background: #1E293B;
+            border: 1px solid #334155;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #FF4500;
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+        .trade-btn {
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+        .chart-container {
+            background: #0A0E1A;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+        }
+        .payout-badge {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .strike-line {
+            border-top: 2px dashed #4F46E5;
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            .grid-cols-2 { grid-template-columns: 1fr; }
+            .lg\\:grid-cols-3 { grid-template-columns: 1fr; }
+            .chart-container { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-[#0A0E1A] border-b border-gray-700 px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-[#FF4500] rounded flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">A</span>
+                    </div>
+                    <span class="text-xl font-bold">Algocdk</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/app" class="text-gray-400 hover:text-white">Chart</a>
+                    <a href="/trading" class="text-[#FF4500] font-semibold">Trade</a>
+                    <a href="/mybots" class="text-gray-400 hover:text-white">Bots</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleAccountType()" class="px-3 py-1 text-sm rounded-lg font-semibold transition-all" id="accountTypeBtn">
+                    Demo
+                </button>
+                <div class="text-right">
+                    <div class="text-xs text-gray-400" id="balanceLabel">Demo Balance</div>
+                    <div class="font-bold text-lg" id="accountBalance">10,000.00 USD</div>
+                </div>
+                <button onclick="exitApp()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="mb-6">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='/trading'" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Trading
+                </button>
+                <h1 class="text-2xl font-bold">Digital Options Trading</h1>
+                <div class="payout-badge">Fixed Payout</div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Chart Panel -->
+            <div class="lg:col-span-2">
+                <div class="panel p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">Price Chart with Strike</h3>
+                        <select id="marketSelect" class="input-field text-sm">
+                            <option value="R_10">Volatility 10 Index</option>
+                            <option value="R_25">Volatility 25 Index</option>
+                            <option value="R_50">Volatility 50 Index</option>
+                            <option value="R_75">Volatility 75 Index</option>
+                            <option value="R_100" selected>Volatility 100 Index</option>
+                            <option value="frxEURUSD">EUR/USD</option>
+                            <option value="frxGBPUSD">GBP/USD</option>
+                            <option value="frxUSDJPY">USD/JPY</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Option Details -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold mb-4">Option Details</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-[#FF4500]" id="currentPrice">1234.567</div>
+                            <div class="text-sm text-gray-400">Current Price</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-purple-500" id="strikePrice">1235.000</div>
+                            <div class="text-sm text-gray-400">Strike Price</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold" id="timeToExpiry">05:00</div>
+                            <div class="text-sm text-gray-400">Time to Expiry</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold" id="moneyness">OTM</div>
+                            <div class="text-sm text-gray-400">Moneyness</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Panel -->
+            <div class="lg:col-span-1">
+                <div class="panel p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Option Parameters</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Option Type</label>
+                            <select id="optionType" class="input-field w-full" onchange="updateOptionType()">
+                                <option value="CALL">Call Option</option>
+                                <option value="PUT">Put Option</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Stake (USD)</label>
+                            <input type="number" id="stakeAmount" value="1" min="0.35" step="0.01" 
+                                   class="input-field w-full" onchange="updatePayout()">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Expiry Time</label>
+                            <select id="expiryTime" class="input-field w-full" onchange="updateExpiry()">
+                                <option value="1">1 minute</option>
+                                <option value="2">2 minutes</option>
+                                <option value="5" selected>5 minutes</option>
+                                <option value="10">10 minutes</option>
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="60">1 hour</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Strike Price</label>
+                            <div class="flex space-x-2">
+                                <input type="number" id="strikeInput" step="0.001" class="input-field flex-1" 
+                                       onchange="updateStrike()">
+                                <button onclick="setATMStrike()" class="btn-primary px-3 py-2 text-sm">ATM</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Buttons -->
+                <div class="panel p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Purchase Option</h3>
+                    <div class="space-y-3">
+                        <button class="trade-btn btn-success w-full" onclick="purchaseOption()" id="purchaseBtn">
+                            <div class="flex justify-between items-center">
+                                <span id="optionDirection">Buy Call</span>
+                                <span id="optionPayout">85.00</span>
+                            </div>
+                        </button>
+                        
+                        <div class="text-xs text-gray-400 text-center">
+                            Fixed payout if option expires in-the-money
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payoff Diagram -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold mb-4">Payoff at Expiry</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">If In-The-Money:</span>
+                            <span class="font-bold text-green-500" id="itmPayout">85.00 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">If Out-Of-The-Money:</span>
+                            <span class="font-bold text-red-500">0.00 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Breakeven:</span>
+                            <span class="font-bold" id="breakeven">1235.000</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Max Profit:</span>
+                            <span class="font-bold text-green-500" id="maxProfit">84.00 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Max Loss:</span>
+                            <span class="font-bold text-red-500" id="maxLoss">-1.00 USD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let widget = null;
+        let currentPrice = 1234.567;
+        let isDemo = true;
+        let strikePrice = 1235.000;
+        let expiryTimestamp = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAccount();
+            initializeTradingView();
+            connectWebSocket();
+            setATMStrike();
+            updateExpiry();
+            updatePayout();
+            startExpiryTimer();
+        });
+
+        function initializeAccount() {
+            const savedAccountType = localStorage.getItem('accountType');
+            if (savedAccountType === 'real') {
+                isDemo = false;
+            }
+            updateAccountDisplay();
+        }
+
+        function initializeTradingView() {
+            widget = new TradingView.widget({
+                "width": "100%",
+                "height": 400,
+                "symbol": "OANDA:SPX500USD",
+                "interval": "1",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#0A0E1A",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": true,
+                "save_image": false,
+                "container_id": "tradingview_chart",
+                "backgroundColor": "#0A0E1A",
+                "gridColor": "#1E293B",
+                "hide_side_toolbar": false,
+                "allow_symbol_change": false,
+                "studies": [],
+                "overrides": {
+                    "paneProperties.background": "#0A0E1A",
+                    "paneProperties.vertGridProperties.color": "#1E293B",
+                    "paneProperties.horzGridProperties.color": "#1E293B",
+                    "symbolWatermarkProperties.transparency": 90,
+                    "scalesProperties.textColor": "#94a3b8"
+                }
+            });
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+            
+            ws.onopen = () => {
+                const market = document.getElementById('marketSelect').value;
+                ws.send(JSON.stringify({ ticks: market, subscribe: 1 }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.tick) {
+                    updatePrice(parseFloat(data.tick.quote));
+                }
+            };
+            
+            ws.onclose = () => {
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function updatePrice(price) {
+            currentPrice = price;
+            
+            // Update display
+            document.getElementById('currentPrice').textContent = price.toFixed(3);
+            
+            // Update moneyness
+            const optionType = document.getElementById('optionType').value;
+            let moneyness = '';
+            
+            if (optionType === 'CALL') {
+                if (price > strikePrice) moneyness = 'ITM';
+                else if (price < strikePrice) moneyness = 'OTM';
+                else moneyness = 'ATM';
+            } else {
+                if (price < strikePrice) moneyness = 'ITM';
+                else if (price > strikePrice) moneyness = 'OTM';
+                else moneyness = 'ATM';
+            }
+            
+            const moneynessEl = document.getElementById('moneyness');
+            moneynessEl.textContent = moneyness;
+            moneynessEl.className = `text-lg font-bold ${moneyness === 'ITM' ? 'text-green-500' : moneyness === 'OTM' ? 'text-red-500' : 'text-yellow-500'}`;
+        }
+
+        function updateOptionType() {
+            const optionType = document.getElementById('optionType').value;
+            const direction = optionType === 'CALL' ? 'Buy Call' : 'Buy Put';
+            document.getElementById('optionDirection').textContent = direction;
+            updatePayout();
+        }
+
+        function setATMStrike() {
+            strikePrice = currentPrice;
+            document.getElementById('strikeInput').value = strikePrice.toFixed(3);
+            document.getElementById('strikePrice').textContent = strikePrice.toFixed(3);
+            document.getElementById('breakeven').textContent = strikePrice.toFixed(3);
+            updatePayout();
+        }
+
+        function updateStrike() {
+            strikePrice = parseFloat(document.getElementById('strikeInput').value) || currentPrice;
+            document.getElementById('strikePrice').textContent = strikePrice.toFixed(3);
+            document.getElementById('breakeven').textContent = strikePrice.toFixed(3);
+            updatePayout();
+        }
+
+        function updateExpiry() {
+            const minutes = parseInt(document.getElementById('expiryTime').value);
+            expiryTimestamp = Date.now() + (minutes * 60 * 1000);
+            updatePayout();
+        }
+
+        function startExpiryTimer() {
+            setInterval(() => {
+                if (expiryTimestamp) {
+                    const remaining = Math.max(0, expiryTimestamp - Date.now());
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    document.getElementById('timeToExpiry').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function updatePayout() {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            
+            // Digital options typically have fixed payout of 85-95% of stake
+            const payoutPercentage = 85;
+            const payout = stake * (payoutPercentage / 100);
+            const profit = payout - stake;
+            
+            document.getElementById('optionPayout').textContent = payout.toFixed(2);
+            document.getElementById('itmPayout').textContent = `${payout.toFixed(2)} USD`;
+            document.getElementById('maxProfit').textContent = `${profit.toFixed(2)} USD`;
+            document.getElementById('maxLoss').textContent = `-${stake.toFixed(2)} USD`;
+        }
+
+        function purchaseOption() {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const optionType = document.getElementById('optionType').value;
+            const expiryMinutes = parseInt(document.getElementById('expiryTime').value);
+            const market = document.getElementById('marketSelect').value;
+            
+            let proposal = {
+                proposal: 1,
+                amount: stake,
+                contract_type: optionType,
+                currency: "USD",
+                symbol: market,
+                basis: "stake",
+                duration: expiryMinutes,
+                duration_unit: "m",
+                barrier: strikePrice.toString()
+            };
+            
+            // Send proposal to get price
+            ws.send(JSON.stringify(proposal));
+            
+            // Listen for proposal response
+            const originalOnMessage = ws.onmessage;
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.proposal) {
+                    // Buy the contract
+                    const buyRequest = {
+                        buy: data.proposal.id,
+                        price: data.proposal.ask_price
+                    };
+                    ws.send(JSON.stringify(buyRequest));
+                    
+                    // Show success message
+                    const optionName = optionType === 'CALL' ? 'Call' : 'Put';
+                    alert(`${optionName} option purchased for ${stake} USD\nStrike: ${strikePrice.toFixed(3)}\nExpiry: ${expiryMinutes} minutes`);
+                    
+                    // Update balance
+                    updateBalance(-stake);
+                    
+                    // Reset expiry timer
+                    updateExpiry();
+                    
+                    // Restore original message handler
+                    ws.onmessage = originalOnMessage;
+                } else if (data.buy) {
+                    console.log('Option purchased:', data.buy);
+                } else {
+                    originalOnMessage(event);
+                }
+            };
+        }
+
+        function updateBalance(change) {
+            const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
+            const newBalance = currentBalance + change;
+            document.getElementById('accountBalance').textContent = `${newBalance.toFixed(2)} USD`;
+            
+            if (isDemo) {
+                localStorage.setItem('demoBalance', newBalance.toFixed(2));
+            } else {
+                localStorage.setItem('realBalance', newBalance.toFixed(2));
+            }
+        }
+
+        function toggleAccountType() {
+            isDemo = !isDemo;
+            localStorage.setItem('accountType', isDemo ? 'demo' : 'real');
+            updateAccountDisplay();
+        }
+
+        function updateAccountDisplay() {
+            const btn = document.getElementById('accountTypeBtn');
+            const label = document.getElementById('balanceLabel');
+            const balance = document.getElementById('accountBalance');
+            
+            const demoBalance = localStorage.getItem('demoBalance') || '10000.00';
+            const realBalance = localStorage.getItem('realBalance') || '0.00';
+            
+            if (isDemo) {
+                btn.textContent = 'Demo';
+                btn.className = 'px-3 py-1 text-sm rounded-lg font-semibold transition-all bg-green-600 text-white';
+                label.textContent = 'Demo Balance';
+                balance.textContent = `${parseFloat(demoBalance).toFixed(2)} USD`;
+                balance.className = 'font-bold text-lg text-green-500';
+            } else {
+                btn.textContent = 'Real';
+                btn.className = 'px-3 py-1 text-sm rounded-lg font-semibold transition-all bg-red-600 text-white';
+                label.textContent = 'Real Balance';
+                balance.textContent = `${parseFloat(realBalance).toFixed(2)} USD`;
+                balance.className = 'font-bold text-lg text-red-500';
+            }
+        }
+
+        function exitApp() {
+            if (ws) ws.close();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userSession');
+            window.location.href = '/auth';
+        }
+
+        // Market change handler
+        document.getElementById('marketSelect').addEventListener('change', function() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ forget_all: 'ticks' }));
+                ws.send(JSON.stringify({ ticks: this.value, subscribe: 1 }));
+            }
+            
+            // Reset price tracking
+            priceData = [];
+            setATMStrike();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algocdk Trading | Deriv-Style Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'deriv-red': '#FF444F',
+                        'deriv-blue': '#377CFC',
+                        'deriv-green': '#4BB4B3',
+                        'deriv-orange': '#FF6444',
+                        'deriv-gray': '#999999',
+                        'deriv-dark': '#0E0E0E',
+                        'deriv-light': '#F2F3F4'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0D1421;
+            color: #ffffff;
+        }
+        
+        .deriv-card {
+            background: #0A0E1A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .deriv-card:hover {
+            border-color: #FF4500;
+            box-shadow: 0 4px 16px rgba(255, 69, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .deriv-card.active {
+            border-color: #FF4500;
+            background: #1E293B;
+        }
+        
+        .contract-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 16px;
+        }
+        
+        .trade-panel {
+            background: #0A0E1A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .deriv-input {
+            border: 1px solid #334155;
+            background: #1E293B;
+            border-radius: 4px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #ffffff;
+            transition: border-color 0.2s ease;
+        }
+        
+        .deriv-input:focus {
+            outline: none;
+            border-color: #FF4500;
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+        
+        .deriv-button {
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 12px 24px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .deriv-button-primary {
+            background: #FF4500;
+            color: white;
+        }
+        
+        .deriv-button-primary:hover {
+            background: #e63e00;
+        }
+        
+        .deriv-button-success {
+            background: #4BB4B3;
+            color: white;
+        }
+        
+        .deriv-button-success:hover {
+            background: #059669;
+        }
+        
+        .deriv-button-danger {
+            background: #FF444F;
+            color: white;
+        }
+        
+        .deriv-button-danger:hover {
+            background: #dc2626;
+        }
+        
+        .price-display {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            text-align: center;
+            padding: 16px;
+            background: #1E293B;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        
+        .digit-box {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            margin: 2px;
+        }
+        
+        .digit-even { background: #4BB4B3; color: white; }
+        .digit-odd { background: #FF444F; color: white; }
+        
+        @media (max-width: 768px) {
+            .contract-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .trading-layout {
+                flex-direction: column !important;
+            }
+            
+            .contract-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-[#0A0E1A] border-b border-gray-700 px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-[#FF4500] rounded flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">A</span>
+                    </div>
+                    <span class="text-xl font-bold text-white">Algocdk</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/app" class="text-gray-400 hover:text-white">Chart</a>
+                    <a href="/trading" class="text-[#FF4500] font-semibold">Trade</a>
+                    <a href="/mybots" class="text-gray-400 hover:text-white">Bots</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="exitApp()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        
+        <!-- Contract Types Grid -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-white mb-6">Choose a contract type</h2>
+            <div class="contract-grid grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Ups & Downs / Rise & Fall -->
+                <div class="deriv-card p-6" onclick="selectContract('updown')" id="card-updown">
+                    <div class="contract-icon bg-deriv-blue">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Ups & Downs</h3>
+                    <p class="text-gray-300 text-sm mb-4">Predict whether the market will rise or fall from its current level.</p>
+                    <div class="text-xs text-gray-400">
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Rise/Fall</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Higher/Lower</span>
+                    </div>
+                </div>
+
+                <!-- Highs & Lows (Barriers) -->
+                <div class="deriv-card p-6" onclick="selectContract('barriers')" id="card-barriers">
+                    <div class="contract-icon bg-deriv-green">
+                        <i class="fas fa-hand-pointer"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Highs & Lows</h3>
+                    <p class="text-gray-300 text-sm mb-4">Predict whether the market will touch or stay within given barriers.</p>
+                    <div class="text-xs text-gray-400">
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Touch/No Touch</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Ends In/Out</span>
+                    </div>
+                </div>
+
+                <!-- Digits -->
+                <div class="deriv-card p-6" onclick="selectContract('digits')" id="card-digits">
+                    <div class="contract-icon bg-deriv-orange">
+                        <i class="fas fa-hashtag"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Digits</h3>
+                    <p class="text-gray-300 text-sm mb-4">Predict the last digit of the spot price at the end of the contract.</p>
+                    <div class="text-xs text-gray-400">
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Matches/Differs</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Even/Odd</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Over/Under</span>
+                    </div>
+                </div>
+
+                <!-- Multipliers -->
+                <div class="deriv-card p-6" onclick="selectContract('multipliers')" id="card-multipliers">
+                    <div class="contract-icon bg-purple-500">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Multipliers</h3>
+                    <p class="text-gray-300 text-sm mb-4">Combine the upside of leverage trading with the security of limited risk.</p>
+                    <div class="text-xs text-gray-400">
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">x5 - x1000</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Stop Loss</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Take Profit</span>
+                    </div>
+                </div>
+
+                <!-- Accumulators -->
+                <div class="deriv-card p-6" onclick="selectContract('accumulators')" id="card-accumulators">
+                    <div class="contract-icon bg-yellow-500">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Accumulators</h3>
+                    <p class="text-gray-300 text-sm mb-4">Earn fixed payouts with every tick the spot price stays within range.</p>
+                    <div class="text-xs text-gray-400">
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">1% - 5%</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Growth Rate</span>
+                    </div>
+                </div>
+
+                <!-- Digital Options -->
+                <div class="deriv-card p-6" onclick="selectContract('options')" id="card-options">
+                    <div class="contract-icon bg-indigo-500">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Digital Options</h3>
+                    <p class="text-gray-300 text-sm mb-4">Earn a fixed payout if your prediction is correct, or lose your stake if not.</p>
+                    <div class="text-xs text-gray-400">
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Fixed Payout</span>
+                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">All or Nothing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trading Interface -->
+        <div class="trading-layout flex flex-col lg:flex-row gap-6" id="tradingInterface" style="display: none;">
+            
+            <!-- Left Panel - Market & Price -->
+            <div class="lg:w-1/3">
+                <div class="trade-panel p-6 mb-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Market</h3>
+                    <select id="marketSelect" class="deriv-input w-full mb-4">
+                        <option value="R_10">Volatility 10 Index</option>
+                        <option value="R_25">Volatility 25 Index</option>
+                        <option value="R_50">Volatility 50 Index</option>
+                        <option value="R_75">Volatility 75 Index</option>
+                        <option value="R_100" selected>Volatility 100 Index</option>
+                    </select>
+                    
+                    <div class="price-display mb-4" id="currentPrice">1234.567</div>
+                    
+                    <div class="text-center text-sm text-gray-300" id="priceInfo">
+                        Last digit: <span class="font-bold text-[#FF4500]">7</span>
+                    </div>
+                </div>
+
+                <!-- Analytics Panel -->
+                <div class="trade-panel p-6" id="analyticsPanel">
+                    <h3 class="text-lg font-bold text-white mb-4">Analytics</h3>
+                    <div id="analyticsContent">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Trading Controls -->
+            <div class="lg:w-2/3">
+                <div class="trade-panel p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-white" id="contractTitle">Contract Details</h3>
+                        <button onclick="closeTrading()" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Trading Controls -->
+                    <div id="tradingControls">
+                        <!-- Controls will be inserted here -->
+                    </div>
+
+                    <!-- Purchase Buttons -->
+                    <div id="purchaseButtons" class="mt-6">
+                        <!-- Buttons will be inserted here -->
+                    </div>
+
+                    <!-- Trade Summary -->
+                    <div class="mt-6 p-4 bg-[#1E293B] rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-300">Potential payout:</span>
+                            <span class="font-bold text-green-400" id="potentialPayout">1.95 USD</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Potential profit:</span>
+                            <span class="font-bold text-green-400" id="potentialProfit">0.95 USD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentContract = null;
+        let currentPrice = 1234.567;
+        let digitHistory = [];
+        let ws = null;
+        let isDemo = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            connectWebSocket();
+            // Force demo account on page load
+            isDemo = true;
+            localStorage.setItem('accountType', 'demo');
+            updateAccountDisplay();
+        });
+
+        function initializeData() {
+            // Generate initial digit history
+            for (let i = 0; i < 20; i++) {
+                digitHistory.push(Math.floor(Math.random() * 10));
+            }
+            updatePrice(currentPrice);
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+            
+            ws.onopen = () => {
+                ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.tick) {
+                    updatePrice(parseFloat(data.tick.quote));
+                }
+            };
+            
+            ws.onclose = () => {
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function updatePrice(price) {
+            currentPrice = price;
+            const lastDigit = parseInt(price.toString().slice(-1));
+            
+            document.getElementById('currentPrice').textContent = price.toFixed(3);
+            
+            // Update digit history
+            digitHistory.push(lastDigit);
+            if (digitHistory.length > 20) digitHistory.shift();
+            
+            // Update analytics if contract is selected
+            if (currentContract) {
+                updateAnalytics();
+                updatePriceInfo();
+            }
+        }
+
+        function selectContract(contractType) {
+            // Redirect to specialized trading pages
+            const redirectMap = {
+                'updown': '/updown',
+                'barriers': '/barriers',
+                'digits': '/digits',
+                'multipliers': '/multipliers',
+                'accumulators': '/accumulators',
+                'options': '/options'
+            };
+            
+            if (redirectMap[contractType]) {
+                window.location.href = redirectMap[contractType];
+                return;
+            }
+            
+            // Fallback for any unmapped contract types
+            currentContract = contractType;
+            
+            // Update card states
+            document.querySelectorAll('.deriv-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(`card-${contractType}`).classList.add('active');
+            
+            // Show trading interface
+            document.getElementById('tradingInterface').style.display = 'flex';
+            
+            // Load contract-specific content
+            loadContractContent(contractType);
+            
+            // Scroll to trading interface
+            document.getElementById('tradingInterface').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadContractContent(contractType) {
+            const titles = {
+                updown: 'Ups & Downs',
+                barriers: 'Highs & Lows',
+                digits: 'Digits',
+                multipliers: 'Multipliers',
+                accumulators: 'Accumulators',
+                options: 'Digital Options'
+            };
+            
+            document.getElementById('contractTitle').textContent = titles[contractType];
+            
+            loadTradingControls(contractType);
+            loadPurchaseButtons(contractType);
+            updateAnalytics();
+            updatePriceInfo();
+        }
+
+        function loadTradingControls(contractType) {
+            const container = document.getElementById('tradingControls');
+            
+            if (contractType === 'digits') {
+                container.innerHTML = `
+                    <div class="mb-6">
+                        <h4 class="text-md font-semibold text-gray-800 mb-4">Trade Parameters</h4>
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Stake</label>
+                                <input type="number" id="stakeAmount" value="1" min="0.35" step="0.01" 
+                                       class="deriv-input w-full" onchange="updatePayout()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Duration (Ticks)</label>
+                                <input type="number" id="duration" value="5" min="1" max="10" class="deriv-input w-full">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-md font-semibold text-gray-800 mb-4">Digit Prediction</h4>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Digit (for Matches/Differs)</label>
+                            <select id="digitPrediction" class="deriv-input w-full" onchange="updatePayout()">
+                                ${Array.from({length: 10}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Over/Under Barrier</label>
+                            <select id="overUnderBarrier" class="deriv-input w-full" onchange="updatePayout()">
+                                ${Array.from({length: 9}, (_, i) => `<option value="${i+1}" ${i+4 === 5 ? 'selected' : ''}>${i+1}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const baseControls = `
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Stake</label>
+                        <input type="number" id="stakeAmount" value="1" min="0.35" step="0.01" 
+                               class="deriv-input w-full" onchange="updatePayout()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="duration" value="5" min="1" class="deriv-input flex-1">
+                            <select id="durationUnit" class="deriv-input">
+                                <option value="t">Ticks</option>
+                                <option value="s">Seconds</option>
+                                <option value="m">Minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            let specificControls = '';
+            
+            switch(contractType) {
+                case 'barriers':
+                    specificControls = `
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Barrier</label>
+                            <input type="number" id="barrier" step="0.001" class="deriv-input w-full" 
+                                   value="${(currentPrice + 0.1).toFixed(3)}">
+                        </div>
+                    `;
+                    break;
+                case 'multipliers':
+                    specificControls = `
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Multiplier</label>
+                            <select id="multiplier" class="deriv-input w-full">
+                                <option value="5">x5</option>
+                                <option value="10">x10</option>
+                                <option value="25">x25</option>
+                                <option value="50">x50</option>
+                                <option value="100">x100</option>
+                            </select>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Stop Loss</label>
+                                <input type="number" id="stopLoss" class="deriv-input w-full" placeholder="Optional">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Take Profit</label>
+                                <input type="number" id="takeProfit" class="deriv-input w-full" placeholder="Optional">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'accumulators':
+                    specificControls = `
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Growth Rate</label>
+                            <select id="growthRate" class="deriv-input w-full">
+                                <option value="1">1%</option>
+                                <option value="2">2%</option>
+                                <option value="3">3%</option>
+                                <option value="4">4%</option>
+                                <option value="5">5%</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = baseControls + specificControls;
+        }
+
+        function loadPurchaseButtons(contractType) {
+            const container = document.getElementById('purchaseButtons');
+            
+            switch(contractType) {
+                case 'updown':
+                    container.innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="deriv-button deriv-button-success py-4" onclick="placeTrade('CALL')">
+                                <div class="text-xs opacity-75">Rise</div>
+                                <div class="font-bold">1.85</div>
+                            </button>
+                            <button class="deriv-button deriv-button-danger py-4" onclick="placeTrade('PUT')">
+                                <div class="text-xs opacity-75">Fall</div>
+                                <div class="font-bold">1.85</div>
+                            </button>
+                        </div>
+                    `;
+                    break;
+                case 'digits':
+                    container.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="deriv-button deriv-button-success py-4" onclick="placeTrade('DIGITEVEN')">
+                                    <div class="text-xs opacity-75">Even</div>
+                                    <div class="font-bold" id="evenPayout">1.95</div>
+                                </button>
+                                <button class="deriv-button deriv-button-danger py-4" onclick="placeTrade('DIGITODD')">
+                                    <div class="text-xs opacity-75">Odd</div>
+                                    <div class="font-bold" id="oddPayout">1.95</div>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="deriv-button deriv-button-primary py-4" onclick="placeTrade('DIGITMATCH')">
+                                    <div class="text-xs opacity-75">Matches</div>
+                                    <div class="font-bold" id="matchPayout">9.50</div>
+                                </button>
+                                <button class="deriv-button bg-gray-600 text-white py-4" onclick="placeTrade('DIGITDIFF')">
+                                    <div class="text-xs opacity-75">Differs</div>
+                                    <div class="font-bold" id="differPayout">1.11</div>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="deriv-button bg-purple-600 text-white py-4" onclick="placeTrade('DIGITOVER')">
+                                    <div class="text-xs opacity-75">Over</div>
+                                    <div class="font-bold" id="overPayout">1.90</div>
+                                </button>
+                                <button class="deriv-button bg-indigo-600 text-white py-4" onclick="placeTrade('DIGITUNDER')">
+                                    <div class="text-xs opacity-75">Under</div>
+                                    <div class="font-bold" id="underPayout">1.90</div>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'barriers':
+                    container.innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="deriv-button deriv-button-primary py-4" onclick="placeTrade('ONETOUCH')">
+                                <div class="text-xs opacity-75">Touch</div>
+                                <div class="font-bold">2.50</div>
+                            </button>
+                            <button class="deriv-button bg-gray-600 text-white py-4" onclick="placeTrade('NOTOUCH')">
+                                <div class="text-xs opacity-75">No Touch</div>
+                                <div class="font-bold">1.40</div>
+                            </button>
+                        </div>
+                    `;
+                    break;
+                case 'multipliers':
+                    container.innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="deriv-button deriv-button-success py-4" onclick="placeTrade('MULTUP')">
+                                <div class="text-xs opacity-75">Up</div>
+                                <div class="font-bold">Start</div>
+                            </button>
+                            <button class="deriv-button deriv-button-danger py-4" onclick="placeTrade('MULTDOWN')">
+                                <div class="text-xs opacity-75">Down</div>
+                                <div class="font-bold">Start</div>
+                            </button>
+                        </div>
+                    `;
+                    break;
+                case 'accumulators':
+                    container.innerHTML = `
+                        <button class="deriv-button deriv-button-primary w-full py-4" onclick="placeTrade('ACCU')">
+                            <div class="text-xs opacity-75">Start Accumulator</div>
+                            <div class="font-bold">Begin</div>
+                        </button>
+                    `;
+                    break;
+                case 'options':
+                    container.innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="deriv-button deriv-button-success py-4" onclick="placeTrade('CALL')">
+                                <div class="text-xs opacity-75">Higher</div>
+                                <div class="font-bold">1.85</div>
+                            </button>
+                            <button class="deriv-button deriv-button-danger py-4" onclick="placeTrade('PUT')">
+                                <div class="text-xs opacity-75">Lower</div>
+                                <div class="font-bold">1.85</div>
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function updateAnalytics() {
+            const container = document.getElementById('analyticsContent');
+            
+            if (currentContract === 'digits') {
+                const evenCount = digitHistory.filter(d => d % 2 === 0).length;
+                const oddCount = digitHistory.length - evenCount;
+                
+                container.innerHTML = `
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-600 mb-2">Last 20 digits</div>
+                        <div class="flex flex-wrap gap-1">
+                            ${digitHistory.map(d => `<div class="digit-box ${d % 2 === 0 ? 'digit-even' : 'digit-odd'}">${d}</div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-deriv-green">${evenCount}</div>
+                            <div class="text-sm text-gray-600">Even</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-deriv-red">${oddCount}</div>
+                            <div class="text-sm text-gray-600">Odd</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-chart-bar text-3xl mb-2"></i>
+                        <div class="text-sm">Analytics for ${currentContract} coming soon</div>
+                    </div>
+                `;
+            }
+        }
+
+        function updatePriceInfo() {
+            const priceInfo = document.getElementById('priceInfo');
+            const lastDigit = parseInt(currentPrice.toString().slice(-1));
+            
+            if (currentContract === 'digits') {
+                priceInfo.innerHTML = `Last digit: <span class="font-bold text-deriv-blue">${lastDigit}</span>`;
+            } else {
+                priceInfo.innerHTML = `Current price: <span class="font-bold text-deriv-blue">${currentPrice.toFixed(3)}</span>`;
+            }
+        }
+
+        function updatePayout() {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const multiplier = 1.95;
+            const payout = stake * multiplier;
+            const profit = payout - stake;
+            
+            document.getElementById('potentialPayout').textContent = `${payout.toFixed(2)} USD`;
+            document.getElementById('potentialProfit').textContent = `${profit.toFixed(2)} USD`;
+        }
+
+        function placeTrade(tradeType) {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const duration = parseInt(document.getElementById('duration').value) || 5;
+            
+            let tradeDetails = `${tradeType} trade placed for ${stake} USD`;
+            
+            if (currentContract === 'digits') {
+                if (tradeType === 'DIGITMATCH' || tradeType === 'DIGITDIFF') {
+                    const digit = document.getElementById('digitPrediction').value;
+                    tradeDetails += ` (Digit: ${digit})`;
+                } else if (tradeType === 'DIGITOVER' || tradeType === 'DIGITUNDER') {
+                    const barrier = document.getElementById('overUnderBarrier').value;
+                    tradeDetails += ` (Barrier: ${barrier})`;
+                }
+                tradeDetails += ` for ${duration} ticks`;
+            }
+            
+            // Simulate trade placement
+            const trade = {
+                id: Date.now(),
+                type: tradeType,
+                stake: stake,
+                duration: duration,
+                time: new Date().toLocaleTimeString(),
+                details: tradeDetails
+            };
+            
+            // Show success message
+            alert(tradeDetails);
+            
+            // Update balance and save to localStorage using same keys as main app
+            const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
+            const newBalance = currentBalance - stake;
+            document.getElementById('accountBalance').textContent = `${formatBalance(newBalance)} USD`;
+            
+            // Save updated balance to localStorage
+            if (isDemo) {
+                localStorage.setItem('demoBalance', newBalance.toFixed(2));
+            } else {
+                localStorage.setItem('realBalance', newBalance.toFixed(2));
+            }
+        }
+
+        function toggleAccountType() {
+            isDemo = !isDemo;
+            localStorage.setItem('accountType', isDemo ? 'demo' : 'real');
+            updateAccountDisplay();
+        }
+
+        function formatBalance(amount) {
+            return parseFloat(amount).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function updateAccountDisplay() {
+            const btn = document.getElementById('accountTypeBtn');
+            const label = document.getElementById('balanceLabel');
+            const balance = document.getElementById('accountBalance');
+            
+            const demoBalance = '10000.00';
+            const realBalance = '0.00';
+            
+            if (isDemo) {
+                btn.textContent = 'Demo';
+                btn.style.background = '#10b981';
+                btn.style.color = 'white';
+                label.textContent = 'Demo Balance';
+                balance.textContent = `${formatBalance(demoBalance)} USD`;
+                balance.className = 'font-bold text-lg text-white';
+            } else {
+                btn.textContent = 'Real';
+                btn.style.background = '#ef4444';
+                btn.style.color = 'white';
+                label.textContent = 'Real Balance';
+                balance.textContent = `${formatBalance(realBalance)} USD`;
+                balance.className = 'font-bold text-lg text-white';
+            }
+        }
+
+        function exitApp() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userSession');
+            window.location.href = '/auth';
+        }
+    </script>
+</body>
+</html>

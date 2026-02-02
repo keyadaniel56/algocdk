@@ -78,6 +78,11 @@
                     My Bots
                     <span id="botsBadge" class="ml-auto bg-primary px-2 py-1 rounded-full text-xs">0</span>
                 </a>
+                <a href="#sites" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-globe mr-3"></i>
+                    My Sites
+                    <span id="sitesBadge" class="ml-auto bg-primary px-2 py-1 rounded-full text-xs">0</span>
+                </a>
                 <a href="#transactions" class="nav-link flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
                     <i class="fas fa-credit-card mr-3"></i>
                     Transactions
@@ -254,6 +259,18 @@
                             </div>
                         </div>
                     </button>
+
+                    <button onclick="switchView('sites')" class="bg-gray-800 hover:bg-gray-700 rounded-xl p-6 text-left transition-all card-hover">
+                        <div class="flex items-center">
+                            <div class="bg-success bg-opacity-20 p-3 rounded-lg mr-4">
+                                <i class="fas fa-globe text-success text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold">My Sites</h3>
+                                <p class="text-gray-400 text-sm">Manage websites</p>
+                            </div>
+                        </div>
+                    </button>
                 </div>
 
                 <!-- Recent Activity -->
@@ -423,6 +440,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Sites View -->
+            <div id="sitesView" class="view-content hidden">
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold">My Sites</h3>
+                        <button onclick="showCreateSiteModal()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i>Create Site
+                        </button>
+                    </div>
+                    <div id="sitesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="flex justify-center py-12">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -502,6 +536,7 @@
             const titles = {
                 dashboard: 'Dashboard',
                 bots: 'My Bots',
+                sites: 'My Sites',
                 transactions: 'Transactions',
                 users: 'Bot Users',
                 bank: 'Bank Details',
@@ -521,11 +556,16 @@
             if (view === 'users') loadBotsList();
             if (view === 'bank') loadBankDetails();
             if (view === 'profile') loadProfile();
+            if (view === 'sites') loadSites();
         }
 
         // Modal functions
         function showCreateBotModal() {
             document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+        
+        function showCreateSiteModal() {
+            window.location.href = '/sites';
         }
 
         function closeModal() {
@@ -678,6 +718,64 @@
                 }
             } catch (error) {
                 console.error('Failed to load profile:', error);
+            }
+        }
+        
+        async function loadSites() {
+            try {
+                const response = await fetch('/api/admin/sites', {
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.get()}`
+                    }
+                });
+                const data = await response.json();
+                const sites = data.sites || [];
+                
+                document.getElementById('sitesBadge').textContent = sites.length;
+                
+                const grid = document.getElementById('sitesGrid');
+                if (sites.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <i class="fas fa-globe text-gray-500 text-6xl mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-400 mb-2">No Sites Yet</h3>
+                            <p class="text-gray-500 mb-6">Create your first site to get started</p>
+                            <button onclick="showCreateSiteModal()" class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg">
+                                <i class="fas fa-plus mr-2"></i>Create Site
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                grid.innerHTML = sites.map(site => `
+                    <div class="bg-gray-700 rounded-xl p-6 hover:bg-gray-600 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-semibold text-white">${site.name}</h4>
+                            <span class="px-2 py-1 rounded text-xs ${site.status === 'active' ? 'bg-success/20 text-success' : 'bg-gray-600 text-gray-300'}">
+                                ${site.status}
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4">${site.description || 'No description'}</p>
+                        <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                            <span><i class="fas fa-eye mr-1"></i>${site.view_count || 0} views</span>
+                            <span><i class="fas fa-calendar mr-1"></i>${new Date(site.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="/site/${site.slug}" target="_blank" class="flex-1 bg-accent hover:bg-gray-500 text-center py-2 rounded-lg text-sm">
+                                <i class="fas fa-external-link-alt mr-1"></i>View
+                            </a>
+                            <a href="/sites" class="flex-1 bg-primary hover:bg-secondary text-center py-2 rounded-lg text-sm">
+                                <i class="fas fa-edit mr-1"></i>Manage
+                            </a>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500">
+                            URL: /site/${site.slug}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load sites:', error);
             }
         }
 

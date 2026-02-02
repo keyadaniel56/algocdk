@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoCDK Trading Platform</title>
+    <title>Algocdk Trading Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -41,9 +41,69 @@
                 margin: 0 !important;
             }
             
-            /* Hide desktop navigation on mobile */
+            /* Mobile navigation */
             nav {
+                padding: 8px 12px !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 1000 !important;
+                background: #0A0E1A !important;
+                border-bottom: 1px solid #374151 !important;
+            }
+            
+            nav .flex {
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+            }
+            
+            nav .flex > div:first-child {
+                flex: 1 !important;
+            }
+            
+            nav .nav-ticker {
                 display: none !important;
+            }
+            
+            nav .flex > div:last-child {
+                flex-shrink: 0 !important;
+            }
+            
+            nav .text-right {
+                display: none !important;
+            }
+            
+            /* Mobile menu button */
+            #navMenuBtn {
+                padding: 8px 12px !important;
+                font-size: 14px !important;
+                min-height: 36px !important;
+            }
+            
+            /* Mobile dropdown menu */
+            #navMenu {
+                position: fixed !important;
+                top: 60px !important;
+                right: 12px !important;
+                left: 12px !important;
+                width: auto !important;
+                max-height: 70vh !important;
+                overflow-y: auto !important;
+                background: #0A0E1A !important;
+                border: 1px solid #374151 !important;
+                border-radius: 8px !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+            }
+            
+            #navMenu a {
+                padding: 16px 20px !important;
+                font-size: 16px !important;
+                border-bottom: 1px solid #374151 !important;
+            }
+            
+            #navMenu a:last-child {
+                border-bottom: none !important;
             }
             
             /* Mobile container */
@@ -51,6 +111,7 @@
                 flex-direction: column !important;
                 height: 100vh !important;
                 overflow: hidden !important;
+                padding-top: 60px !important;
             }
             
             /* Hide market watch on mobile to save space */
@@ -60,20 +121,22 @@
             
             /* Chart takes top portion */
             .flex-1 {
-                height: 65vh !important;
+                height: calc(60vh - 60px) !important;
                 order: 1 !important;
                 position: relative !important;
+                min-height: 250px !important;
             }
             
             /* Trading panel takes bottom portion */
             .w-80:last-child {
-                height: 35vh !important;
+                height: 40vh !important;
                 width: 100% !important;
                 order: 2 !important;
                 overflow-y: auto !important;
                 border-left: none !important;
                 border-top: 2px solid #FF4500 !important;
                 background: #0A0E1A !important;
+                min-height: 200px !important;
             }
             
             /* Simplified mobile controls */
@@ -90,16 +153,18 @@
                 gap: 6px !important;
                 z-index: 100 !important;
                 border: 1px solid #374151 !important;
+                max-height: 80px !important;
+                overflow: hidden !important;
             }
             
             #controls select, #controls button {
-                padding: 8px 12px !important;
-                font-size: 13px !important;
-                min-height: 36px !important;
+                padding: 6px 10px !important;
+                font-size: 12px !important;
+                min-height: 32px !important;
                 border-radius: 6px !important;
                 margin: 0 !important;
                 flex: 1 !important;
-                min-width: 90px !important;
+                min-width: 80px !important;
                 background: #1E293B !important;
                 border: 1px solid #475569 !important;
                 color: #E2E8F0 !important;
@@ -113,14 +178,22 @@
                 display: none !important;
             }
             
+            /* Chart info panel mobile */
+            .chart-info {
+                top: 100px !important;
+                right: 8px !important;
+                font-size: 10px !important;
+                padding: 6px !important;
+            }
+            
             /* Mobile Trading Panel */
             .w-80:last-child .p-4 {
-                padding: 16px !important;
+                padding: 12px !important;
             }
             
             .w-80:last-child h3 {
-                font-size: 18px !important;
-                margin-bottom: 12px !important;
+                font-size: 16px !important;
+                margin-bottom: 10px !important;
                 color: #FF4500 !important;
                 font-weight: 700 !important;
             }
@@ -132,15 +205,15 @@
             }
             
             .w-80:last-child .space-y-3 > * + * {
-                margin-top: 12px !important;
+                margin-top: 10px !important;
             }
             
             .w-80:last-child input, 
             .w-80:last-child select {
-                padding: 12px 16px !important;
-                font-size: 15px !important;
-                min-height: 48px !important;
-                border-radius: 8px !important;
+                padding: 10px 12px !important;
+                font-size: 14px !important;
+                min-height: 44px !important;
+                border-radius: 6px !important;
                 background: #1E293B !important;
                 border: 2px solid #475569 !important;
                 color: #E2E8F0 !important;
@@ -153,10 +226,10 @@
             }
             
             .w-80:last-child button {
-                padding: 14px 20px !important;
-                font-size: 16px !important;
-                min-height: 52px !important;
-                border-radius: 8px !important;
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                min-height: 48px !important;
+                border-radius: 6px !important;
                 font-weight: 700 !important;
                 border: none !important;
                 cursor: pointer !important;
@@ -169,31 +242,31 @@
             
             /* Mobile grid adjustments */
             .grid-cols-2 {
-                gap: 12px !important;
+                gap: 10px !important;
             }
             
             /* Mobile text sizes */
             .text-xs {
-                font-size: 13px !important;
+                font-size: 12px !important;
             }
             
             .text-sm {
-                font-size: 15px !important;
+                font-size: 14px !important;
             }
             
             /* Account toggle mobile */
             .w-11 {
-                width: 48px !important;
+                width: 44px !important;
             }
             .h-6 {
-                height: 26px !important;
+                height: 24px !important;
             }
             
             /* Mobile trade summary */
             .bg-accent.bg-opacity-50 {
-                padding: 16px !important;
-                margin-top: 16px !important;
-                border-radius: 8px !important;
+                padding: 12px !important;
+                margin-top: 12px !important;
+                border-radius: 6px !important;
                 background: rgba(30, 41, 59, 0.8) !important;
                 border: 1px solid #475569 !important;
             }
@@ -201,7 +274,7 @@
             /* Mobile recent trades */
             .w-80:last-child .flex-1 {
                 height: auto !important;
-                max-height: 100px !important;
+                max-height: 120px !important;
                 overflow-y: auto !important;
             }
             
@@ -214,39 +287,101 @@
             #accountStatus {
                 background: rgba(30, 41, 59, 0.6) !important;
                 border: 1px solid #475569 !important;
-                border-radius: 8px !important;
-                padding: 12px !important;
+                border-radius: 6px !important;
+                padding: 10px !important;
+            }
+            
+            /* Mobile notifications */
+            .notification {
+                top: 80px !important;
+                right: 10px !important;
+                left: 10px !important;
+                transform: translateY(-100px) !important;
+                font-size: 13px !important;
+            }
+            
+            .notification.show {
+                transform: translateY(0) !important;
+            }
+        }
+        
+        /* Tablet adjustments */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .w-80:first-child {
+                width: 250px !important;
+            }
+            
+            .w-80:last-child {
+                width: 280px !important;
+            }
+            
+            #controls {
+                left: 260px !important;
+                flex-wrap: wrap !important;
+                max-width: calc(100% - 550px) !important;
+            }
+            
+            #controls select, #controls button {
+                font-size: 13px !important;
+                padding: 6px 10px !important;
+                min-width: 100px !important;
             }
         }
         
         /* Very small phones */
         @media (max-width: 400px) {
             .flex-1 {
-                height: 60vh !important;
+                height: 55vh !important;
+                min-height: 250px !important;
             }
             
             .w-80:last-child {
-                height: 40vh !important;
+                height: 45vh !important;
+                min-height: 200px !important;
             }
             
             #controls select, #controls button {
-                font-size: 12px !important;
-                min-height: 32px !important;
-                min-width: 80px !important;
-                padding: 6px 10px !important;
+                font-size: 11px !important;
+                min-height: 30px !important;
+                min-width: 70px !important;
+                padding: 5px 8px !important;
             }
             
             .w-80:last-child input, 
             .w-80:last-child select {
-                padding: 10px 12px !important;
-                font-size: 14px !important;
-                min-height: 44px !important;
+                padding: 8px 10px !important;
+                font-size: 13px !important;
+                min-height: 40px !important;
             }
             
             .w-80:last-child button {
-                padding: 12px 16px !important;
-                font-size: 15px !important;
-                min-height: 48px !important;
+                padding: 10px 14px !important;
+                font-size: 13px !important;
+                min-height: 44px !important;
+            }
+            
+            nav {
+                padding: 8px 12px !important;
+            }
+            
+            nav .nav-ticker-content {
+                font-size: 10px !important;
+            }
+        }
+        
+        /* Large screens optimization */
+        @media (min-width: 1440px) {
+            .w-80:first-child {
+                width: 320px !important;
+            }
+            
+            .w-80:last-child {
+                width: 350px !important;
+            }
+            
+            #controls {
+                left: 330px !important;
+                max-width: calc(100% - 680px) !important;
             }
         }
         
@@ -615,7 +750,7 @@
                     <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
                         <i class="fas fa-chart-line text-white text-sm"></i>
                     </div>
-                    <span class="text-xl font-bold">AlgoCDK</span>
+                    <span class="text-xl font-bold">Algocdk</span>
                 </div>
                 
                 <!-- Price Ticker -->
@@ -655,6 +790,10 @@
                             <i class="fas fa-store"></i>
                             <span>Bot Store</span>
                         </a>
+                        <a href="/trading" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Advanced Trading</span>
+                        </a>
                         <a href="/marketchart" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
                             <i class="fas fa-chart-area"></i>
                             <span>Market Chart</span>
@@ -664,7 +803,7 @@
                             <span>Support</span>
                         </a>
                         <div class="border-t border-gray-600 my-1"></div>
-                        <a href="/" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors text-red-400">
+                        <a href="#" onclick="exitApp()" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors text-red-400">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Exit App</span>
                         </a>
@@ -3078,7 +3217,7 @@
         
         function showNotification(message) {
             if (Notification.permission === 'granted') {
-                new Notification('AlgoCDK Price Alert', { body: message });
+                new Notification('Algocdk Price Alert', { body: message });
             } else {
                 alert(message);
             }
@@ -3707,6 +3846,49 @@
                 setTimeout(() => resize(), 100);
             }
         });
+        
+        /* ================= EXIT APP ================= */
+        function exitApp() {
+            // Clear all tokens and session data
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('adminId');
+            localStorage.removeItem('superadminId');
+            localStorage.removeItem('preferredAccountType');
+            localStorage.removeItem('demoBalance');
+            localStorage.removeItem('realBalance');
+            
+            // Close WebSocket connections
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            if (derivWS) {
+                derivWS.close();
+                derivWS = null;
+            }
+            if (backgroundWs) {
+                backgroundWs.close();
+                backgroundWs = null;
+            }
+            
+            // Reset all global variables
+            authToken = null;
+            isRealAccount = false;
+            demoBalance = 10000;
+            realBalance = 1000;
+            candles = [];
+            currentCandle = null;
+            
+            // Clear session storage
+            sessionStorage.clear();
+            
+            // Redirect to home/login
+            window.location.href = '/';
+        }
         
         /* ================= START ================= */
         async function initializeApp() {

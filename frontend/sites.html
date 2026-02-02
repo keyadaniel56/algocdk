@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sites - Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF4500',
+                        secondary: '#FF6347',
+                        success: '#00C851',
+                        danger: '#FF4444',
+                        warning: '#FFBB33',
+                        dark: '#0D1421',
+                        darker: '#0A0E1A',
+                        accent: '#1E293B'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark text-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-darker border-b border-gray-700 py-3 px-6 flex justify-between items-center">
+        <div class="flex items-center">
+            <a href="/" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                Algocdk
+            </a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="/admin" class="text-gray-400 hover:text-white">
+                <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+            </a>
+            <button onclick="logout()" class="text-gray-400 hover:text-white">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-2">My Sites</h1>
+                <p class="text-gray-400">Create and manage your custom sites</p>
+            </div>
+            <button onclick="showCreateSiteModal()" class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-medium">
+                <i class="fas fa-plus mr-2"></i>Create Site
+            </button>
+        </div>
+
+        <!-- Sites Grid -->
+        <div id="sitesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Loading -->
+            <div class="col-span-full flex justify-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Site Modal -->
+    <div id="siteModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div class="bg-darker rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modalTitle" class="text-xl font-bold text-white">Create Site</h3>
+                <button onclick="closeSiteModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="siteForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Site Name</label>
+                        <input type="text" id="siteName" required class="w-full bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">URL Slug</label>
+                        <input type="text" id="siteSlug" required class="w-full bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white" placeholder="my-awesome-site">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Description</label>
+                    <textarea id="siteDescription" rows="3" class="w-full bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">HTML Content</label>
+                        <textarea id="htmlContent" rows="12" class="w-full bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white font-mono text-sm" placeholder="<h1>Welcome to my site!</h1>"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">CSS Styles</label>
+                        <textarea id="cssContent" rows="12" class="w-full bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white font-mono text-sm" placeholder="body { font-family: Arial; }"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">JavaScript</label>
+                        <textarea id="jsContent" rows="12" class="w-full bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white font-mono text-sm" placeholder="console.log('Hello World!');"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex items-center mb-6">
+                    <input type="checkbox" id="isPublic" class="mr-2">
+                    <label for="isPublic" class="text-gray-300">Make site public</label>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeSiteModal()" class="px-6 py-2 text-gray-400 hover:text-white">Cancel</button>
+                    <button type="submit" class="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-lg">
+                        <span id="submitText">Create Site</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Members Modal -->
+    <div id="membersModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+        <div class="bg-darker rounded-xl p-6 w-full max-w-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Site Members</h3>
+                <button onclick="closeMembersModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="mb-4">
+                <div class="flex space-x-3">
+                    <input type="email" id="memberEmail" placeholder="User email" class="flex-1 bg-accent border border-gray-600 rounded-lg px-4 py-2 text-white">
+                    <button onclick="addMember()" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-plus mr-2"></i>Add
+                    </button>
+                </div>
+            </div>
+
+            <div id="membersList" class="space-y-3">
+                <!-- Members will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSiteId = null;
+        let sites = [];
+
+        // Authentication check
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/auth';
+        }
+
+        async function authFetch(url, options = {}) {
+            const token = localStorage.getItem('token');
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            };
+            const response = await fetch(url, { ...defaultOptions, ...options });
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                window.location.href = '/auth';
+            }
+            return response;
+        }
+
+        async function loadSites() {
+            try {
+                const response = await authFetch('/api/admin/sites');
+                const data = await response.json();
+                sites = data.sites || [];
+                displaySites();
+            } catch (error) {
+                console.error('Failed to load sites:', error);
+            }
+        }
+
+        function displaySites() {
+            const grid = document.getElementById('sitesGrid');
+            
+            if (sites.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-globe text-gray-500 text-6xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-400 mb-2">No Sites Yet</h3>
+                        <p class="text-gray-500 mb-6">Create your first site to get started</p>
+                        <button onclick="showCreateSiteModal()" class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i>Create Site
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = sites.map(site => `
+                <div class="bg-darker rounded-xl border border-gray-700 p-6 hover:border-primary/50 transition-colors">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-1">${site.name}</h3>
+                            <p class="text-sm text-gray-400">${site.description || 'No description'}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 rounded text-xs ${site.status === 'active' ? 'bg-success/20 text-success' : 'bg-gray-600 text-gray-300'}">
+                                ${site.status}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                        <span><i class="fas fa-eye mr-1"></i>${site.view_count || 0} views</span>
+                        <span><i class="fas fa-calendar mr-1"></i>${new Date(site.created_at).toLocaleDateString()}</span>
+                    </div>
+
+                    <div class="flex space-x-2">
+                        <a href="/site/${site.slug}" target="_blank" class="flex-1 bg-accent hover:bg-gray-600 text-center py-2 rounded-lg text-sm">
+                            <i class="fas fa-external-link-alt mr-1"></i>View
+                        </a>
+                        <button onclick="editSite(${site.id})" class="flex-1 bg-primary hover:bg-secondary py-2 rounded-lg text-sm">
+                            <i class="fas fa-edit mr-1"></i>Edit
+                        </button>
+                        <button onclick="showMembers(${site.id})" class="flex-1 bg-warning hover:bg-yellow-600 py-2 rounded-lg text-sm">
+                            <i class="fas fa-users mr-1"></i>Members
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCreateSiteModal() {
+            currentSiteId = null;
+            document.getElementById('modalTitle').textContent = 'Create Site';
+            document.getElementById('submitText').textContent = 'Create Site';
+            document.getElementById('siteForm').reset();
+            document.getElementById('siteModal').classList.remove('hidden');
+        }
+
+        function editSite(siteId) {
+            const site = sites.find(s => s.id === siteId);
+            if (!site) return;
+
+            currentSiteId = siteId;
+            document.getElementById('modalTitle').textContent = 'Edit Site';
+            document.getElementById('submitText').textContent = 'Update Site';
+            
+            document.getElementById('siteName').value = site.name;
+            document.getElementById('siteSlug').value = site.slug;
+            document.getElementById('siteDescription').value = site.description || '';
+            document.getElementById('htmlContent').value = site.html_content || '';
+            document.getElementById('cssContent').value = site.css_content || '';
+            document.getElementById('jsContent').value = site.js_content || '';
+            document.getElementById('isPublic').checked = site.is_public;
+            
+            document.getElementById('siteModal').classList.remove('hidden');
+        }
+
+        function closeSiteModal() {
+            document.getElementById('siteModal').classList.add('hidden');
+        }
+
+        async function showMembers(siteId) {
+            currentSiteId = siteId;
+            document.getElementById('membersModal').classList.remove('hidden');
+            await loadMembers();
+        }
+
+        function closeMembersModal() {
+            document.getElementById('membersModal').classList.add('hidden');
+        }
+
+        async function loadMembers() {
+            try {
+                const response = await authFetch(`/api/admin/sites/${currentSiteId}/members`);
+                const data = await response.json();
+                const members = data.members || [];
+                
+                const membersList = document.getElementById('membersList');
+                membersList.innerHTML = members.map(member => `
+                    <div class="flex items-center justify-between bg-accent p-3 rounded-lg">
+                        <div>
+                            <span class="text-white font-medium">${member.user.name}</span>
+                            <span class="text-gray-400 text-sm ml-2">${member.user.email}</span>
+                            <span class="px-2 py-1 bg-primary/20 text-primary text-xs rounded ml-2">${member.role}</span>
+                        </div>
+                        <button onclick="removeMember(${member.user.id})" class="text-red-400 hover:text-red-300">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load members:', error);
+            }
+        }
+
+        async function addMember() {
+            const email = document.getElementById('memberEmail').value.trim();
+            if (!email) return;
+
+            try {
+                const response = await authFetch(`/api/admin/sites/${currentSiteId}/members`, {
+                    method: 'POST',
+                    body: JSON.stringify({ user_email: email })
+                });
+
+                if (response.ok) {
+                    document.getElementById('memberEmail').value = '';
+                    await loadMembers();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to add member');
+                }
+            } catch (error) {
+                console.error('Failed to add member:', error);
+            }
+        }
+
+        async function removeMember(userId) {
+            if (!confirm('Remove this member?')) return;
+
+            try {
+                const response = await authFetch(`/api/admin/sites/${currentSiteId}/members/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadMembers();
+                }
+            } catch (error) {
+                console.error('Failed to remove member:', error);
+            }
+        }
+
+        document.getElementById('siteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('siteName').value,
+                slug: document.getElementById('siteSlug').value,
+                description: document.getElementById('siteDescription').value,
+                html_content: document.getElementById('htmlContent').value,
+                css_content: document.getElementById('cssContent').value,
+                js_content: document.getElementById('jsContent').value,
+                is_public: document.getElementById('isPublic').checked
+            };
+
+            try {
+                const url = currentSiteId ? `/api/admin/update-site/${currentSiteId}` : '/api/admin/create-site';
+                const method = currentSiteId ? 'PUT' : 'POST';
+                
+                const response = await authFetch(url, {
+                    method: method,
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    closeSiteModal();
+                    await loadSites();
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to save site');
+                }
+            } catch (error) {
+                console.error('Failed to save site:', error);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/auth';
+        }
+
+        // Load sites on page load
+        loadSites();
+    </script>
+</body>
+</html>

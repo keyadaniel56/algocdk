@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ups & Downs Trading | Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0D1421;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .panel {
+            background: #0A0E1A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+        }
+        .btn-primary { background: #FF4500; }
+        .btn-primary:hover { background: #e63e00; }
+        .btn-success { background: #00C851; }
+        .btn-success:hover { background: #00a844; }
+        .btn-danger { background: #FF4444; }
+        .btn-danger:hover { background: #e63939; }
+        .input-field {
+            background: #1E293B;
+            border: 1px solid #334155;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #FF4500;
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+        .trade-btn {
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+        .chart-container {
+            background: #0A0E1A;
+            border-radius: 8px;
+            height: 400px;
+        }
+        #chart {
+            background: #0e1117;
+            display: block;
+            cursor: grab;
+        }
+        #chart:active {
+            cursor: grabbing;
+        }
+        @media (max-width: 768px) {
+            .grid-cols-2 { grid-template-columns: 1fr; }
+            .lg\\:grid-cols-3 { grid-template-columns: 1fr; }
+            .chart-container { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-[#0A0E1A] border-b border-gray-700 px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-[#FF4500] rounded flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">A</span>
+                    </div>
+                    <span class="text-xl font-bold">Algocdk</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/app" class="text-gray-400 hover:text-white">Chart</a>
+                    <a href="/trading" class="text-[#FF4500] font-semibold">Trade</a>
+                    <a href="/mybots" class="text-gray-400 hover:text-white">Bots</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleAccountType()" class="px-3 py-1 text-sm rounded-lg font-semibold transition-all" id="accountTypeBtn">
+                    Demo
+                </button>
+                <div class="text-right">
+                    <div class="text-xs text-gray-400" id="balanceLabel">Demo Balance</div>
+                    <div class="font-bold text-lg" id="accountBalance">10,000.00 USD</div>
+                </div>
+                <button onclick="exitApp()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="mb-6">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='/trading'" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Trading
+                </button>
+                <h1 class="text-2xl font-bold">Ups & Downs Trading</h1>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Chart Panel -->
+            <div class="lg:col-span-2">
+                <div class="panel p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">Price Chart</h3>
+                        <select id="marketSelect" class="input-field text-sm">
+                            <option value="R_10">Volatility 10 Index</option>
+                            <option value="R_25">Volatility 25 Index</option>
+                            <option value="R_50">Volatility 50 Index</option>
+                            <option value="R_75">Volatility 75 Index</option>
+                            <option value="R_100" selected>Volatility 100 Index</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Market Info -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold mb-4">Market Information</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-[#FF4500]" id="currentPrice">1234.567</div>
+                            <div class="text-sm text-gray-400">Current Price</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-green-500" id="priceChange">+0.123</div>
+                            <div class="text-sm text-gray-400">Change</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold" id="highPrice">1235.890</div>
+                            <div class="text-sm text-gray-400">High</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold" id="lowPrice">1233.456</div>
+                            <div class="text-sm text-gray-400">Low</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Panel -->
+            <div class="lg:col-span-1">
+                <div class="panel p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Trade Parameters</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Trade Type</label>
+                            <select id="tradeType" class="input-field w-full" onchange="updateTradeType()">
+                                <option value="CALL">Rise/Fall</option>
+                                <option value="CALLE">Higher/Lower</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Stake (USD)</label>
+                            <input type="number" id="stakeAmount" value="1" min="0.35" step="0.01" 
+                                   class="input-field w-full" onchange="updatePayout()">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Duration</label>
+                            <div class="flex space-x-2">
+                                <input type="number" id="duration" value="5" min="1" class="input-field flex-1">
+                                <select id="durationUnit" class="input-field" onchange="updatePayout()">
+                                    <option value="t">Ticks</option>
+                                    <option value="s">Seconds</option>
+                                    <option value="m">Minutes</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="barrierSection" style="display: none;">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Barrier</label>
+                            <input type="number" id="barrier" step="0.001" class="input-field w-full" 
+                                   onchange="updatePayout()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Buttons -->
+                <div class="panel p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Purchase</h3>
+                    <div class="space-y-3" id="purchaseButtons">
+                        <button class="trade-btn btn-success w-full" onclick="placeTrade('CALL')">
+                            <div class="flex justify-between items-center">
+                                <span>Rise</span>
+                                <span id="risePayout">1.85</span>
+                            </div>
+                        </button>
+                        <button class="trade-btn btn-danger w-full" onclick="placeTrade('PUT')">
+                            <div class="flex justify-between items-center">
+                                <span>Fall</span>
+                                <span id="fallPayout">1.85</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trade Summary -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold mb-4">Trade Summary</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Potential Payout:</span>
+                            <span class="font-bold text-green-500" id="potentialPayout">1.85 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Potential Profit:</span>
+                            <span class="font-bold text-green-500" id="potentialProfit">0.85 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Commission:</span>
+                            <span class="font-bold">0.00 USD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let canvas = null;
+        let ctx = null;
+        let candles = [];
+        let currentCandle = null;
+        let currentPrice = 1234.567;
+        let isDemo = true;
+        let highPrice = 1234.567;
+        let lowPrice = 1234.567;
+        let startPrice = 1234.567;
+        let zoom = 1;
+        let offset = 0;
+        const MAX_CANDLES = 100;
+        const TIMEFRAME = 60;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAccount();
+            initializeChart();
+            connectWebSocket();
+            updatePayout();
+        });
+
+        function initializeAccount() {
+            const savedAccountType = localStorage.getItem('accountType');
+            if (savedAccountType === 'real') {
+                isDemo = false;
+            }
+            updateAccountDisplay();
+        }
+
+        function initializeChart() {
+            canvas = document.getElementById('chart');
+            ctx = canvas.getContext('2d');
+            
+            function resize() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                draw();
+            }
+            resize();
+            window.addEventListener('resize', resize);
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+            
+            ws.onopen = () => {
+                const market = document.getElementById('marketSelect').value;
+                ws.send(JSON.stringify({
+                    ticks_history: market,
+                    style: "candles",
+                    granularity: TIMEFRAME,
+                    count: MAX_CANDLES,
+                    end: "latest"
+                }));
+                ws.send(JSON.stringify({ ticks: market, subscribe: 1 }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.candles) {
+                    candles = data.candles.map(c => ({
+                        time: Math.floor(c.epoch / TIMEFRAME) * TIMEFRAME,
+                        open: +c.open,
+                        high: +c.high,
+                        low: +c.low,
+                        close: +c.close
+                    }));
+                    currentCandle = null;
+                    draw();
+                }
+                if (data.tick) {
+                    updatePrice(parseFloat(data.tick.quote));
+                    updateCandle(parseFloat(data.tick.quote), data.tick.epoch);
+                }
+            };
+            
+            ws.onclose = () => {
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function updateCandle(price, epoch) {
+            const t = Math.floor(epoch / TIMEFRAME) * TIMEFRAME;
+
+            if (!currentCandle || currentCandle.time !== t) {
+                if (currentCandle) {
+                    candles.push(currentCandle);
+                    if (candles.length > MAX_CANDLES) candles.shift();
+                }
+                currentCandle = { time: t, open: price, high: price, low: price, close: price };
+            } else {
+                currentCandle.high = Math.max(currentCandle.high, price);
+                currentCandle.low = Math.min(currentCandle.low, price);
+                currentCandle.close = price;
+            }
+            
+            draw();
+        }
+
+        function draw() {
+            if (!ctx || !canvas) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let data = [...candles];
+            if (currentCandle) data.push(currentCandle);
+            if (!data.length) return;
+
+            const pad = 50;
+            const w = canvas.width - pad * 2;
+            const h = canvas.height - pad * 2;
+
+            const candleSpacing = 8 * zoom;
+            const visible = Math.floor(w / candleSpacing);
+            const start = Math.max(0, data.length - visible - Math.floor(offset));
+            const view = data.slice(start, start + visible);
+
+            if (!view.length) return;
+
+            const max = Math.max(...view.map(c => c.high));
+            const min = Math.min(...view.map(c => c.low));
+            const range = max - min || 1;
+            const y = p => pad + h - ((p - min) / range) * h;
+
+            // Grid
+            ctx.strokeStyle = "#1f2430";
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const gy = pad + (h / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(pad, gy);
+                ctx.lineTo(canvas.width - pad, gy);
+                ctx.stroke();
+            }
+
+            // Candles
+            view.forEach((c, i) => {
+                const x = pad + i * candleSpacing + candleSpacing / 2;
+                const up = c.close >= c.open;
+                
+                ctx.strokeStyle = ctx.fillStyle = up ? '#00C851' : '#FF4444';
+                ctx.lineWidth = 1;
+
+                // Wick
+                ctx.beginPath();
+                ctx.moveTo(x, y(c.high));
+                ctx.lineTo(x, y(c.low));
+                ctx.stroke();
+
+                // Body
+                const bodyWidth = Math.max(2, candleSpacing * 0.6);
+                const bodyHeight = Math.max(1, Math.abs(y(c.close) - y(c.open)));
+                
+                ctx.fillRect(
+                    x - bodyWidth / 2,
+                    Math.min(y(c.open), y(c.close)),
+                    bodyWidth,
+                    bodyHeight
+                );
+            });
+
+            // Price labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const price = min + (range / 5) * (5 - i);
+                const gy = pad + (h / 5) * i;
+                ctx.fillText(price.toFixed(3), pad - 5, gy + 4);
+            }
+        }
+
+        function updateTradeType() {
+            const tradeType = document.getElementById('tradeType').value;
+            const barrierSection = document.getElementById('barrierSection');
+            const purchaseButtons = document.getElementById('purchaseButtons');
+            
+            if (tradeType === 'CALLE') {
+                barrierSection.style.display = 'block';
+                document.getElementById('barrier').value = (currentPrice + 0.1).toFixed(3);
+                purchaseButtons.innerHTML = `
+                    <button class="trade-btn btn-success w-full" onclick="placeTrade('CALLE')">
+                        <div class="flex justify-between items-center">
+                            <span>Higher</span>
+                            <span id="higherPayout">1.85</span>
+                        </div>
+                    </button>
+                    <button class="trade-btn btn-danger w-full" onclick="placeTrade('PUTE')">
+                        <div class="flex justify-between items-center">
+                            <span>Lower</span>
+                            <span id="lowerPayout">1.85</span>
+                        </div>
+                    </button>
+                `;
+            } else {
+                barrierSection.style.display = 'none';
+                purchaseButtons.innerHTML = `
+                    <button class="trade-btn btn-success w-full" onclick="placeTrade('CALL')">
+                        <div class="flex justify-between items-center">
+                            <span>Rise</span>
+                            <span id="risePayout">1.85</span>
+                        </div>
+                    </button>
+                    <button class="trade-btn btn-danger w-full" onclick="placeTrade('PUT')">
+                        <div class="flex justify-between items-center">
+                            <span>Fall</span>
+                            <span id="fallPayout">1.85</span>
+                        </div>
+                    </button>
+                `;
+            }
+            updatePayout();
+        }
+
+        function updatePayout() {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const multiplier = 1.85;
+            const payout = stake * multiplier;
+            const profit = payout - stake;
+            
+            document.getElementById('potentialPayout').textContent = `${payout.toFixed(2)} USD`;
+            document.getElementById('potentialProfit').textContent = `${profit.toFixed(2)} USD`;
+            
+            // Update button payouts
+            const tradeType = document.getElementById('tradeType').value;
+            if (tradeType === 'CALLE') {
+                const higherEl = document.getElementById('higherPayout');
+                const lowerEl = document.getElementById('lowerPayout');
+                if (higherEl) higherEl.textContent = payout.toFixed(2);
+                if (lowerEl) lowerEl.textContent = payout.toFixed(2);
+            } else {
+                const riseEl = document.getElementById('risePayout');
+                const fallEl = document.getElementById('fallPayout');
+                if (riseEl) riseEl.textContent = payout.toFixed(2);
+                if (fallEl) fallEl.textContent = payout.toFixed(2);
+            }
+        }
+
+        function placeTrade(contractType) {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const duration = parseInt(document.getElementById('duration').value) || 5;
+            const durationUnit = document.getElementById('durationUnit').value;
+            const market = document.getElementById('marketSelect').value;
+            
+            let proposal = {
+                proposal: 1,
+                amount: stake,
+                contract_type: contractType,
+                currency: "USD",
+                symbol: market,
+                basis: "stake"
+            };
+            
+            // Add duration
+            if (durationUnit === 't') {
+                proposal.duration = duration;
+                proposal.duration_unit = 't';
+            } else if (durationUnit === 's') {
+                proposal.duration = duration;
+                proposal.duration_unit = 's';
+            } else {
+                proposal.duration = duration;
+                proposal.duration_unit = 'm';
+            }
+            
+            // Add barrier for Higher/Lower
+            if (contractType === 'CALLE' || contractType === 'PUTE') {
+                const barrier = parseFloat(document.getElementById('barrier').value);
+                proposal.barrier = barrier.toString();
+            }
+            
+            // Send proposal to get price
+            ws.send(JSON.stringify(proposal));
+            
+            // Listen for proposal response
+            const originalOnMessage = ws.onmessage;
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.proposal) {
+                    // Buy the contract
+                    const buyRequest = {
+                        buy: data.proposal.id,
+                        price: data.proposal.ask_price
+                    };
+                    ws.send(JSON.stringify(buyRequest));
+                    
+                    // Show success message
+                    const tradeNames = {
+                        'CALL': 'Rise',
+                        'PUT': 'Fall',
+                        'CALLE': 'Higher',
+                        'PUTE': 'Lower'
+                    };
+                    
+                    alert(`${tradeNames[contractType]} trade placed for ${stake} USD`);
+                    
+                    // Update balance
+                    updateBalance(-stake);
+                    
+                    // Restore original message handler
+                    ws.onmessage = originalOnMessage;
+                } else if (data.buy) {
+                    console.log('Trade executed:', data.buy);
+                } else {
+                    originalOnMessage(event);
+                }
+            };
+        }
+
+        function updateBalance(change) {
+            const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
+            const newBalance = currentBalance + change;
+            document.getElementById('accountBalance').textContent = `${newBalance.toFixed(2)} USD`;
+            
+            if (isDemo) {
+                localStorage.setItem('demoBalance', newBalance.toFixed(2));
+            } else {
+                localStorage.setItem('realBalance', newBalance.toFixed(2));
+            }
+        }
+
+        function toggleAccountType() {
+            isDemo = !isDemo;
+            localStorage.setItem('accountType', isDemo ? 'demo' : 'real');
+            updateAccountDisplay();
+        }
+
+        function updateAccountDisplay() {
+            const btn = document.getElementById('accountTypeBtn');
+            const label = document.getElementById('balanceLabel');
+            const balance = document.getElementById('accountBalance');
+            
+            const demoBalance = localStorage.getItem('demoBalance') || '10000.00';
+            const realBalance = localStorage.getItem('realBalance') || '0.00';
+            
+            if (isDemo) {
+                btn.textContent = 'Demo';
+                btn.className = 'px-3 py-1 text-sm rounded-lg font-semibold transition-all bg-green-600 text-white';
+                label.textContent = 'Demo Balance';
+                balance.textContent = `${parseFloat(demoBalance).toFixed(2)} USD`;
+                balance.className = 'font-bold text-lg text-green-500';
+            } else {
+                btn.textContent = 'Real';
+                btn.className = 'px-3 py-1 text-sm rounded-lg font-semibold transition-all bg-red-600 text-white';
+                label.textContent = 'Real Balance';
+                balance.textContent = `${parseFloat(realBalance).toFixed(2)} USD`;
+                balance.className = 'font-bold text-lg text-red-500';
+            }
+        }
+
+        function exitApp() {
+            if (ws) ws.close();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userSession');
+            window.location.href = '/auth';
+        }
+
+        function updatePrice(price) {
+            currentPrice = price;
+            
+            // Update high/low
+            if (price > highPrice) highPrice = price;
+            if (price < lowPrice) lowPrice = price;
+            
+            // Update display
+            document.getElementById('currentPrice').textContent = price.toFixed(3);
+            document.getElementById('highPrice').textContent = highPrice.toFixed(3);
+            document.getElementById('lowPrice').textContent = lowPrice.toFixed(3);
+            
+            const change = price - startPrice;
+            const changeEl = document.getElementById('priceChange');
+            changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(3);
+            changeEl.className = `text-lg font-bold ${change >= 0 ? 'text-green-500' : 'text-red-500'}`;
+            
+            updatePayout();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accumulators Trading | Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: #0D1421;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .panel {
+            background: #0A0E1A;
+            border: 1px solid #1E293B;
+            border-radius: 8px;
+        }
+        .btn-primary { background: #FF4500; }
+        .btn-primary:hover { background: #e63e00; }
+        .btn-success { background: #00C851; }
+        .btn-success:hover { background: #00a844; }
+        .btn-danger { background: #FF4444; }
+        .btn-danger:hover { background: #e63939; }
+        .input-field {
+            background: #1E293B;
+            border: 1px solid #334155;
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #FF4500;
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+        }
+        .trade-btn {
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+        .chart-container {
+            background: #0A0E1A;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+        }
+        .accumulator-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .range-indicator {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px dashed #FFD700;
+        }
+        .tick-counter {
+            background: #1E293B;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .grid-cols-2 { grid-template-columns: 1fr; }
+            .lg\\:grid-cols-3 { grid-template-columns: 1fr; }
+            .chart-container { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-[#0A0E1A] border-b border-gray-700 px-4 py-3 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-[#FF4500] rounded flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">A</span>
+                    </div>
+                    <span class="text-xl font-bold">Algocdk</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/app" class="text-gray-400 hover:text-white">Chart</a>
+                    <a href="/trading" class="text-[#FF4500] font-semibold">Trade</a>
+                    <a href="/mybots" class="text-gray-400 hover:text-white">Bots</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleAccountType()" class="px-3 py-1 text-sm rounded-lg font-semibold transition-all" id="accountTypeBtn">
+                    Demo
+                </button>
+                <div class="text-right">
+                    <div class="text-xs text-gray-400" id="balanceLabel">Demo Balance</div>
+                    <div class="font-bold text-lg" id="accountBalance">10,000.00 USD</div>
+                </div>
+                <button onclick="exitApp()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="mb-6">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='/trading'" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Trading
+                </button>
+                <h1 class="text-2xl font-bold">Accumulators Trading</h1>
+                <div class="accumulator-badge" id="currentGrowthRate">1%</div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Chart Panel -->
+            <div class="lg:col-span-2">
+                <div class="panel p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">Price Chart with Range</h3>
+                        <select id="marketSelect" class="input-field text-sm">
+                            <option value="1HZ10V">Volatility 10 (1s) Index</option>
+                            <option value="1HZ25V">Volatility 25 (1s) Index</option>
+                            <option value="1HZ50V">Volatility 50 (1s) Index</option>
+                            <option value="1HZ75V" selected>Volatility 75 (1s) Index</option>
+                            <option value="1HZ100V">Volatility 100 (1s) Index</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Accumulator Status -->
+                <div class="panel p-6" id="accumulatorStatus" style="display: none;">
+                    <h3 class="text-lg font-bold mb-4">Accumulator Status</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="tick-counter">
+                            <div class="text-2xl font-bold text-yellow-500" id="ticksInRange">0</div>
+                            <div class="text-sm text-gray-400">Ticks in Range</div>
+                        </div>
+                        <div class="tick-counter">
+                            <div class="text-lg font-bold text-green-500" id="totalPayout">0.00</div>
+                            <div class="text-sm text-gray-400">Total Payout</div>
+                        </div>
+                        <div class="tick-counter">
+                            <div class="text-lg font-bold" id="rangeStatus">In Range</div>
+                            <div class="text-sm text-gray-400">Status</div>
+                        </div>
+                        <div class="text-center">
+                            <button onclick="sellAccumulator()" class="trade-btn btn-danger text-sm px-4 py-2">
+                                Sell Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Panel -->
+            <div class="lg:col-span-1">
+                <div class="panel p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Accumulator Parameters</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Stake (USD)</label>
+                            <input type="number" id="stakeAmount" value="1" min="1" step="0.01" 
+                                   class="input-field w-full" onchange="updateCalculations()">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Growth Rate</label>
+                            <select id="growthRate" class="input-field w-full" onchange="updateGrowthRate()">
+                                <option value="1">1%</option>
+                                <option value="2">2%</option>
+                                <option value="3">3%</option>
+                                <option value="4">4%</option>
+                                <option value="5">5%</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Range</label>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span>Upper Barrier:</span>
+                                    <span id="upperBarrier">+0.05%</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span>Lower Barrier:</span>
+                                    <span id="lowerBarrier">-0.05%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg p-3">
+                            <div class="text-xs text-yellow-300">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Earn fixed payouts for every tick the price stays within the range. 
+                                Contract ends if price goes outside the range.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Button -->
+                <div class="panel p-6 mb-6" id="startButton">
+                    <h3 class="text-lg font-bold mb-4">Start Accumulator</h3>
+                    <button class="trade-btn btn-primary w-full" onclick="startAccumulator()">
+                        <div class="flex justify-between items-center">
+                            <span><i class="fas fa-play mr-2"></i>Start</span>
+                            <span>Begin Accumulating</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Risk Information -->
+                <div class="panel p-6">
+                    <h3 class="text-lg font-bold mb-4">Risk Information</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Payout per tick:</span>
+                            <span class="font-bold text-green-500" id="payoutPerTick">0.01 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Maximum loss:</span>
+                            <span class="font-bold text-red-500" id="maxLoss">-1.00 USD</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Range width:</span>
+                            <span class="font-bold" id="rangeWidth">0.10%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let widget = null;
+        let currentPrice = 1234.567;
+        let isDemo = true;
+        let activeAccumulator = null;
+        let entryPrice = 0;
+        let ticksInRange = 0;
+        let totalPayout = 0;
+        let upperBarrierPrice = 0;
+        let lowerBarrierPrice = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAccount();
+            initializeTradingView();
+            connectWebSocket();
+            updateCalculations();
+        });
+
+        function initializeAccount() {
+            const savedAccountType = localStorage.getItem('accountType');
+            if (savedAccountType === 'real') {
+                isDemo = false;
+            }
+            updateAccountDisplay();
+        }
+
+        function initializeTradingView() {
+            widget = new TradingView.widget({
+                "width": "100%",
+                "height": 400,
+                "symbol": "OANDA:SPX500USD",
+                "interval": "1",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#0A0E1A",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": true,
+                "save_image": false,
+                "container_id": "tradingview_chart",
+                "backgroundColor": "#0A0E1A",
+                "gridColor": "#1E293B",
+                "hide_side_toolbar": false,
+                "allow_symbol_change": false,
+                "studies": [],
+                "overrides": {
+                    "paneProperties.background": "#0A0E1A",
+                    "paneProperties.vertGridProperties.color": "#1E293B",
+                    "paneProperties.horzGridProperties.color": "#1E293B",
+                    "symbolWatermarkProperties.transparency": 90,
+                    "scalesProperties.textColor": "#94a3b8"
+                }
+            });
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+            
+            ws.onopen = () => {
+                const market = document.getElementById('marketSelect').value;
+                ws.send(JSON.stringify({ ticks: market, subscribe: 1 }));
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.tick) {
+                    updatePrice(parseFloat(data.tick.quote));
+                }
+            };
+            
+            ws.onclose = () => {
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function updatePrice(price) {
+            currentPrice = price;
+            
+            if (activeAccumulator) {
+                // Check if price is in range
+                if (price >= lowerBarrierPrice && price <= upperBarrierPrice) {
+                    ticksInRange++;
+                    const growthRate = parseFloat(document.getElementById('growthRate').value);
+                    const stake = parseFloat(document.getElementById('stakeAmount').value);
+                    const payoutPerTick = stake * (growthRate / 100);
+                    totalPayout += payoutPerTick;
+                    
+                    document.getElementById('ticksInRange').textContent = ticksInRange;
+                    document.getElementById('totalPayout').textContent = totalPayout.toFixed(2);
+                    document.getElementById('rangeStatus').textContent = 'In Range';
+                    document.getElementById('rangeStatus').className = 'text-lg font-bold text-green-500';
+                } else {
+                    // Price went outside range - end accumulator
+                    document.getElementById('rangeStatus').textContent = 'Out of Range';
+                    document.getElementById('rangeStatus').className = 'text-lg font-bold text-red-500';
+                    
+                    setTimeout(() => {
+                        sellAccumulator();
+                    }, 1000);
+                }
+            }
+        }
+
+        function updateGrowthRate() {
+            const growthRate = document.getElementById('growthRate').value;
+            document.getElementById('currentGrowthRate').textContent = `${growthRate}%`;
+            
+            // Update range based on growth rate (higher growth = narrower range)
+            const rangePercent = Math.max(0.03, 0.08 - (growthRate * 0.01));
+            document.getElementById('upperBarrier').textContent = `+${(rangePercent * 100).toFixed(2)}%`;
+            document.getElementById('lowerBarrier').textContent = `-${(rangePercent * 100).toFixed(2)}%`;
+            document.getElementById('rangeWidth').textContent = `${(rangePercent * 200).toFixed(2)}%`;
+            
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const growthRate = parseFloat(document.getElementById('growthRate').value) || 1;
+            
+            const payoutPerTick = stake * (growthRate / 100);
+            
+            document.getElementById('payoutPerTick').textContent = `${payoutPerTick.toFixed(3)} USD`;
+            document.getElementById('maxLoss').textContent = `-${stake.toFixed(2)} USD`;
+        }
+
+        function startAccumulator() {
+            const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
+            const growthRate = parseFloat(document.getElementById('growthRate').value) || 1;
+            const market = document.getElementById('marketSelect').value;
+            
+            let proposal = {
+                proposal: 1,
+                amount: stake,
+                contract_type: "ACCU",
+                currency: "USD",
+                symbol: market,
+                basis: "stake",
+                growth_rate: growthRate / 100
+            };
+            
+            // Send proposal to get price
+            ws.send(JSON.stringify(proposal));
+            
+            // Listen for proposal response
+            const originalOnMessage = ws.onmessage;
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.proposal) {
+                    // Buy the contract
+                    const buyRequest = {
+                        buy: data.proposal.id,
+                        price: data.proposal.ask_price
+                    };
+                    ws.send(JSON.stringify(buyRequest));
+                    
+                    // Set up active accumulator
+                    activeAccumulator = {
+                        stake: stake,
+                        growthRate: growthRate,
+                        entryPrice: currentPrice,
+                        startTime: Date.now()
+                    };
+                    
+                    entryPrice = currentPrice;
+                    ticksInRange = 0;
+                    totalPayout = 0;
+                    
+                    // Calculate barriers
+                    const rangePercent = Math.max(0.03, 0.08 - (growthRate * 0.01));
+                    upperBarrierPrice = entryPrice * (1 + rangePercent);
+                    lowerBarrierPrice = entryPrice * (1 - rangePercent);
+                    
+                    // Show accumulator status
+                    document.getElementById('accumulatorStatus').style.display = 'block';
+                    document.getElementById('startButton').style.display = 'none';
+                    
+                    // Show success message
+                    alert(`Accumulator started with ${growthRate}% growth rate for ${stake} USD`);
+                    
+                    // Update balance
+                    updateBalance(-stake);
+                    
+                    // Restore original message handler
+                    ws.onmessage = originalOnMessage;
+                } else if (data.buy) {
+                    console.log('Accumulator started:', data.buy);
+                } else {
+                    originalOnMessage(event);
+                }
+            };
+        }
+
+        function sellAccumulator() {
+            if (!activeAccumulator) return;
+            
+            // Update balance with total payout
+            updateBalance(totalPayout);
+            
+            // Reset accumulator
+            activeAccumulator = null;
+            entryPrice = 0;
+            ticksInRange = 0;
+            totalPayout = 0;
+            
+            // Hide accumulator status and show start button
+            document.getElementById('accumulatorStatus').style.display = 'none';
+            document.getElementById('startButton').style.display = 'block';
+            
+            alert(`Accumulator sold. Total payout: ${totalPayout.toFixed(2)} USD`);
+        }
+
+        function updateBalance(change) {
+            const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
+            const newBalance = currentBalance + change;
+            document.getElementById('accountBalance').textContent = `${newBalance.toFixed(2)} USD`;
+            
+            if (isDemo) {
+                localStorage.setItem('demoBalance', newBalance.toFixed(2));
+            } else {
+                localStorage.setItem('realBalance', newBalance.toFixed(2));
+            }
+        }
+
+        function toggleAccountType() {
+            isDemo = !isDemo;
+            localStorage.setItem('accountType', isDemo ? 'demo' : 'real');
+            updateAccountDisplay();
+        }
+
+        function updateAccountDisplay() {
+            const btn = document.getElementById('accountTypeBtn');
+            const label = document.getElementById('balanceLabel');
+            const balance = document.getElementById('accountBalance');
+            
+            const demoBalance = localStorage.getItem('demoBalance') || '10000.00';
+            const realBalance = localStorage.getItem('realBalance') || '0.00';
+            
+            if (isDemo) {
+                btn.textContent = 'Demo';
+                btn.className = 'px-3 py-1 text-sm rounded-lg font-semibold transition-all bg-green-600 text-white';
+                label.textContent = 'Demo Balance';
+                balance.textContent = `${parseFloat(demoBalance).toFixed(2)} USD`;
+                balance.className = 'font-bold text-lg text-green-500';
+            } else {
+                btn.textContent = 'Real';
+                btn.className = 'px-3 py-1 text-sm rounded-lg font-semibold transition-all bg-red-600 text-white';
+                label.textContent = 'Real Balance';
+                balance.textContent = `${parseFloat(realBalance).toFixed(2)} USD`;
+                balance.className = 'font-bold text-lg text-red-500';
+            }
+        }
+
+        function exitApp() {
+            if (ws) ws.close();
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userSession');
+            window.location.href = '/auth';
+        }
+
+        // Market change handler
+        document.getElementById('marketSelect').addEventListener('change', function() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ forget_all: 'ticks' }));
+                ws.send(JSON.stringify({ ticks: this.value, subscribe: 1 }));
+            }
+            
+            // Reset price tracking
+            priceData = [];
+        });
+
+        // Initialize growth rate
+        updateGrowthRate();
+    </script>
+</body>
+</html>
