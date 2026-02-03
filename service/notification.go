@@ -1,10 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/keyadaniel56/algocdk/internal/database"
 	"github.com/keyadaniel56/algocdk/internal/models"
+	"github.com/keyadaniel56/algocdk/internal/utils"
 )
 
 type NotificationService struct{}
@@ -35,6 +38,9 @@ func (ns *NotificationService) SendAccountAlert(userID uint, title, message stri
 		return err
 	}
 
+	// Send email notification
+	ns.sendEmailNotification(userID, title, message)
+
 	log.Printf("Notification sent to user %d: %s", userID, title)
 	return nil
 }
@@ -56,6 +62,9 @@ func (ns *NotificationService) SendTradeAlert(userID uint, title, message string
 		return err
 	}
 
+	// Send email notification for high priority trade alerts
+	ns.sendEmailNotification(userID, title, message)
+
 	log.Printf("Trade notification sent to user %d: %s", userID, title)
 	return nil
 }
@@ -70,4 +79,36 @@ func (ns *NotificationService) GetUserNotifications(userID uint) ([]models.Notif
 		Find(&notifications).Error
 
 	return notifications, err
+}
+
+func (ns *NotificationService) SendEmailAlert(userID uint, title, message string) error {
+	ns.sendEmailNotification(userID, title, message)
+	return nil
+}
+
+func (ns *NotificationService) sendEmailNotification(userID uint, title, message string) {
+	db := database.GetDB()
+	var user models.User
+
+	if err := db.First(&user, userID).Error; err != nil {
+		log.Printf("Failed to get user for email notification: %v", err)
+		return
+	}
+
+	if user.Email == "" {
+		log.Printf("User %d has no email address", userID)
+		return
+	}
+
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:8080"
+	}
+
+	emailMsg := fmt.Sprintf(
+		"Subject: %s\n\n%s\n\nView your notifications: %s/notifications",
+		title, message, frontendURL,
+	)
+
+	utils.SendEmail(user.Email, emailMsg)
 }

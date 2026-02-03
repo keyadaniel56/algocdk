@@ -67,6 +67,8 @@ const api = {
     signup: (data) => apiRequest('/auth/signup', 'POST', data),
     login: (data) => apiRequest('/auth/login', 'POST', data),
     forgotPassword: (data) => apiRequest('/auth/forgot_password/', 'POST', data),
+    verifyEmail: (token) => apiRequest(`/auth/verify-email?token=${token}`, 'GET'),
+    resendVerification: (data) => apiRequest('/auth/resend-verification', 'POST', data),
   },
 
   user: {

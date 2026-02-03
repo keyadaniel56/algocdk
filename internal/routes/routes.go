@@ -27,6 +27,8 @@ func SetUpRouter(router *gin.Engine) {
 			auth.POST("/signup", handlers.SignupHandler)
 			auth.POST("/login", handlers.LoginHandler)
 			auth.POST("/forgot_password/", handlers.ForgotPasswordHandler)
+			auth.GET("/verify-email", handlers.VerifyEmailHandler)
+			auth.POST("/resend-verification", handlers.ResendVerificationEmailHandler)
 		}
 
 		// ================= MARKET DATA =================
@@ -210,6 +212,9 @@ func SetUpRouter(router *gin.Engine) {
 	})
 	router.GET("/auth", func(c *gin.Context) {
 		c.File(frontendPath + "/auth.html")
+	})
+	router.GET("/verify-email", func(c *gin.Context) {
+		c.File(frontendPath + "/verify-email.html")
 	})
 	router.GET("/settings", func(c *gin.Context) {
 		c.File(frontendPath + "/settings.html")

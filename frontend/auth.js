@@ -141,10 +141,10 @@ class AuthHandler {
         password: data.password
       });
 
-      utils.notify('Account created successfully! Please login.', 'success');
-      setTimeout(() => {
-        this.showForm('login');
-      }, 1500);
+      utils.notify('Account created! Please check your email to verify your account.', 'success');
+      
+      // Show verification message and resend option
+      this.showVerificationMessage(data.email);
     } catch (error) {
       utils.notify(error.message || 'Signup failed', 'error');
       this.setLoading(event.target, false);
@@ -324,6 +324,51 @@ class AuthHandler {
     const urlParams = new URLSearchParams(window.location.search);
     const formType = urlParams.get('form') || 'login';
     this.showForm(formType);
+  }
+
+  showVerificationMessage(email) {
+    const signupForm = document.getElementById('signup-form');
+    if (signupForm) {
+      signupForm.innerHTML = `
+        <div class="text-center">
+          <div class="bg-primary bg-opacity-20 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <i class="fas fa-envelope text-primary text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-4">Check Your Email</h3>
+          <p class="text-gray-400 mb-6">We've sent a verification link to <strong>${email}</strong>. Please check your email and click the link to verify your account.</p>
+          <div class="space-y-3">
+            <button onclick="authHandler.resendVerification('${email}')" class="bg-primary hover:bg-secondary px-6 py-3 rounded-lg w-full">
+              Resend Verification Email
+            </button>
+            <button onclick="authHandler.showForm('login')" class="text-gray-400 hover:text-white">
+              Back to Login
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  async resendVerification(email) {
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        utils.notify('Verification email sent!', 'success');
+      } else {
+        utils.notify(data.error || 'Failed to send verification email', 'error');
+      }
+    } catch (error) {
+      utils.notify('Network error. Please try again.', 'error');
+    }
   }
 }
 

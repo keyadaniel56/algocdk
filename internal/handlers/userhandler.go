@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -79,13 +80,22 @@ func SignupHandler(ctx *gin.Context) {
 		return
 	}
 
+	// Generate verification token
+	verificationToken, err := utils.GenerateVerificationToken()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate verification token"})
+		return
+	}
+
 	user := models.User{
-		Name:      payload.Name,
-		Email:     payload.Email,
-		Password:  hashed,
-		Country:   country,
-		CreatedAt: utils.FormattedTime(time.Now()),
-		UpdatedAt: utils.FormattedTime(time.Now()),
+		Name:              payload.Name,
+		Email:             payload.Email,
+		Password:          hashed,
+		Country:           country,
+		EmailVerified:     false,
+		VerificationToken: verificationToken,
+		CreatedAt:         utils.FormattedTime(time.Now()),
+		UpdatedAt:         utils.FormattedTime(time.Now()),
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
@@ -96,17 +106,13 @@ func SignupHandler(ctx *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, user.Email, "user")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "could not generate token",
-		})
-		return
-	}
+	// Send verification email
+	verificationLink := fmt.Sprintf("%s/verify-email?token=%s",
+		os.Getenv("FRONTEND_URL"), verificationToken)
+	go utils.SendVerificationEmail(user.Email, verificationLink)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Signup successful",
-		"token":   token,
+		"message": "Signup successful. Please check your email to verify your account.",
 		"country": country,
 	})
 }
@@ -143,6 +149,12 @@ func LoginHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "user not found"})
 		return
 	}
+
+	if !user.EmailVerified {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "please verify your email before logging in"})
+		return
+	}
+
 	if !utils.IsHashed(user.Password, payload.Password) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})
 		return
@@ -716,4 +728,86 @@ func GetUserNotificationsHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"notifications": notifications,
 	})
+}
+
+// VerifyEmailHandler verifies user email with token
+func VerifyEmailHandler(ctx *gin.Context) {
+	token := ctx.Query("token")
+	if token == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "verification token is required"})
+		return
+	}
+
+	var user models.User
+	if err := database.DB.Where("verification_token = ?", token).First(&user).Error; err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid verification token"})
+		return
+	}
+
+	if user.EmailVerified {
+		ctx.JSON(http.StatusOK, gin.H{"message": "email already verified"})
+		return
+	}
+
+	user.EmailVerified = true
+	user.VerificationToken = ""
+	user.UpdatedAt = utils.FormattedTime(time.Now())
+
+	if err := database.DB.Save(&user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify email"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "email verified successfully"})
+}
+
+// ResendVerificationEmailHandler resends verification email
+func ResendVerificationEmailHandler(ctx *gin.Context) {
+	var payload struct {
+		Email string `json:"email"`
+	}
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+		return
+	}
+
+	payload.Email = strings.ToLower(strings.TrimSpace(payload.Email))
+	if payload.Email == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email is required"})
+		return
+	}
+
+	var user models.User
+	if err := database.DB.Where("email = ?", payload.Email).First(&user).Error; err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"message": "if the email exists, a verification link was sent"})
+		return
+	}
+
+	if user.EmailVerified {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "email is already verified"})
+		return
+	}
+
+	// Generate new verification token
+	verificationToken, err := utils.GenerateVerificationToken()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate verification token"})
+		return
+	}
+
+	user.VerificationToken = verificationToken
+	user.UpdatedAt = utils.FormattedTime(time.Now())
+
+	if err := database.DB.Save(&user).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update verification token"})
+		return
+	}
+
+	// Send verification email
+	verificationLink := fmt.Sprintf("%s/verify-email?token=%s",
+		os.Getenv("FRONTEND_URL"), verificationToken)
+	go utils.SendVerificationEmail(user.Email, verificationLink)
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "verification email sent"})
 }

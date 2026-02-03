@@ -55,11 +55,55 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+            .mobile-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .table-responsive table {
+                min-width: 600px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" class="mobile-overlay" onclick="closeMobileSidebar()"></div>
+    
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 sidebar-gradient shadow-xl z-50">
+    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 sidebar-gradient shadow-xl z-50">
         <div class="flex flex-col h-full">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 border-b border-gray-700">
@@ -137,19 +181,24 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="main-content ml-64 min-h-screen lg:ml-64">
         <!-- Header -->
         <header class="bg-gray-800 shadow-sm border-b border-gray-700">
-            <div class="px-6 py-4">
+            <div class="px-4 sm:px-6 py-4">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold" id="pageTitle">Dashboard</h2>
-                        <p class="text-gray-400 text-sm" id="pageSubtitle">System overview and management</p>
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" onclick="toggleMobileSidebar()" class="lg:hidden text-white hover:text-primary transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                    <div class="flex-1 lg:flex-none">
+                        <h2 class="text-xl sm:text-2xl font-bold" id="pageTitle">Dashboard</h2>
+                        <p class="text-gray-400 text-sm hidden sm:block" id="pageSubtitle">System overview and management</p>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button onclick="refreshData()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-sync-alt mr-2"></i>
-                            Refresh
+                    <div class="flex items-center space-x-2 sm:space-x-4">
+                        <button onclick="refreshData()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base">
+                            <i class="fas fa-sync-alt sm:mr-2"></i>
+                            <span class="hidden sm:inline">Refresh</span>
                         </button>
                         <div class="relative">
                             <a href="/notifications" class="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg block">
@@ -163,11 +212,11 @@
         </header>
 
         <!-- Content Area -->
-        <main class="p-6">
+        <main class="p-4 sm:p-6">
             <!-- Dashboard View -->
             <div id="dashboardView" class="view-content">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     <div class="bg-gray-800 rounded-xl p-6 card-hover transition-all">
                         <div class="flex items-center justify-between">
                             <div>
@@ -234,12 +283,12 @@
                 </div>
 
                 <!-- Charts and Tables -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     <!-- Recent Users -->
-                    <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-semibold">Recent Users</h3>
-                            <button onclick="showAllUsers()" class="text-primary hover:text-secondary">View All</button>
+                            <h3 class="text-lg sm:text-xl font-semibold">Recent Users</h3>
+                            <button onclick="showAllUsers()" class="text-primary hover:text-secondary text-sm sm:text-base">View All</button>
                         </div>
                         <div class="space-y-4" id="recentUsersList">
                             <div class="flex items-center justify-center py-8">
@@ -249,10 +298,10 @@
                     </div>
 
                     <!-- System Activity -->
-                    <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-semibold">System Activity</h3>
-                            <button class="text-primary hover:text-secondary">View Logs</button>
+                            <h3 class="text-lg sm:text-xl font-semibold">System Activity</h3>
+                            <button class="text-primary hover:text-secondary text-sm sm:text-base">View Logs</button>
                         </div>
                         <div class="space-y-4" id="systemActivity">
                             <div class="flex items-start space-x-3">
@@ -271,14 +320,14 @@
 
             <!-- Users View -->
             <div id="usersView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">Users Management</h3>
-                        <button onclick="showCreateUserModal()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
-                            <i class="fas fa-plus mr-2"></i>Create User
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-3 sm:space-y-0">
+                        <h3 class="text-lg sm:text-xl font-semibold">Users Management</h3>
+                        <button onclick="showCreateUserModal()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                            <i class="fas fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Create </span>User
                         </button>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="table-responsive overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b border-gray-700">
@@ -304,11 +353,11 @@
 
             <!-- Admins View -->
             <div id="adminsView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">Admins Management</h3>
-                        <button onclick="showCreateAdminModal()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
-                            <i class="fas fa-plus mr-2"></i>Create Admin
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-3 sm:space-y-0">
+                        <h3 class="text-lg sm:text-xl font-semibold">Admins Management</h3>
+                        <button onclick="showCreateAdminModal()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                            <i class="fas fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Create </span>Admin
                         </button>
                     </div>
                     <div id="adminsContainer">
@@ -321,11 +370,11 @@
 
             <!-- Bots View -->
             <div id="botsView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">Bots Management</h3>
-                        <button onclick="scanAllBots()" class="bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg">
-                            <i class="fas fa-search mr-2"></i>Scan All Bots
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-3 sm:space-y-0">
+                        <h3 class="text-lg sm:text-xl font-semibold">Bots Management</h3>
+                        <button onclick="scanAllBots()" class="bg-warning hover:bg-yellow-600 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                            <i class="fas fa-search mr-1 sm:mr-2"></i><span class="hidden sm:inline">Scan All </span>Bots
                         </button>
                     </div>
                     <div id="botsContainer">
@@ -338,30 +387,30 @@
 
             <!-- Sales View -->
             <div id="salesView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6 mb-6">
-                    <h3 class="text-xl font-semibold mb-6">Sales Overview</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6 mb-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Sales Overview</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Total Sales</h4>
-                            <p class="text-2xl font-bold text-success" id="totalSales">$0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-success" id="totalSales">$0</p>
                             <p class="text-sm text-gray-400">All time</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Total Transactions</h4>
-                            <p class="text-2xl font-bold text-primary" id="totalTransactions">0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-primary" id="totalTransactions">0</p>
                             <p class="text-sm text-gray-400">Completed</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Company Revenue</h4>
-                            <p class="text-2xl font-bold text-warning" id="companyRevenue">$0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-warning" id="companyRevenue">$0</p>
                             <p class="text-sm text-gray-400">Our share</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold mb-6">Recent Sales</h3>
-                    <div class="overflow-x-auto">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Recent Sales</h3>
+                    <div class="table-responsive overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b border-gray-700">
@@ -387,34 +436,34 @@
 
             <!-- Analytics View -->
             <div id="analyticsView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6 mb-6">
-                    <h3 class="text-xl font-semibold mb-6">Platform Performance</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6 mb-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Platform Performance</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Active Users</h4>
-                            <p class="text-2xl font-bold text-primary" id="activeUsersCount">0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-primary" id="activeUsersCount">0</p>
                             <p class="text-sm text-gray-400">Last 30 days</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Revenue Growth</h4>
-                            <p class="text-2xl font-bold" id="revenueGrowthRate">0%</p>
+                            <p class="text-xl sm:text-2xl font-bold" id="revenueGrowthRate">0%</p>
                             <p class="text-sm text-gray-400">Monthly</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Top Bot Sales</h4>
-                            <p class="text-2xl font-bold text-success" id="topBotSales">$0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-success" id="topBotSales">$0</p>
                             <p class="text-sm text-gray-400">Best performer</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Avg Transaction</h4>
-                            <p class="text-2xl font-bold text-warning" id="avgTransaction">$0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-warning" id="avgTransaction">$0</p>
                             <p class="text-sm text-gray-400">Per sale</p>
                         </div>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-gray-800 rounded-xl p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
                         <h4 class="font-semibold mb-4">Top Performing Bots</h4>
                         <div id="topBotsContainer">
                             <div class="flex items-center justify-center py-8">
@@ -422,7 +471,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
                         <h4 class="font-semibold mb-4">Top Admins by Revenue</h4>
                         <div id="topAdminsContainer">
                             <div class="flex items-center justify-center py-8">
@@ -435,21 +484,21 @@
 
             <!-- Admin Requests View -->
             <div id="admin-requestsView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6 mb-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">Admin Requests</h3>
-                        <div class="flex space-x-3">
-                            <button onclick="loadPendingRequests()" class="bg-warning hover:bg-yellow-600 px-4 py-2 rounded-lg">
-                                <i class="fas fa-clock mr-2"></i>Pending Only
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-3 sm:space-y-0">
+                        <h3 class="text-lg sm:text-xl font-semibold">Admin Requests</h3>
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                            <button onclick="loadPendingRequests()" class="bg-warning hover:bg-yellow-600 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                                <i class="fas fa-clock mr-1 sm:mr-2"></i><span class="hidden sm:inline">Pending </span>Only
                             </button>
-                            <button onclick="loadAllRequests()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
-                                <i class="fas fa-list mr-2"></i>All Requests
+                            <button onclick="loadAllRequests()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                                <i class="fas fa-list mr-1 sm:mr-2"></i><span class="hidden sm:inline">All </span>Requests
                             </button>
                         </div>
                     </div>
                     
                     <!-- Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Total Requests</h4>
                             <p class="text-2xl font-bold text-primary" id="totalRequestsCount">0</p>
@@ -479,24 +528,24 @@
 
             <!-- Settings View -->
             <div id="settingsView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold mb-6">System Settings</h3>
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">System Settings</h3>
+                    <div class="space-y-4 sm:space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-700 rounded-lg space-y-3 sm:space-y-0">
                             <div>
                                 <h4 class="font-medium">Maintenance Mode</h4>
                                 <p class="text-sm text-gray-400">Enable system maintenance</p>
                             </div>
-                            <button class="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg">
+                            <button class="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg w-full sm:w-auto">
                                 Toggle
                             </button>
                         </div>
-                        <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-700 rounded-lg space-y-3 sm:space-y-0">
                             <div>
                                 <h4 class="font-medium">Auto Backup</h4>
                                 <p class="text-sm text-gray-400">Automatic database backups</p>
                             </div>
-                            <button class="bg-success hover:bg-green-600 px-4 py-2 rounded-lg">
+                            <button class="bg-success hover:bg-green-600 px-4 py-2 rounded-lg w-full sm:w-auto">
                                 Enabled
                             </button>
                         </div>
@@ -509,7 +558,7 @@
     <!-- Modals -->
     <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-gray-800 rounded-xl p-6 w-full max-w-md">
+            <div class="bg-gray-800 rounded-xl p-4 sm:p-6 w-full max-w-md mx-4">
                 <div class="flex items-center justify-between mb-4">
                     <h3 id="modalTitle" class="text-lg font-semibold">Modal Title</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-white">
@@ -573,6 +622,7 @@
                 e.preventDefault();
                 const view = link.getAttribute('href').substring(1);
                 switchView(view);
+                handleNavClick(e); // Close mobile sidebar
             });
         });
 
@@ -864,6 +914,30 @@
             window.location.href = '/auth';
         }
 
+        // Mobile sidebar functions
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        // Close sidebar when clicking nav links on mobile
+        function handleNavClick(e) {
+            if (window.innerWidth <= 1024) {
+                closeMobileSidebar();
+            }
+        }
+
             // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             if (!TokenManager.isValid()) {
@@ -877,6 +951,13 @@
             
             // Load initial admin requests count
             loadAllRequests();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1024) {
+                    closeMobileSidebar();
+                }
+            });
             
             // Test API connection
             setTimeout(() => {

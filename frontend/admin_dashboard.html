@@ -55,11 +55,59 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+            .mobile-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .actions-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .table-responsive table {
+                min-width: 600px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" class="mobile-overlay" onclick="closeMobileSidebar()"></div>
+    
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 sidebar-gradient shadow-xl z-50">
+    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 sidebar-gradient shadow-xl z-50">
         <div class="flex flex-col h-full">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 border-b border-gray-700">
@@ -127,19 +175,24 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
+    <div class="main-content ml-64 min-h-screen lg:ml-64">
         <!-- Header -->
         <header class="bg-gray-800 shadow-sm border-b border-gray-700">
-            <div class="px-6 py-4">
+            <div class="px-4 sm:px-6 py-4">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold" id="pageTitle">Dashboard</h2>
-                        <p class="text-gray-400 text-sm" id="pageSubtitle">Manage your bots and track performance</p>
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" onclick="toggleMobileSidebar()" class="lg:hidden text-white hover:text-primary transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                    <div class="flex-1 lg:flex-none">
+                        <h2 class="text-xl sm:text-2xl font-bold" id="pageTitle">Dashboard</h2>
+                        <p class="text-gray-400 text-sm hidden sm:block" id="pageSubtitle">Manage your bots and track performance</p>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button onclick="refreshData()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-sync-alt mr-2"></i>
-                            Refresh
+                    <div class="flex items-center space-x-2 sm:space-x-4">
+                        <button onclick="refreshData()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base">
+                            <i class="fas fa-sync-alt sm:mr-2"></i>
+                            <span class="hidden sm:inline">Refresh</span>
                         </button>
                     </div>
                 </div>
@@ -147,11 +200,11 @@
         </header>
 
         <!-- Content Area -->
-        <main class="p-6">
+        <main class="p-4 sm:p-6">
             <!-- Dashboard View -->
             <div id="dashboardView" class="view-content">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     <div class="bg-gray-800 rounded-xl p-6 card-hover transition-all">
                         <div class="flex items-center justify-between">
                             <div>
@@ -218,7 +271,7 @@
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="actions-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     <button onclick="showCreateBotModal()" class="bg-gray-800 hover:bg-gray-700 rounded-xl p-6 text-left transition-all card-hover">
                         <div class="flex items-center">
                             <div class="bg-primary bg-opacity-20 p-3 rounded-lg mr-4">
@@ -295,12 +348,12 @@
             <div id="botsView" class="view-content hidden">
                 <div class="bg-gray-800 rounded-xl p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">My Bots</h3>
-                        <button onclick="showCreateBotModal()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
-                            <i class="fas fa-plus mr-2"></i>Create Bot
+                        <h3 class="text-lg sm:text-xl font-semibold">My Bots</h3>
+                        <button onclick="showCreateBotModal()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                            <i class="fas fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Create </span>Bot
                         </button>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="table-responsive overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b border-gray-700">
@@ -325,23 +378,23 @@
 
             <!-- Transactions View -->
             <div id="transactionsView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold mb-6">Transaction History</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Transaction History</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Total Sales</h4>
-                            <p class="text-2xl font-bold text-success" id="modalTotalRevenue">$0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-success" id="modalTotalRevenue">$0</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Admin Share</h4>
-                            <p class="text-2xl font-bold text-primary" id="modalAdminShare">$0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-primary" id="modalAdminShare">$0</p>
                         </div>
                         <div class="bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-medium mb-2">Total Transactions</h4>
-                            <p class="text-2xl font-bold text-warning" id="modalTotalTx">0</p>
+                            <p class="text-xl sm:text-2xl font-bold text-warning" id="modalTotalTx">0</p>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="table-responsive overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b border-gray-700">
@@ -366,15 +419,15 @@
 
             <!-- Users View -->
             <div id="usersView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold mb-6">Bot Users Management</h3>
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Bot Users Management</h3>
                     <div class="mb-6">
                         <label class="block text-sm font-medium mb-2">Select Bot:</label>
                         <select id="botSelect" onchange="loadBotUsers()" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 w-full max-w-xs">
                             <option value="">Choose a bot...</option>
                         </select>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="table-responsive overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b border-gray-700">
@@ -396,9 +449,9 @@
 
             <!-- Bank Details View -->
             <div id="bankView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold mb-6">Bank Details</h3>
-                    <form id="bankDetailsForm" class="max-w-md">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Bank Details</h3>
+                    <form id="bankDetailsForm" class="max-w-md w-full">
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium mb-2">Bank Code *</label>
@@ -412,7 +465,7 @@
                                 <label class="block text-sm font-medium mb-2">Account Name *</label>
                                 <input type="text" name="account_name" required placeholder="Enter account name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
                             </div>
-                            <button type="submit" class="bg-primary hover:bg-secondary px-6 py-2 rounded-lg">
+                            <button type="submit" class="bg-primary hover:bg-secondary px-6 py-2 rounded-lg w-full sm:w-auto">
                                 Update Details
                             </button>
                         </div>
@@ -422,16 +475,16 @@
 
             <!-- Profile View -->
             <div id="profileView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold mb-6">Profile Settings</h3>
-                    <div class="max-w-md">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-semibold mb-6">Profile Settings</h3>
+                    <div class="max-w-md w-full">
                         <div class="flex items-center mb-6">
-                            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-user text-white text-2xl"></i>
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-primary rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-user text-white text-xl sm:text-2xl"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold" id="profileName">Admin Name</h4>
-                                <p class="text-gray-400" id="profileEmail">admin@example.com</p>
+                                <h4 class="font-semibold text-lg" id="profileName">Admin Name</h4>
+                                <p class="text-gray-400 text-sm" id="profileEmail">admin@example.com</p>
                                 <p class="text-sm text-primary">Administrator</p>
                             </div>
                         </div>
@@ -450,14 +503,14 @@
 
             <!-- Sites View -->
             <div id="sitesView" class="view-content hidden">
-                <div class="bg-gray-800 rounded-xl p-6">
+                <div class="bg-gray-800 rounded-xl p-4 sm:p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-semibold">My Sites</h3>
-                        <button onclick="showCreateSiteModal()" class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
-                            <i class="fas fa-plus mr-2"></i>Create Site
+                        <h3 class="text-lg sm:text-xl font-semibold">My Sites</h3>
+                        <button onclick="showCreateSiteModal()" class="bg-primary hover:bg-secondary px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base">
+                            <i class="fas fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Create </span>Site
                         </button>
                     </div>
-                    <div id="sitesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="sitesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                         <div class="flex justify-center py-12">
                             <div class="loading-spinner"></div>
                         </div>
@@ -470,7 +523,7 @@
     <!-- Modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-gray-800 rounded-xl p-6 w-full max-w-md">
+            <div class="bg-gray-800 rounded-xl p-4 sm:p-6 w-full max-w-md mx-4">
                 <div class="flex items-center justify-between mb-4">
                     <h3 id="modalTitle" class="text-lg font-semibold">Create New Bot</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-white">
@@ -506,7 +559,7 @@
                                 <label class="block text-sm font-medium mb-2">Bot Image *</label>
                                 <input type="file" name="image" accept="image/*" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2">
                             </div>
-                            <div class="flex space-x-3 pt-4">
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
                                 <button type="submit" class="flex-1 bg-primary hover:bg-secondary py-2 rounded-lg">Create Bot</button>
                                 <button type="button" onclick="closeModal()" class="flex-1 bg-gray-600 hover:bg-gray-500 py-2 rounded-lg">Cancel</button>
                             </div>
@@ -846,6 +899,30 @@
             window.location.href = '/auth';
         }
 
+        // Mobile sidebar functions
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        // Close sidebar when clicking nav links on mobile
+        function handleNavClick(e) {
+            if (window.innerWidth <= 1024) {
+                closeMobileSidebar();
+            }
+        }
+
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             // Check authentication
@@ -864,9 +941,17 @@
                         e.preventDefault();
                         const view = href.substring(1);
                         switchView(view);
+                        handleNavClick(e); // Close mobile sidebar
                     }
                     // Let regular links (like /app) work normally - don't prevent default
                 });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1024) {
+                    closeMobileSidebar();
+                }
             });
         });
     </script>
