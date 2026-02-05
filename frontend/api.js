@@ -47,7 +47,11 @@ async function apiRequest(endpoint, method = 'GET', data = null, headers = {}, r
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ message: response.statusText }));
-    throw new Error(errorData.message || `API request failed: ${response.statusText}`);
+    const error = new Error(errorData.message || `API request failed: ${response.statusText}`);
+    // Attach additional error data
+    if (errorData.code) error.code = errorData.code;
+    if (errorData.email) error.email = errorData.email;
+    throw error;
   }
 
   return response.json();
@@ -67,6 +71,8 @@ const api = {
     signup: (data) => apiRequest('/auth/signup', 'POST', data),
     login: (data) => apiRequest('/auth/login', 'POST', data),
     forgotPassword: (data) => apiRequest('/auth/forgot_password/', 'POST', data),
+    verifyEmail: (token) => apiRequest(`/auth/verify-email?token=${token}`, 'GET'),
+    resendVerification: (data) => apiRequest('/auth/resend-verification', 'POST', data),
   },
 
   user: {

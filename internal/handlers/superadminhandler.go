@@ -104,14 +104,7 @@ func SuperAdminRegisterHandler(ctx *gin.Context) {
 		return
 	}
 
-	// Generate token
-	token, err := utils.GenerateToken(superAdmin.ID, superAdmin.Email)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{"message": "superadmin registered", "token": token})
+	ctx.JSON(http.StatusOK, gin.H{"message": "superadmin registered successfully"})
 }
 
 // SuperAdminLoginHandler godoc
@@ -149,7 +142,7 @@ func SuperAdminLoginHandler(ctx *gin.Context) {
 	}
 
 	var superadmin models.SuperAdmin
-	if err := database.DB.Where("email=? AND role=?", payload.Email, "superadmin").First(&superadmin).Error; err != nil {
+	if err := database.DB.Where("email=?", payload.Email).First(&superadmin).Error; err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
 		return
 	}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verified | Algocdk</title>
+    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ff4500, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-10 text-center">
+        <!-- Loading State -->
+        <div id="loading-state" class="mb-8">
+            <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-circle-notch animate-spin text-white text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white mb-2">Verifying Email...</h1>
+            <p class="text-gray-300">Please wait while we verify your email address</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="success-state" class="mb-8 hidden">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Email Verified!</h1>
+            <p class="text-gray-300 mb-6">Your email has been successfully verified. You can now log in to your account.</p>
+            
+            <button onclick="window.location.href='/auth'" 
+                class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                Continue to Login
+            </button>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="mb-8 hidden">
+            <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-times text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-red-400 mb-2">Verification Failed</h1>
+            <p id="error-message" class="text-gray-300 mb-6">The verification link is invalid or has expired.</p>
+            
+            <div class="space-y-3">
+                <button onclick="window.location.href='/auth'" 
+                    class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                    Back to Login
+                </button>
+                
+                <button onclick="window.location.href='/verify-email'" 
+                    class="w-full py-3 px-4 bg-dark-800 text-gray-300 rounded-lg font-semibold border border-gray-700 hover:bg-gray-700 hover:text-white transition-all duration-300">
+                    Resend Verification
+                </button>
+            </div>
+        </div>
+
+        <!-- Already Verified State -->
+        <div id="already-verified-state" class="mb-8 hidden">
+            <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-info text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-blue-400 mb-2">Already Verified</h1>
+            <p class="text-gray-300 mb-6">Your email is already verified. You can log in to your account.</p>
+            
+            <button onclick="window.location.href='/auth'" 
+                class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                Continue to Login
+            </button>
+        </div>
+    </div>
+
+    <!-- Include JavaScript modules -->
+    <script src="api.js"></script>
+    <script src="notifications.js"></script>
+    <script>
+        class EmailVerificationHandler {
+            constructor() {
+                this.init();
+            }
+
+            async init() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status');
+                const error = urlParams.get('error');
+
+                // Handle different states based on URL parameters
+                if (error) {
+                    let errorMessage = 'Verification failed';
+                    switch (error) {
+                        case 'missing_token':
+                            errorMessage = 'No verification token provided.';
+                            break;
+                        case 'invalid_token':
+                            errorMessage = 'The verification link is invalid or has expired.';
+                            break;
+                        case 'database_error':
+                            errorMessage = 'A database error occurred. Please try again.';
+                            break;
+                    }
+                    this.showError(errorMessage);
+                } else if (status === 'already_verified') {
+                    this.showAlreadyVerified();
+                } else if (status === 'success') {
+                    this.showSuccess();
+                    // Clear any pending verification email from localStorage
+                    localStorage.removeItem('pendingVerificationEmail');
+                } else {
+                    // No parameters, show error
+                    this.showError('Invalid verification request.');
+                }
+            }
+
+            showSuccess() {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('success-state').classList.remove('hidden');
+            }
+
+            showError(message) {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('error-message').textContent = message;
+                document.getElementById('error-state').classList.remove('hidden');
+            }
+
+            showAlreadyVerified() {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('already-verified-state').classList.remove('hidden');
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new EmailVerificationHandler();
+        });
+    </script>
+</body>
+
+</html>

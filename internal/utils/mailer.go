@@ -18,10 +18,29 @@ func SendResetEmail(to, resetLink string) {
 		resetLink,
 	)
 
+	sendEmail(mode, from, to, msg, "RESET EMAIL")
+}
+
+// SendVerificationEmail sends an email verification link to a user.
+func SendVerificationEmail(to, verificationLink string) {
+	mode := os.Getenv("EMAIL_MODE")
+	from := os.Getenv("EMAIL_FROM")
+
+	msg := fmt.Sprintf(
+		"Subject: Verify Your Email Address\n\nWelcome to Algocdk!\n\nPlease click the link below to verify your email address:\n%s\n\nIf you didn't create an account, please ignore this email.",
+		verificationLink,
+	)
+
+	sendEmail(mode, from, to, msg, "VERIFICATION EMAIL")
+}
+
+// sendEmail is a helper function to send emails based on the configured mode
+func sendEmail(mode, from, to, msg, emailType string) {
+
 	switch mode {
 	case "console":
 		// Just log the email to console
-		log.Println("===== RESET EMAIL =====")
+		log.Printf("===== %s =====", emailType)
 		log.Println("To:", to)
 		log.Println("From:", from)
 		log.Println("Message:\n", msg)
@@ -34,9 +53,9 @@ func SendResetEmail(to, resetLink string) {
 		auth := smtp.PlainAuth("", "", "", host)
 		err := smtp.SendMail(host+":"+port, auth, from, []string{to}, []byte(msg))
 		if err != nil {
-			log.Println("MAILHOG ERROR:", err)
+			log.Printf("MAILHOG ERROR (%s): %v", emailType, err)
 		} else {
-			log.Println("MailHog: reset email sent to", to)
+			log.Printf("MailHog: %s sent to %s", emailType, to)
 		}
 
 	case "smtp":
@@ -50,12 +69,12 @@ func SendResetEmail(to, resetLink string) {
 
 		err := smtp.SendMail(host+":"+port, auth, from, []string{to}, []byte(msg))
 		if err != nil {
-			log.Println("SMTP ERROR:", err)
+			log.Printf("SMTP ERROR (%s): %v", emailType, err)
 		} else {
-			log.Println("SMTP: reset email sent to", to)
+			log.Printf("SMTP: %s sent to %s", emailType, to)
 		}
 
 	default:
-		log.Println("EMAIL_MODE not set or invalid. Email not sent. Use console/mailhog/smtp")
+		log.Printf("EMAIL_MODE not set or invalid. %s not sent. Use console/mailhog/smtp", emailType)
 	}
 }

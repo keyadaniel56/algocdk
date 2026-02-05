@@ -15,6 +15,7 @@ type User struct {
 	Country              string              `json:"country"`
 	Membership           string              `json:"member_ship_type" gorm:"default:freemium"`
 	EmailVerified        bool                `gorm:"default:false"`
+	VerificationToken    string              `json:"-"`
 	RefreshToken         string              `json:"refresh_token"`
 	ResetToken           string              `json:"-"`
 	ResetExpiry          time.Time           `json:"-"`
