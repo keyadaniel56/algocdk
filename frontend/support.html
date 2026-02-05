@@ -482,6 +482,8 @@
                 <a href="app" class="nav-link">Dashboard</a>
                 <a href="mybots" class="nav-link">My Bots</a>
                 <a href="botstore" class="nav-link">Marketplace</a>
+                <a id="adminDashboardLink" href="admin_dashboard" class="nav-link" style="display:none">Admin Dashboard</a>
+                <a id="superadminDashboardLink" href="superadmin_dashboard" class="nav-link" style="display:none">SuperAdmin Dashboard</a>
                 <a href="marketchart" class="nav-link">Charts</a>
                 <a href="support" class="nav-link active">Support</a>
             </div>
@@ -764,9 +766,39 @@
 
         // Mobile menu toggle (placeholder)
         function toggleMobileMenu() {
-            // Mobile menu functionality can be added here
+            // Reveal role links when user opens the mobile menu (user gesture)
+            tryShowRoleLinks();
             alert('Mobile menu - navigate to other pages using the links above');
         }
+
+    // Show admin/superadmin links when user has those roles
+    function tryShowRoleLinks(){
+        const adminLink = document.getElementById('adminDashboardLink');
+        const superLink = document.getElementById('superadminDashboardLink');
+        if(!adminLink || !superLink) return;
+        try{
+            const token = localStorage.getItem('token');
+            if(!token) return;
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = (payload.role || payload.user_role || '').toString().toLowerCase();
+            if(role.includes('admin')) adminLink.style.display = 'inline-block';
+            if(role.includes('superadmin')) superLink.style.display = 'inline-block';
+            return;
+        }catch(e){}
+
+        const token = localStorage.getItem('token');
+        if(!token) return;
+        fetch('/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(r => r.json())
+            .then(data => {
+                const role = (data.role || data.user?.role || '').toString().toLowerCase();
+                if(role.includes('admin')) adminLink.style.display = 'inline-block';
+                if(role.includes('superadmin')) superLink.style.display = 'inline-block';
+            }).catch(()=>{});
+    }
+
+    // Run once on load and also rely on user gesture via toggleMobileMenu
+    document.addEventListener('DOMContentLoaded', tryShowRoleLinks);
     </script>
 </body>
 

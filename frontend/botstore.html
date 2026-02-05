@@ -350,6 +350,8 @@
             <a href="app" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Dashboard</a>
             <a href="mybots" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">My Bots</a>
             <a href="botstore" class="font-medium" style="color: var(--accent-primary);">Marketplace</a>
+            <a id="adminDashboardLink" href="/admin" class="transition-colors" style="color: var(--text-secondary); display:none;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Admin Dashboard</a>
+            <a id="superadminDashboardLink" href="/superadmin" class="transition-colors" style="color: var(--text-secondary); display:none;" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">SuperAdmin Dashboard</a>
             <a href="support" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">Support</a>
         </div>
 
@@ -384,6 +386,8 @@
             <a href="app" class="block py-2 transition-colors" style="color: var(--text-secondary);">Dashboard</a>
             <a href="mybots" class="block py-2 transition-colors" style="color: var(--text-secondary);">My Bots</a>
             <a href="botstore" class="block py-2 font-medium" style="color: var(--accent-primary);">Marketplace</a>
+            <a id="mobileAdminLink" href="/admin" class="block py-2 transition-colors" style="color: var(--text-secondary); display:none;">Admin Dashboard</a>
+            <a id="mobileSuperadminLink" href="/superadmin" class="block py-2 transition-colors" style="color: var(--text-secondary); display:none;">SuperAdmin Dashboard</a>
             <a href="support" class="block py-2 transition-colors" style="color: var(--text-secondary);">Support</a>
             <div class="border-t pt-3" style="border-color: var(--border-color);">
                 <a href="profile" class="block py-2 transition-colors" style="color: var(--text-secondary);">Profile</a>
@@ -391,6 +395,36 @@
                 <a href="#" id="mobileLogoutButton" class="block py-2 transition-colors" style="color: var(--danger);">Logout</a>
             </div>
         </div>
+    <script>
+        (function showRoleLinks(){
+            function reveal(){
+                const ids = ['adminDashboardLink','superadminDashboardLink','mobileAdminLink','mobileSuperadminLink'];
+                const els = ids.map(id=>document.getElementById(id)).filter(Boolean);
+                if(els.length===0) return;
+                try{
+                    const token = localStorage.getItem('token');
+                    if(!token) return;
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const role = (payload.role || payload.user_role || '').toString().toLowerCase();
+                    if(role.includes('admin')) { document.getElementById('adminDashboardLink')?.style.display='inline-block'; document.getElementById('mobileAdminLink')?.style.display='block'; }
+                    if(role.includes('superadmin')) { document.getElementById('superadminDashboardLink')?.style.display='inline-block'; document.getElementById('mobileSuperadminLink')?.style.display='block'; }
+                    return;
+                }catch(e){}
+
+                const token = localStorage.getItem('token');
+                if(!token) return;
+                fetch('/api/user/profile', { headers: { 'Authorization': `Bearer ${token}` } })
+                    .then(r=>r.json()).then(data=>{
+                        const role = (data.role || data.user?.role || '').toString().toLowerCase();
+                        if(role.includes('admin')) { document.getElementById('adminDashboardLink')?.style.display='inline-block'; document.getElementById('mobileAdminLink')?.style.display='block'; }
+                        if(role.includes('superadmin')) { document.getElementById('superadminDashboardLink')?.style.display='inline-block'; document.getElementById('mobileSuperadminLink')?.style.display='block'; }
+                    }).catch(()=>{});
+            }
+            document.addEventListener('DOMContentLoaded', reveal);
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            if (mobileBtn) mobileBtn.addEventListener('click', reveal);
+        })();
+    </script>
     </div>
 
     <!-- Main Content -->

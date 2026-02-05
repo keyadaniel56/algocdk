@@ -798,6 +798,14 @@
                             <i class="fas fa-chart-area"></i>
                             <span>Market Chart</span>
                         </a>
+                        <a id="adminDashboardLink" href="/admin" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors" style="display:none">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin Dashboard</span>
+                        </a>
+                        <a id="superadminDashboardLink" href="/superadmin" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors" style="display:none">
+                            <i class="fas fa-crown"></i>
+                            <span>SuperAdmin Dashboard</span>
+                        </a>
                         <a href="/support" class="flex items-center space-x-2 px-4 py-3 hover:bg-accent transition-colors">
                             <i class="fas fa-life-ring"></i>
                             <span>Support</span>
@@ -808,6 +816,38 @@
                             <span>Exit App</span>
                         </a>
                     </div>
+                    <script>
+                        (function showRoleLinks(){
+                            function tryShow() {
+                                const admin = document.getElementById('adminDashboardLink');
+                                const superadmin = document.getElementById('superadminDashboardLink');
+                                if(!admin || !superadmin) return;
+                                try{
+                                    const token = localStorage.getItem('token');
+                                    if(!token) return;
+                                    const payload = JSON.parse(atob(token.split('.')[1]));
+                                    const role = (payload.role || payload.user_role || '').toString().toLowerCase();
+                                    if(role.includes('admin')) admin.style.display = 'flex';
+                                    if(role.includes('superadmin')) superadmin.style.display = 'flex';
+                                    return;
+                                }catch(e){}
+
+                                const token = localStorage.getItem('token');
+                                // If token is present, include Authorization header; otherwise try cookie/session-based profile
+                                const fetchOptions = token ? { headers: { 'Authorization': `Bearer ${token}` } } : {};
+                                fetch('/api/user/profile', fetchOptions)
+                                    .then(r=>r.json()).then(data=>{
+                                        const role = (data.role || data.user?.role || '').toString().toLowerCase();
+                                        if(role.includes('admin')) admin.style.display = 'flex';
+                                        if(role.includes('superadmin')) superadmin.style.display = 'flex';
+                                    }).catch(()=>{});
+                            }
+                            document.addEventListener('DOMContentLoaded', tryShow);
+                               // Also trigger role reveal when user opens the menu (user gesture)
+                               const menuBtn = document.getElementById('navMenuBtn');
+                               if (menuBtn) menuBtn.addEventListener('click', () => { tryShow(); if (window.requestNotificationPermission) window.requestNotificationPermission(); });
+                        })();
+                    </script>
                 </div>
             </div>
         </div>
@@ -3900,12 +3940,19 @@
             await initializeAccountDisplay(); // Initialize account display with proper token handling
             initProfessionalFeatures(); // Initialize professional features
             
-            // Request notification permission
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
+            // Notification permission should be requested from a user gesture.
+            // Call `requestNotificationPermission()` from a click handler when appropriate.
         }
         
+        // Expose a helper to request notification permission from a user gesture
+        window.requestNotificationPermission = function(){
+            try{
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission().catch(()=>{});
+                }
+            }catch(e){}
+        }
+
         initializeApp();
     </script>
 
