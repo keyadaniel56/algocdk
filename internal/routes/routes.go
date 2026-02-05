@@ -76,7 +76,7 @@ func SetUpRouter(router *gin.Engine) {
 
 		// ================= SUPERADMIN PROTECTED =================
 		superadmin := api.Group("/superadmin")
-		superadmin.Use(middleware.AuthMiddleware())
+		superadmin.Use(middleware.AuthMiddleware(), middleware.SuperAdminOnly())
 		{
 			superadmin.GET("/profile/:id", handlers.SuperAdminProfileHandler)
 			superadmin.GET("/superadmindashboard/:id", handlers.SuperAdminDashboardHandler)
@@ -113,7 +113,7 @@ func SetUpRouter(router *gin.Engine) {
 		}
 
 		admin := api.Group("/admin")
-		admin.Use(middleware.AuthMiddleware())
+		admin.Use(middleware.AuthMiddleware(), middleware.AdminOnly())
 		{
 			admin.GET("/dashboard", handlers.AdminDashboardHandler)
 			admin.POST("/create-bot", handlers.CreateBotHandler)

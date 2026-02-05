@@ -35,9 +35,12 @@ class SuperAdminDashboard {
 
   async loadCurrentUser() {
     try {
-      // Try to get superadmin profile - use a default ID if none stored
-      const adminId = localStorage.getItem('superadminId') || '1';
-      this.currentUser = await api.superadmin.getProfile(adminId);
+      // Derive superadmin ID from JWT payload when available, fall back to stored ID or '1'
+      const payload = TokenManager.getPayload();
+      const adminId = (payload && payload.user_id) ? String(payload.user_id) : (localStorage.getItem('superadminId') || '1');
+      const profileResponse = await api.superadmin.getProfile(adminId);
+      // API returns { user: { ... } }, normalize to the user object
+      this.currentUser = profileResponse && profileResponse.user ? profileResponse.user : profileResponse;
       
       // Store the superadmin ID for future use
       if (this.currentUser && this.currentUser.id) {
@@ -48,13 +51,81 @@ class SuperAdminDashboard {
       if (window.location.pathname !== '/superadmin') {
         window.location.href = '/superadmin';
       }
+      // If the fetched user is not a superadmin, show warning then redirect
+      if (this.currentUser && this.currentUser.role !== 'superadmin') {
+        this.showWrongPageMessageAndRedirect();
+        return;
+      }
     } catch (error) {
       console.error('Failed to load superadmin profile:', error);
-      // If we can't load superadmin profile, redirect to auth
+      // If we can't load superadmin profile, show wrong-page message then redirect to auth
       if (error.message.includes('401') || error.message.includes('403')) {
         TokenManager.remove();
-        window.location.href = '/auth';
+        this.showWrongPageMessageAndRedirect('/auth');
       }
+    }
+  }
+
+  showWrongPageMessageAndRedirect(redirectTo = '/auth') {
+    try {
+      const existing = document.getElementById('wrong-page-overlay');
+      if (existing) return;
+
+      const overlay = document.createElement('div');
+      overlay.id = 'wrong-page-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.background = 'rgba(0,0,0,0.8)';
+      overlay.style.zIndex = '9999';
+
+      const box = document.createElement('div');
+      box.style.background = '#1f2937';
+      box.style.color = '#fff';
+      box.style.padding = '24px';
+      box.style.borderRadius = '8px';
+      box.style.maxWidth = '480px';
+      box.style.textAlign = 'center';
+      box.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+
+      const title = document.createElement('h2');
+      title.textContent = 'Wrong Page';
+      title.style.marginBottom = '8px';
+      title.style.fontSize = '20px';
+
+      const msg = document.createElement('p');
+      msg.textContent = 'You have accessed the SuperAdmin area by mistake. Redirecting to the login page...';
+      msg.style.marginBottom = '12px';
+
+      const countdown = document.createElement('p');
+      countdown.style.fontSize = '13px';
+      countdown.style.opacity = '0.9';
+
+      box.appendChild(title);
+      box.appendChild(msg);
+      box.appendChild(countdown);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+
+      let seconds = 4;
+      countdown.textContent = `Redirecting in ${seconds} seconds...`;
+      const timer = setInterval(() => {
+        seconds -= 1;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          window.location.href = redirectTo;
+          return;
+        }
+        countdown.textContent = `Redirecting in ${seconds} seconds...`;
+      }, 1000);
+    } catch (e) {
+      // fallback redirect if DOM fails
+      window.location.href = redirectTo;
     }
   }
 
