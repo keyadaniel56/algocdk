@@ -47,7 +47,11 @@ async function apiRequest(endpoint, method = 'GET', data = null, headers = {}, r
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ message: response.statusText }));
-    throw new Error(errorData.message || `API request failed: ${response.statusText}`);
+    const error = new Error(errorData.message || `API request failed: ${response.statusText}`);
+    // Attach additional error data
+    if (errorData.code) error.code = errorData.code;
+    if (errorData.email) error.email = errorData.email;
+    throw error;
   }
 
   return response.json();

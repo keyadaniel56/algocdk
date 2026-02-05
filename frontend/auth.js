@@ -115,6 +115,16 @@ class AuthHandler {
       }
     } catch (error) {
       console.error('Login error:', error);
+      
+      // Handle email not verified error
+      if (error.code === 'EMAIL_NOT_VERIFIED') {
+        utils.notify('Please verify your email address before logging in.', 'warning');
+        setTimeout(() => {
+          window.location.href = `/verify-email?email=${encodeURIComponent(error.email)}`;
+        }, 2000);
+        return;
+      }
+      
       utils.notify(error.message || 'Login failed', 'error');
       this.setLoading(event.target, false);
     }
@@ -135,16 +145,15 @@ class AuthHandler {
     this.setLoading(event.target, true);
 
     try {
-      const response = await api.auth.signup({
+      await api.auth.signup({
         name: data.name,
         email: data.email,
         password: data.password
       });
 
-      utils.notify('Account created! Please check your email to verify your account.', 'success');
-      
-      // Show verification message and resend option
-      this.showVerificationMessage(data.email);
+      // Store email and redirect
+      localStorage.setItem('pendingVerificationEmail', data.email);
+      window.location = '/verify-email?email=' + encodeURIComponent(data.email);
     } catch (error) {
       utils.notify(error.message || 'Signup failed', 'error');
       this.setLoading(event.target, false);

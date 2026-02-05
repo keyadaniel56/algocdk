@@ -28,7 +28,7 @@ func SetUpRouter(router *gin.Engine) {
 			auth.POST("/login", handlers.LoginHandler)
 			auth.POST("/forgot_password/", handlers.ForgotPasswordHandler)
 			auth.GET("/verify-email", handlers.VerifyEmailHandler)
-			auth.POST("/resend-verification", handlers.ResendVerificationEmailHandler)
+			auth.POST("/resend-verification", handlers.ResendVerificationHandler)
 		}
 
 		// ================= MARKET DATA =================
@@ -216,11 +216,20 @@ func SetUpRouter(router *gin.Engine) {
 	router.GET("/verify-email", func(c *gin.Context) {
 		c.File(frontendPath + "/verify-email.html")
 	})
+	router.GET("/verify-success", func(c *gin.Context) {
+		c.File(frontendPath + "/verify-success.html")
+	})
 	router.GET("/settings", func(c *gin.Context) {
 		c.File(frontendPath + "/settings.html")
 	})
 	router.GET("/profile", func(c *gin.Context) {
 		c.File(frontendPath + "/userprofile.html")
+	})
+	router.GET("/superadmin-signup", func(c *gin.Context) {
+		c.File(frontendPath + "/superadmin-signup.html")
+	})
+	router.GET("/superadmin", func(c *gin.Context) {
+		c.File(frontendPath + "/superadmin_dashboard.html")
 	})
 	router.GET("/app", func(c *gin.Context) {
 		c.File(frontendPath + "/app.html")
@@ -230,9 +239,6 @@ func SetUpRouter(router *gin.Engine) {
 	})
 	router.GET("/botstore", func(c *gin.Context) {
 		c.File(frontendPath + "/botstore.html")
-	})
-	router.GET("/superadmin", func(c *gin.Context) {
-		c.File(frontendPath + "/superadmin_dashboard.html")
 	})
 	router.GET("/support", func(c *gin.Context) {
 		c.File(frontendPath + "/support.html")

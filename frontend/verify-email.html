@@ -1,157 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification - Algocdk</title>
+    <title>Verify Email | Algocdk</title>
+    <link rel="stylesheet" href="output.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#FF4500',
-                        secondary: '#FF6347',
-                        success: '#10B981',
-                        danger: '#EF4444'
-                    }
-                }
-            }
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-    </script>
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ff4500, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full mx-4">
-        <div class="bg-gray-800 rounded-xl p-8 text-center">
-            <div id="loading" class="hidden">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                <p>Verifying your email...</p>
+
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-10 text-center">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="w-20 h-20 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-envelope text-white text-2xl"></i>
             </div>
-            
-            <div id="success" class="hidden">
-                <div class="bg-success bg-opacity-20 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <i class="fas fa-check text-success text-2xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold mb-4">Email Verified!</h2>
-                <p class="text-gray-400 mb-6">Your email has been successfully verified. You can now log in to your account.</p>
-                <a href="/auth" class="bg-primary hover:bg-secondary px-6 py-3 rounded-lg inline-block">
-                    Go to Login
-                </a>
-            </div>
-            
-            <div id="error" class="hidden">
-                <div class="bg-danger bg-opacity-20 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <i class="fas fa-times text-danger text-2xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold mb-4">Verification Failed</h2>
-                <p class="text-gray-400 mb-6" id="errorMessage">Invalid or expired verification token.</p>
-                <div class="space-y-3">
-                    <button onclick="resendVerification()" class="bg-primary hover:bg-secondary px-6 py-3 rounded-lg block w-full">
-                        Resend Verification Email
-                    </button>
-                    <a href="/auth" class="text-gray-400 hover:text-white">
-                        Back to Login
-                    </a>
-                </div>
-            </div>
-            
-            <div id="resendForm" class="hidden">
-                <h2 class="text-2xl font-bold mb-4">Resend Verification</h2>
-                <form onsubmit="handleResend(event)">
-                    <input type="email" id="emailInput" placeholder="Enter your email" required 
-                           class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 mb-4">
-                    <button type="submit" class="bg-primary hover:bg-secondary px-6 py-3 rounded-lg w-full">
-                        Send Verification Email
-                    </button>
-                </form>
-                <button onclick="showError()" class="text-gray-400 hover:text-white mt-3">
-                    Back
-                </button>
-            </div>
+            <h1 class="text-3xl font-bold gradient-text mb-2">Check Your Email</h1>
+            <p class="text-gray-300">We've sent a verification link to your email address</p>
         </div>
+
+        <!-- Email Display -->
+        <div class="mb-6">
+            <p class="text-gray-400 mb-2">Verification email sent to:</p>
+            <p id="user-email" class="text-white font-semibold bg-dark-800 p-3 rounded-lg"></p>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mb-8 text-left">
+            <h3 class="text-white font-semibold mb-3">Next steps:</h3>
+            <ul class="text-gray-300 space-y-2">
+                <li class="flex items-start">
+                    <i class="fas fa-check text-primary-500 mt-1 mr-3"></i>
+                    <span>Check your email inbox</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-primary-500 mt-1 mr-3"></i>
+                    <span>Click the verification link</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-check text-primary-500 mt-1 mr-3"></i>
+                    <span>Return to login</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-4">
+            <button id="resend-btn" 
+                class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50">
+                <span>Resend Verification Email</span>
+                <div class="loading-spinner hidden ml-2">
+                    <i class="fas fa-circle-notch animate-spin"></i>
+                </div>
+            </button>
+            
+            <button onclick="window.location.href='/auth'" 
+                class="w-full py-3 px-4 bg-dark-800 text-gray-300 rounded-lg font-semibold border border-gray-700 hover:bg-gray-700 hover:text-white transition-all duration-300">
+                Back to Login
+            </button>
+        </div>
+
+        <!-- Help Text -->
+        <div class="mt-6 text-sm text-gray-400">
+            <p>Didn't receive the email? Check your spam folder or 
+                <button id="contact-support" class="text-primary-500 hover:text-primary-400 underline">
+                    contact support
+                </button>
+            </p>
+        </div>
+
+        <!-- Message Display -->
+        <div id="message" class="mt-4 p-3 rounded-lg hidden"></div>
     </div>
 
+    <!-- Include JavaScript modules -->
+    <script src="api.js"></script>
+    <script src="notifications.js"></script>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
+        class EmailVerification {
+            constructor() {
+                this.init();
+            }
 
-        function showLoading() {
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('success').classList.add('hidden');
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('resendForm').classList.add('hidden');
-        }
+            init() {
+                this.displayEmail();
+                this.setupEventListeners();
+            }
 
-        function showSuccess() {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('success').classList.remove('hidden');
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('resendForm').classList.add('hidden');
-        }
-
-        function showError(message = 'Invalid or expired verification token.') {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('success').classList.add('hidden');
-            document.getElementById('error').classList.remove('hidden');
-            document.getElementById('resendForm').classList.add('hidden');
-            document.getElementById('errorMessage').textContent = message;
-        }
-
-        function resendVerification() {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('success').classList.add('hidden');
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('resendForm').classList.remove('hidden');
-        }
-
-        async function verifyEmail(token) {
-            try {
-                const response = await fetch(`/api/auth/verify-email?token=${token}`);
-                const data = await response.json();
+            displayEmail() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const email = urlParams.get('email') || localStorage.getItem('pendingVerificationEmail');
                 
-                if (response.ok) {
-                    showSuccess();
+                if (email) {
+                    document.getElementById('user-email').textContent = email;
+                    localStorage.setItem('pendingVerificationEmail', email);
                 } else {
-                    showError(data.error || 'Verification failed');
+                    // Redirect to auth if no email found
+                    window.location.href = '/auth';
                 }
-            } catch (error) {
-                showError('Network error. Please try again.');
+            }
+
+            setupEventListeners() {
+                const resendBtn = document.getElementById('resend-btn');
+                const contactSupport = document.getElementById('contact-support');
+
+                resendBtn.addEventListener('click', this.resendVerification.bind(this));
+                contactSupport.addEventListener('click', this.contactSupport.bind(this));
+            }
+
+            async resendVerification() {
+                const email = localStorage.getItem('pendingVerificationEmail');
+                if (!email) {
+                    utils.notify('Email not found. Please try signing up again.', 'error');
+                    return;
+                }
+
+                const resendBtn = document.getElementById('resend-btn');
+                this.setLoading(resendBtn, true);
+
+                try {
+                    await api.auth.resendVerification({ email });
+                    utils.notify('Verification email sent successfully!', 'success');
+                } catch (error) {
+                    utils.notify(error.message || 'Failed to resend verification email', 'error');
+                } finally {
+                    this.setLoading(resendBtn, false);
+                }
+            }
+
+            contactSupport() {
+                window.location.href = '/support';
+            }
+
+            setLoading(button, isLoading) {
+                const spinner = button.querySelector('.loading-spinner');
+                
+                if (isLoading) {
+                    button.disabled = true;
+                    button.classList.add('opacity-50');
+                    if (spinner) spinner.classList.remove('hidden');
+                } else {
+                    button.disabled = false;
+                    button.classList.remove('opacity-50');
+                    if (spinner) spinner.classList.add('hidden');
+                }
             }
         }
 
-        async function handleResend(event) {
-            event.preventDefault();
-            const email = document.getElementById('emailInput').value;
-            
-            try {
-                const response = await fetch('/api/auth/resend-verification', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok) {
-                    showError('Verification email sent! Please check your inbox.');
-                } else {
-                    showError(data.error || 'Failed to send verification email');
-                }
-            } catch (error) {
-                showError('Network error. Please try again.');
-            }
-        }
-
-        // Auto-verify if token is present
-        if (token) {
-            showLoading();
-            verifyEmail(token);
-        } else {
-            showError('No verification token provided.');
-        }
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new EmailVerification();
+        });
     </script>
 </body>
+
 </html>
