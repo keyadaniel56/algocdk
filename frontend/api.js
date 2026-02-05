@@ -17,6 +17,17 @@ const TokenManager = {
       return false;
     }
   }
+  ,
+  getPayload: () => {
+    const token = TokenManager.get();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch {
+      return null;
+    }
+  }
 };
 
 // Helper function to make API requests

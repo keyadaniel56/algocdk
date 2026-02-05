@@ -21,6 +21,12 @@ class AdminDashboard {
     }
 
     try {
+      await this.loadCurrentUser();
+    } catch (err) {
+      console.error('Failed to validate admin user:', err);
+      return;
+    }
+    try {
       this.showLoading(true);
       await this.loadDashboardData();
       this.setupEventListeners();
@@ -28,6 +34,46 @@ class AdminDashboard {
     } catch (error) {
       this.showLoading(false);
       utils.handleError(error);
+    }
+  }
+
+  async loadCurrentUser() {
+    try {
+      const payload = TokenManager.getPayload();
+      // admin profile endpoint uses the token to determine current admin
+      const profileResponse = await api.admin.getProfile();
+      const admin = profileResponse && profileResponse.admin ? profileResponse.admin : profileResponse;
+
+      // If role does not include 'admin', show wrong-page and redirect
+      const role = (admin && admin.role) ? String(admin.role).toLowerCase() : '';
+      if (!role.includes('admin')) {
+        // Not an admin - clear token and show wrong page overlay
+        TokenManager.remove();
+        // Reuse the overlay function from SuperAdminDashboard if available, otherwise fallback
+        if (window.SuperAdminDashboard && typeof window.SuperAdminDashboard.prototype.showWrongPageMessageAndRedirect === 'function') {
+          // create a temporary instance to call the overlay
+          const tmp = new window.SuperAdminDashboard();
+          tmp.showWrongPageMessageAndRedirect('/auth');
+        } else {
+          // simple fallback overlay
+          const overlay = document.createElement('div');
+          overlay.style.position = 'fixed'; overlay.style.inset = '0'; overlay.style.display = 'flex'; overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center'; overlay.style.background = 'rgba(0,0,0,0.8)'; overlay.style.zIndex = '9999';
+          overlay.innerHTML = '<div style="background:#1f2937;color:#fff;padding:24px;border-radius:8px;text-align:center;max-width:480px;"><h2>Wrong Page</h2><p>You have accessed the Admin area by mistake. Redirecting to the login page...</p></div>';
+          document.body.appendChild(overlay);
+          setTimeout(() => window.location.href = '/auth', 3000);
+        }
+        throw new Error('not an admin');
+      }
+
+      // store some profile info
+      this.data.profile = admin || {};
+    } catch (err) {
+      console.error('Error loading current admin profile:', err);
+      if (err.message && (err.message.includes('401') || err.message.includes('403'))) {
+        TokenManager.remove();
+        window.location.href = '/auth';
+      }
+      throw err;
     }
   }
 

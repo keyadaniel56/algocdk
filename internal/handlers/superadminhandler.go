@@ -95,6 +95,7 @@ func SuperAdminRegisterHandler(ctx *gin.Context) {
 		Name:      payload.Name,
 		Email:     payload.Email,
 		Password:  hashedPassword,
+		Role:      "superadmin",
 		CreatedAt: utils.FormattedTime(time.Now()),
 		UpdatedAt: utils.FormattedTime(time.Now()),
 	}
@@ -151,6 +152,11 @@ func SuperAdminLoginHandler(ctx *gin.Context) {
 		return
 	}
 
+	// ensure role is set
+	if superadmin.Role == "" {
+		superadmin.Role = "superadmin"
+	}
+
 	token, err := utils.GenerateToken(superadmin.ID, superadmin.Email)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
@@ -195,6 +201,11 @@ func SuperAdminProfileHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
+	// ensure role is present in response
+	role := user.Role
+	if role == "" {
+		role = "superadmin"
+	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"user": gin.H{
 			"id":         user.ID,
@@ -202,7 +213,7 @@ func SuperAdminProfileHandler(ctx *gin.Context) {
 			"email":      user.Email,
 			"joined":     time.Time(user.CreatedAt).Format(time.RFC3339),
 			"membership": user.Membership,
-			"role":       user.Role,
+			"role":       role,
 		},
 	})
 
