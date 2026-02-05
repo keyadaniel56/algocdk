@@ -55,11 +55,92 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1000;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .desktop-header {
+                display: none !important;
+            }
+            .grid-cols-4 {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+            .grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+            .grid-cols-2 {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+            .overflow-x-auto table {
+                font-size: 14px;
+            }
+            .overflow-x-auto th,
+            .overflow-x-auto td {
+                padding: 8px 12px;
+            }
+            .modal-content {
+                margin: 16px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .p-6 {
+                padding: 16px !important;
+            }
+            .text-3xl {
+                font-size: 1.5rem !important;
+            }
+            .text-2xl {
+                font-size: 1.25rem !important;
+            }
+            .space-x-4 > * + * {
+                margin-left: 8px !important;
+            }
+        }
+        
+        .mobile-overlay {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-overlay {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white">
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+    
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 sidebar-gradient shadow-xl z-50">
+    <div class="sidebar fixed inset-y-0 left-0 w-64 sidebar-gradient shadow-xl z-50" id="sidebar">
         <div class="flex flex-col h-full">
             <!-- Logo -->
             <div class="flex items-center justify-center h-16 border-b border-gray-700">
@@ -124,9 +205,22 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64 min-h-screen">
-        <!-- Header -->
-        <header class="bg-gray-800 shadow-sm border-b border-gray-700">
+    <div class="main-content ml-64 min-h-screen">
+        <!-- Mobile Header -->
+        <header class="mobile-header bg-gray-800 shadow-sm border-b border-gray-700 px-4 py-3 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="openMobileSidebar()" class="text-white p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-lg font-bold" id="mobilePageTitle">Dashboard</h2>
+                <button onclick="refreshData()" class="text-white p-2">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Desktop Header -->
+        <header class="desktop-header bg-gray-800 shadow-sm border-b border-gray-700">
             <div class="px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div>
@@ -216,7 +310,7 @@
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                     <button onclick="showCreateBotModal()" class="bg-gray-800 hover:bg-gray-700 rounded-xl p-6 text-left transition-all card-hover">
                         <div class="flex items-center">
                             <div class="bg-primary bg-opacity-20 p-3 rounded-lg mr-4">
@@ -468,7 +562,7 @@
     <!-- Modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-gray-800 rounded-xl p-6 w-full max-w-md">
+            <div class="modal-content bg-gray-800 rounded-xl p-6 w-full max-w-md">
                 <div class="flex items-center justify-between mb-4">
                     <h3 id="modalTitle" class="text-lg font-semibold">Create New Bot</h3>
                     <button onclick="closeModal()" class="text-gray-400 hover:text-white">
@@ -547,7 +641,9 @@
                 bank: 'Bank Details',
                 profile: 'Profile'
             };
-            document.getElementById('pageTitle').textContent = titles[view] || 'Dashboard';
+            const title = titles[view] || 'Dashboard';
+            document.getElementById('pageTitle').textContent = title;
+            document.getElementById('mobilePageTitle').textContent = title;
 
             // Show/hide views
             document.querySelectorAll('.view-content').forEach(content => {
@@ -556,12 +652,25 @@
             document.getElementById(`${view}View`).classList.remove('hidden');
             document.getElementById(`${view}View`).classList.add('fade-in');
 
+            // Close mobile sidebar after navigation
+            closeMobileSidebar();
+
             // Load data for specific views
             if (view === 'transactions') loadTransactions();
             if (view === 'users') loadBotsList();
             if (view === 'bank') loadBankDetails();
             if (view === 'profile') loadProfile();
             if (view === 'sites') loadSites();
+        }
+        
+        function openMobileSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('mobileOverlay').classList.add('active');
+        }
+        
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('mobileOverlay').classList.remove('active');
         }
 
         // Modal functions
@@ -836,6 +945,18 @@
                 window.location.href = '/auth';
                 return;
             }
+            
+            // Close mobile sidebar when clicking outside
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    const mobileMenuBtn = e.target.closest('[onclick="openMobileSidebar()"]');
+                    
+                    if (!sidebar.contains(e.target) && !mobileMenuBtn && sidebar.classList.contains('open')) {
+                        closeMobileSidebar();
+                    }
+                }
+            });
         });
     </script>
 </body>
