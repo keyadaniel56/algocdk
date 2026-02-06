@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Algocdk - AI-Powered Algorithmic Trading Platform</title>
     <link rel="stylesheet" href="output.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,6 +55,26 @@
         }
     </script>
     <style>
+        /* Prevent horizontal scrolling */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+        }
+        
+        /* Force wrapping for long text */
+        .break-words {
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        /* Responsive image and video */
+        img, video {
+            max-width: 100%;
+            height: auto;
+        }
+        
         .glass-effect {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -75,200 +95,111 @@
             background: linear-gradient(135deg, #ff4500, #ff6b35);
         }
         
-        /* Mobile Responsive Styles */
+        /* Mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Mobile-specific styles */
         @media (max-width: 768px) {
-            body {
-                font-size: 14px;
+            /* Prevent overflow */
+            .mobile-no-overflow {
+                overflow-x: hidden;
             }
-            .container {
-                padding-left: 1rem;
-                padding-right: 1rem;
+            
+            /* Adjust ticker animation for mobile */
+            @keyframes mobile-ticker {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-200%); }
             }
-            header {
-                padding: 1rem 0;
+            
+            /* Safe area support */
+            .safe-area-left {
+                padding-left: max(16px, env(safe-area-inset-left, 16px));
             }
-            .mobile-menu {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.95);
-                backdrop-filter: blur(10px);
-                z-index: 1000;
+            
+            .safe-area-right {
+                padding-right: max(16px, env(safe-area-inset-right, 16px));
+            }
+            
+            /* Hide scrollbar */
+            .hide-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            
+            .hide-scrollbar::-webkit-scrollbar {
                 display: none;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 2rem;
             }
-            .mobile-menu.active {
-                display: flex;
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 380px) {
+            /* Reduce padding further */
+            .xs-padding {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
             }
-            .mobile-menu a {
-                font-size: 1.5rem;
-                font-weight: 600;
-            }
-            section {
-                padding: 3rem 0 !important;
-            }
-            .pt-40 {
-                padding-top: 6rem !important;
-            }
-            .pb-20, .pb-32 {
-                padding-bottom: 3rem !important;
-            }
-            h1 {
-                font-size: 2rem !important;
-                line-height: 1.2 !important;
-            }
-            .text-lg, .text-xl {
-                font-size: 1rem !important;
-            }
-            .text-3xl {
-                font-size: 1.75rem !important;
-            }
-            .text-4xl {
-                font-size: 2rem !important;
-            }
-            .hero-stats {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 0.75rem !important;
-            }
-            .hero-stats .glass-effect {
-                padding: 0.75rem !important;
-            }
-            .hero-stats .text-2xl {
-                font-size: 1.125rem !important;
-            }
-            .hero-stats .text-sm {
-                font-size: 0.75rem !important;
-            }
-            .trading-terminal {
-                margin-top: 2rem;
-            }
-            .trading-terminal .p-4 {
-                padding: 0.75rem !important;
-            }
-            .trading-terminal .grid-cols-3,
-            .trading-terminal .md\:grid-cols-3 {
-                grid-template-columns: 1fr !important;
-                gap: 0.5rem !important;
-            }
-            .trading-terminal .flex.space-x-2 {
-                grid-column: span 1;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 0.5rem;
-            }
-            .features-grid {
-                grid-template-columns: 1fr !important;
-                gap: 1.25rem !important;
-            }
-            .features-grid .glass-effect {
-                padding: 1.25rem !important;
-            }
-            .markets-grid {
-                grid-template-columns: 1fr !important;
-                gap: 1rem !important;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr !important;
-                gap: 2rem !important;
-                text-align: center;
-            }
-            .footer-grid .flex {
-                justify-content: center;
-            }
-            .cta-grid {
-                grid-template-columns: 1fr !important;
-                gap: 0.75rem !important;
+            
+            /* Smaller text on tiny screens */
+            .xs-text {
                 font-size: 0.875rem !important;
             }
-            .space-x-4 > * + * {
-                margin-left: 0.5rem !important;
-            }
-            .space-y-4 > * + * {
-                margin-top: 0.75rem !important;
-            }
-            .sm\:flex-row {
+            
+            /* Stack elements vertically */
+            .xs-stack {
                 flex-direction: column !important;
             }
-            .sm\:space-x-4 > * + * {
-                margin-left: 0 !important;
-            }
-            .sm\:space-y-0 > * + * {
-                margin-top: 1rem !important;
-            }
-            .px-6 {
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
-            }
-            .py-4 {
-                padding-top: 0.75rem !important;
-                padding-bottom: 0.75rem !important;
-            }
-            .mb-12 {
-                margin-bottom: 2rem !important;
-            }
-            .mb-16 {
-                margin-bottom: 2.5rem !important;
+            
+            /* Full width on tiny screens */
+            .xs-full-width {
+                width: 100% !important;
+                max-width: 100% !important;
             }
         }
         
-        @media (max-width: 480px) {
-            .hero-stats {
-                grid-template-columns: 1fr !important;
-            }
-            .hero-stats .glass-effect {
-                padding: 1rem !important;
-            }
-            h1 {
-                font-size: 1.75rem !important;
-            }
-            .text-3xl {
-                font-size: 1.5rem !important;
-            }
-            .text-4xl {
-                font-size: 1.75rem !important;
-            }
-            .px-4 {
-                padding-left: 0.75rem !important;
-                padding-right: 0.75rem !important;
-            }
-            .inline-flex.items-center {
-                font-size: 0.75rem !important;
-            }
-            button, a.px-6 {
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
-                font-size: 0.875rem !important;
+        /* Tablet adjustments */
+        @media (min-width: 641px) and (max-width: 768px) {
+            .tablet-padding {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
             }
         }
         
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                max-width: 100%;
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-            .lg\:grid-cols-3 {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-            .lg\:grid-cols-4 {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
+        /* Ensure all containers don't exceed screen width */
+        .max-w-screen {
+            max-width: 100vw;
+        }
+        
+        /* Prevent text overflow */
+        .truncate-multiline {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
 
-<body class="gradient-bg text-white overflow-x-hidden">
+<body class="gradient-bg text-white max-w-screen mobile-no-overflow">
     <!-- Background Elements -->
     <div class="fixed inset-0 overflow-hidden -z-10">
         <!-- Animated Background Elements -->
-        <div class="absolute top-10 left-10 w-20 h-20 rounded-full bg-orange-500/10 animate-pulse"></div>
-        <div class="absolute top-1/4 right-20 w-16 h-16 rounded-full bg-red-500/10 animate-pulse-slow"></div>
-        <div class="absolute bottom-20 left-1/4 w-24 h-24 rounded-full bg-orange-600/10 animate-float"></div>
+        <div class="absolute top-10 left-10 w-20 h-20 rounded-full bg-orange-500/10 animate-pulse hidden sm:block"></div>
+        <div class="absolute top-1/4 right-20 w-16 h-16 rounded-full bg-red-500/10 animate-pulse-slow hidden md:block"></div>
+        <div class="absolute bottom-20 left-1/4 w-24 h-24 rounded-full bg-orange-600/10 animate-float hidden lg:block"></div>
         <div class="absolute bottom-10 right-10 w-12 h-12 rounded-full bg-red-600/10 animate-pulse"></div>
 
         <!-- Grid Pattern -->
@@ -279,199 +210,196 @@
     </div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 w-full z-50 py-5 glass-effect border-b border-white/5">
-        <div class="container mx-auto px-4">
+    <header class="fixed top-0 left-0 w-full z-50 py-4 md:py-5 glass-effect border-b border-white/5 safe-area-left safe-area-right">
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <span class="text-2xl font-bold gradient-text">Algocdk</span>
+                    <span class="text-xl md:text-2xl font-bold gradient-text break-words">Algocdk</span>
                 </div>
 
-                <nav class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="text-gray-300 hover:text-white transition-colors relative group">
+                <nav class="hidden md:flex items-center space-x-4 lg:space-x-8">
+                    <a href="#features" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
                         Features
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
                     </a>
-                    <a href="#markets" class="text-gray-300 hover:text-white transition-colors relative group">
+                    <a href="#markets" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
                         Markets
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
                     </a>
-                    <a href="#performance" class="text-gray-300 hover:text-white transition-colors relative group">
+                    <a href="#performance" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
                         Performance
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
                     </a>
-                    <a href="#testimonials" class="text-gray-300 hover:text-white transition-colors relative group">
+                    <a href="#testimonials" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
                         Testimonials
-                        <span
-                            class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
                     </a>
-                    <div class="flex items-center space-x-4">
-                        <a href="auth"
-                            class="px-4 py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-colors">
+                    <div class="flex items-center space-x-3 ml-4">
+                        <a href="auth" class="px-3 py-2 md:px-4 md:py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-sm md:text-base break-words whitespace-nowrap">
                             Sign In
                         </a>
-                        <a href="auth"
-                            class="px-4 py-2 gradient-bg-primary rounded-lg font-medium hover:shadow-lg transition-all flex items-center">
+                        <a href="auth" class="px-3 py-2 md:px-4 md:py-2 gradient-bg-primary rounded-lg font-medium hover:shadow-lg transition-all flex items-center text-sm md:text-base break-words whitespace-nowrap">
                             <i class="fas fa-rocket mr-2"></i>
-                            Automate Your Success
+                            <span class="hidden sm:inline">Automate</span>
+                            <span class="sm:hidden">Start</span>
                         </a>
                     </div>
                 </nav>
 
-                <button class="md:hidden text-white text-xl" id="mobileMenuBtn">
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuButton" class="md:hidden text-white text-2xl touch-button p-2">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
             
             <!-- Mobile Menu -->
-            <div class="mobile-menu" id="mobileMenu">
-                <button class="absolute top-6 right-6 text-white text-2xl" id="closeMobileMenu">
-                    <i class="fas fa-times"></i>
-                </button>
-                <a href="#features" class="text-white hover:text-primary-500 transition-colors">Features</a>
-                <a href="#markets" class="text-white hover:text-primary-500 transition-colors">Markets</a>
-                <a href="#performance" class="text-white hover:text-primary-500 transition-colors">Performance</a>
-                <a href="#testimonials" class="text-white hover:text-primary-500 transition-colors">Testimonials</a>
-                <div class="flex flex-col space-y-4 mt-8">
-                    <a href="auth" class="px-6 py-3 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-center">
-                        Sign In
+            <div id="mobileMenu" class="mobile-menu md:hidden mt-4">
+                <div class="flex flex-col space-y-4 pb-4">
+                    <a href="#features" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
+                        Features
                     </a>
-                    <a href="auth" class="px-6 py-3 gradient-bg-primary rounded-lg font-medium hover:shadow-lg transition-all text-center">
-                        <i class="fas fa-rocket mr-2"></i>
-                        Get Started
+                    <a href="#markets" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
+                        Markets
                     </a>
+                    <a href="#performance" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
+                        Performance
+                    </a>
+                    <a href="#testimonials" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
+                        Testimonials
+                    </a>
+                    <div class="flex flex-col space-y-3 pt-2">
+                        <a href="auth" class="px-4 py-3 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-center text-base break-words">
+                            Sign In
+                        </a>
+                        <a href="auth" class="px-4 py-3 gradient-bg-primary rounded-lg font-medium hover:shadow-lg transition-all flex items-center justify-center text-base break-words">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Automate Your Success
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-40 pb-20 md:pb-32 relative">
-        <div class="container mx-auto px-4">
+    <section class="pt-28 md:pt-40 pb-16 md:pb-32 relative">
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
             <div class="flex flex-col lg:flex-row items-center">
-                <div class="lg:w-1/2 mb-12 lg:mb-0">
-                    <div
-                        class="inline-flex items-center space-x-2 bg-primary-500/10 text-primary-500 px-4 py-2 rounded-full border border-primary-500/20 mb-6">
-                        <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
-                        <i class="fas fa-crown text-sm"></i>
-                        <span class="text-sm font-medium">INSTITUTIONAL-GRADE TRADING PLATFORM</span>
+                <div class="lg:w-1/2 mb-12 lg:mb-0 w-full">
+                    <div class="inline-flex items-center space-x-2 bg-primary-500/10 text-primary-500 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-primary-500/20 mb-6 text-xs md:text-sm break-words overflow-hidden">
+                        <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse flex-shrink-0"></span>
+                        <i class="fas fa-crown text-xs md:text-sm flex-shrink-0"></i>
+                        <span class="font-medium truncate">INSTITUTIONAL TRADING</span>
                     </div>
 
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight break-words">
                         Algorithmic Trading
-                        <span class="gradient-text"> Powered by You</span>
+                        <span class="gradient-text block mt-2">Powered by AI</span>
                     </h1>
 
-                    <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl">
+                    <p class="text-base md:text-lg lg:text-xl text-gray-300 mb-8 break-words max-w-full">
                         Trade smarter with our advanced AI algorithms. Institutional-grade execution,
-                        real-time analytics, and automated strategies that work 24/7 across global markets.
+                        real-time analytics, and automated strategies.
                     </p>
 
-                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
-                        <a href="auth"
-                            class="px-6 py-4 gradient-bg-primary rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center group relative overflow-hidden">
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-12 w-full">
+                        <a href="auth" class="px-6 py-4 gradient-bg-primary rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center group relative overflow-hidden touch-button w-full sm:w-auto break-words">
                             <i class="fas fa-rocket mr-2"></i>
-                            <span>Automate Your Success</span>
-                            <div
-                                class="absolute top-0 left-0 w-full h-full bg-white/10 transform -translate-x-full group-hover:translate-x-0 transition-transform">
-                            </div>
+                            <span class="text-center">Automate Your Success</span>
+                            <div class="absolute top-0 left-0 w-full h-full bg-white/10 transform -translate-x-full group-hover:translate-x-0 transition-transform"></div>
                         </a>
-                        <button
-                            class="px-6 py-4 bg-white/10 backdrop-blur-sm rounded-lg font-semibold hover:bg-white/15 transition-all flex items-center justify-center border border-white/10">
+                        <button class="px-6 py-4 bg-white/10 backdrop-blur-sm rounded-lg font-semibold hover:bg-white/15 transition-all flex items-center justify-center border border-white/10 touch-button w-full sm:w-auto break-words">
                             <i class="fas fa-play mr-2"></i>
                             Start Here
                         </button>
                     </div>
 
-                    <div class="hero-stats grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="glass-effect p-4 rounded-lg text-center transition-all hover:-translate-y-1">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 w-full">
+                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
                             <div class="text-primary-500 mb-2">
-                                <i class="fas fa-chart-bar text-xl"></i>
+                                <i class="fas fa-chart-bar text-lg md:text-xl"></i>
                             </div>
-                            <div class="text-2xl font-bold">$2.1B</div>
-                            <div class="text-gray-400 text-sm">Daily Volume</div>
-                            <div class="text-success-500 text-sm font-medium">+15.3%</div>
+                            <div class="text-lg md:text-2xl font-bold">$2.1B</div>
+                            <div class="text-gray-400 text-xs md:text-sm">Daily Volume</div>
+                            <div class="text-success-500 text-xs md:text-sm font-medium">+15.3%</div>
                         </div>
-                        <div class="glass-effect p-4 rounded-lg text-center transition-all hover:-translate-y-1">
+                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
                             <div class="text-primary-500 mb-2">
-                                <i class="fas fa-bullseye text-xl"></i>
+                                <i class="fas fa-bullseye text-lg md:text-xl"></i>
                             </div>
-                            <div class="text-2xl font-bold">98.7%</div>
-                            <div class="text-gray-400 text-sm">Accuracy Rate</div>
-                            <div class="text-success-500 text-sm font-medium">+2.1%</div>
+                            <div class="text-lg md:text-2xl font-bold">98.7%</div>
+                            <div class="text-gray-400 text-xs md:text-sm">Accuracy</div>
+                            <div class="text-success-500 text-xs md:text-sm font-medium">+2.1%</div>
                         </div>
-                        <div class="glass-effect p-4 rounded-lg text-center transition-all hover:-translate-y-1">
+                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
                             <div class="text-primary-500 mb-2">
-                                <i class="fas fa-bolt text-xl"></i>
+                                <i class="fas fa-bolt text-lg md:text-xl"></i>
                             </div>
-                            <div class="text-2xl font-bold">2.3ms</div>
-                            <div class="text-gray-400 text-sm">Avg Execution</div>
-                            <div class="text-success-500 text-sm font-medium">-0.4ms</div>
+                            <div class="text-lg md:text-2xl font-bold">2.3ms</div>
+                            <div class="text-gray-400 text-xs md:text-sm">Avg Execution</div>
+                            <div class="text-success-500 text-xs md:text-sm font-medium">-0.4ms</div>
                         </div>
-                        <div class="glass-effect p-4 rounded-lg text-center transition-all hover:-translate-y-1">
+                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
                             <div class="text-primary-500 mb-2">
-                                <i class="fas fa-gem text-xl"></i>
+                                <i class="fas fa-gem text-lg md:text-xl"></i>
                             </div>
-                            <div class="text-2xl font-bold">99.97%</div>
-                            <div class="text-gray-400 text-sm">Platform Uptime</div>
-                            <div class="text-gray-400 text-sm font-medium">Stable</div>
+                            <div class="text-lg md:text-2xl font-bold">99.97%</div>
+                            <div class="text-gray-400 text-xs md:text-sm">Uptime</div>
+                            <div class="text-gray-400 text-xs md:text-sm font-medium">Stable</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:w-1/2 lg:pl-12">
-                    <div class="trading-terminal glass-effect rounded-xl overflow-hidden shadow-2xl">
-                        <div class="bg-dark-800 p-4 flex items-center justify-between border-b border-white/10">
+                <div class="lg:w-1/2 lg:pl-8 xl:pl-12 mt-8 lg:mt-0 w-full">
+                    <div class="glass-effect rounded-xl overflow-hidden shadow-2xl w-full max-w-full">
+                        <div class="bg-dark-800 p-3 md:p-4 flex items-center justify-between border-b border-white/10">
                             <div class="flex space-x-2">
                                 <div class="w-3 h-3 bg-red-500 rounded-full"></div>
                                 <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
                                 <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                             </div>
-                            <div class="flex items-center text-sm font-medium">
+                            <div class="flex items-center text-xs md:text-sm font-medium mx-2 truncate">
                                 <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                                Live Trading Terminal
+                                Live Terminal
                             </div>
-                            <div
-                                class="flex items-center bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-xs font-medium">
+                            <div class="flex items-center bg-red-500/10 text-red-500 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0">
                                 <span class="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse"></span>
                                 <i class="fas fa-bolt mr-1"></i>
                                 LIVE
                             </div>
                         </div>
 
-                        <div class="bg-dark-900 p-3 overflow-hidden">
-                            <div class="flex animate-ticker">
-                                <div class="flex space-x-8 pr-8">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">BTC/USD</span>
-                                        <span class="font-bold">$67,423.85</span>
-                                        <span class="text-success-500 flex items-center">
+                        <div class="bg-dark-900 p-2 md:p-3 overflow-hidden hide-scrollbar">
+                            <div class="animate-ticker whitespace-nowrap">
+                                <div class="inline-flex space-x-4 md:space-x-8 pr-8">
+                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
+                                        <span class="font-medium text-xs md:text-sm">BTC</span>
+                                        <span class="font-bold text-xs md:text-sm">$67.4K</span>
+                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
                                             <i class="fas fa-arrow-trend-up mr-1"></i>
                                             2.34%
                                         </span>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">ETH/USD</span>
-                                        <span class="font-bold">$3,812.67</span>
-                                        <span class="text-success-500 flex items-center">
+                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
+                                        <span class="font-medium text-xs md:text-sm">ETH</span>
+                                        <span class="font-bold text-xs md:text-sm">$3.8K</span>
+                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
                                             <i class="fas fa-arrow-trend-up mr-1"></i>
                                             1.56%
                                         </span>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">SOL/USD</span>
-                                        <span class="font-bold">$182.45</span>
-                                        <span class="text-success-500 flex items-center">
+                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
+                                        <span class="font-medium text-xs md:text-sm">SOL</span>
+                                        <span class="font-bold text-xs md:text-sm">$182</span>
+                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
                                             <i class="fas fa-arrow-trend-up mr-1"></i>
                                             5.23%
                                         </span>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-medium">EUR/USD</span>
-                                        <span class="font-bold">$1.0854</span>
-                                        <span class="text-success-500 flex items-center">
+                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
+                                        <span class="font-medium text-xs md:text-sm">EUR</span>
+                                        <span class="font-bold text-xs md:text-sm">$1.08</span>
+                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
                                             <i class="fas fa-arrow-trend-up mr-1"></i>
                                             0.24%
                                         </span>
@@ -480,20 +408,17 @@
                             </div>
                         </div>
 
-                        <div class="p-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <div class="font-medium">EUR/USD Live Chart</div>
-                                <div class="flex space-x-2 text-sm">
-                                    <span class="bg-primary-500/20 text-primary-500 px-2 py-1 rounded">1H</span>
-                                    <span
-                                        class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer">4H</span>
-                                    <span
-                                        class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer">1D</span>
-                                    <span
-                                        class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer">1W</span>
+                        <div class="p-3 md:p-4">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+                                <div class="font-medium text-sm md:text-base break-words">EUR/USD Chart</div>
+                                <div class="flex space-x-1 md:space-x-2 text-xs md:text-sm">
+                                    <span class="bg-primary-500/20 text-primary-500 px-2 py-1 rounded flex-shrink-0">1H</span>
+                                    <span class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer flex-shrink-0">4H</span>
+                                    <span class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer flex-shrink-0">1D</span>
+                                    <span class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer flex-shrink-0">1W</span>
                                 </div>
                             </div>
-                            <div class="h-48 bg-dark-800 rounded-lg relative overflow-hidden">
+                            <div class="h-40 md:h-48 bg-dark-800 rounded-lg relative overflow-hidden">
                                 <!-- Chart grid lines -->
                                 <div class="absolute inset-0 flex flex-col justify-between">
                                     <div class="border-t border-white/5"></div>
@@ -506,45 +431,41 @@
                                 <div class="absolute top-1/2 left-0 right-0 border-t border-primary-500/30"></div>
                                 <!-- Candles -->
                                 <div class="absolute bottom-0 left-0 right-0 h-full flex items-end justify-around px-2">
-                                    <div class="w-2 h-3/5 bg-success-500 rounded-sm"></div>
-                                    <div class="w-2 h-2/5 bg-red-500 rounded-sm"></div>
-                                    <div class="w-2 h-4/5 bg-success-500 rounded-sm"></div>
-                                    <div class="w-2 h-3/5 bg-success-500 rounded-sm"></div>
-                                    <div class="w-2 h-1/3 bg-red-500 rounded-sm"></div>
-                                    <div class="w-2 h-2/3 bg-success-500 rounded-sm"></div>
-                                    <div class="w-2 h-1/2 bg-red-500 rounded-sm"></div>
-                                    <div class="w-2 h-3/4 bg-success-500 rounded-sm"></div>
-                                    <div class="w-2 h-2/5 bg-red-500 rounded-sm"></div>
-                                    <div class="w-2 h-3/5 bg-success-500 rounded-sm"></div>
+                                    <div class="w-1 md:w-2 h-3/5 bg-success-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-2/5 bg-red-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-4/5 bg-success-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-3/5 bg-success-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-1/3 bg-red-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-2/3 bg-success-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-1/2 bg-red-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-3/4 bg-success-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-2/5 bg-red-500 rounded-sm flex-shrink-0"></div>
+                                    <div class="w-1 md:w-2 h-3/5 bg-success-500 rounded-sm flex-shrink-0"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-4 bg-dark-800 border-t border-white/10">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="text-gray-400 text-sm mb-1 block">Amount</label>
-                                    <input type="text" placeholder="0.00"
-                                        class="w-full bg-dark-700 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <div class="p-3 md:p-4 bg-dark-800 border-t border-white/10">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                                <div class="md:col-span-3 lg:col-span-1">
+                                    <label class="text-gray-400 text-xs md:text-sm mb-1 block break-words">Amount</label>
+                                    <input type="text" placeholder="0.00" class="w-full bg-dark-700 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base" style="-webkit-appearance: none;">
                                 </div>
-                                <div>
-                                    <label class="text-gray-400 text-sm mb-1 block">Leverage</label>
-                                    <select
-                                        class="w-full bg-dark-700 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <div class="md:col-span-3 lg:col-span-1">
+                                    <label class="text-gray-400 text-xs md:text-sm mb-1 block break-words">Leverage</label>
+                                    <select class="w-full bg-dark-700 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base" style="-webkit-appearance: none;">
                                         <option>10x</option>
                                         <option>25x</option>
                                         <option>50x</option>
                                     </select>
                                 </div>
-                                <div class="flex space-x-2">
-                                    <button
-                                        class="flex-1 bg-success-500 hover:bg-success-600 text-white font-medium py-2 px-4 rounded flex items-center justify-center transition-colors">
-                                        <i class="fas fa-arrow-trend-up mr-2"></i>
+                                <div class="flex space-x-2 md:col-span-3 lg:col-span-1 xs-stack xs-full-width">
+                                    <button class="flex-1 bg-success-500 hover:bg-success-600 text-white font-medium py-2 px-2 md:py-2 md:px-4 rounded flex items-center justify-center transition-colors text-sm md:text-base touch-button break-words">
+                                        <i class="fas fa-arrow-trend-up mr-1 md:mr-2"></i>
                                         BUY
                                     </button>
-                                    <button
-                                        class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded flex items-center justify-center transition-colors">
-                                        <i class="fas fa-arrow-trend-down mr-2"></i>
+                                    <button class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-2 md:py-2 md:px-4 rounded flex items-center justify-center transition-colors text-sm md:text-base touch-button break-words">
+                                        <i class="fas fa-arrow-trend-down mr-1 md:mr-2"></i>
                                         SELL
                                     </button>
                                 </div>
@@ -557,132 +478,95 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-20">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">Advanced Trading Features</h2>
-                <p class="text-xl text-gray-300 max-w-2xl mx-auto">Professional tools and technologies used by
-                    institutional traders</p>
+    <section id="features" class="py-16 md:py-20">
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 gradient-text break-words px-2">Advanced Trading Features</h2>
+                <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 break-words">Professional tools and technologies used by institutional traders</p>
             </div>
 
-            <div class="features-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full">
                 <!-- Feature 1 -->
-                <div
-                    class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group">
-                    <div
-                        class="w-16 h-16 rounded-full gradient-bg-primary flex items-center justify-center mb-4 relative">
-                        <i class="fas fa-robot text-white text-2xl"></i>
+                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full gradient-bg-primary flex items-center justify-center mb-4 relative mx-auto">
+                        <i class="fas fa-robot text-white text-xl md:text-2xl"></i>
                         <div class="absolute inset-0 rounded-full bg-primary-500 opacity-30 blur-md"></div>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">AI Trading Bots</h3>
-                    <p class="text-gray-300 mb-4">Automate your strategies with machine learning algorithms that adapt
-                        to market conditions in real-time.</p>
-                    <div class="flex items-center text-amber-500 font-medium">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">AI Trading Bots</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Automate your strategies with machine learning algorithms that adapt to market conditions.</p>
+                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
                         <i class="fas fa-star mr-1"></i>
                         98.7% accuracy
-                    </div>
-                    <div
-                        class="absolute -top-1/2 -left-1/2 w-full h-full bg-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     </div>
                 </div>
 
                 <!-- Feature 2 -->
-                <div
-                    class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group">
-                    <div
-                        class="w-16 h-16 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center mb-4 relative">
-                        <i class="fas fa-bolt text-white text-2xl"></i>
+                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center mb-4 relative mx-auto">
+                        <i class="fas fa-bolt text-white text-xl md:text-2xl"></i>
                         <div class="absolute inset-0 rounded-full bg-pink-500 opacity-30 blur-md"></div>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Lightning Execution</h3>
-                    <p class="text-gray-300 mb-4">Execute trades in under 10ms with our direct market access and
-                        colocated servers.</p>
-                    <div class="flex items-center text-amber-500 font-medium">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Lightning Execution</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Execute trades in under 10ms with our direct market access and colocated servers.</p>
+                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
                         <i class="fas fa-star mr-1"></i>
                         2.3ms average
-                    </div>
-                    <div
-                        class="absolute -top-1/2 -left-1/2 w-full h-full bg-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     </div>
                 </div>
 
                 <!-- Feature 3 -->
-                <div
-                    class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group">
-                    <div
-                        class="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center mb-4 relative">
-                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center mb-4 relative mx-auto">
+                        <i class="fas fa-chart-line text-white text-xl md:text-2xl"></i>
                         <div class="absolute inset-0 rounded-full bg-cyan-500 opacity-30 blur-md"></div>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Advanced Analytics</h3>
-                    <p class="text-gray-300 mb-4">Real-time market depth, technical indicators, and predictive analytics
-                        powered by AI.</p>
-                    <div class="flex items-center text-amber-500 font-medium">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Advanced Analytics</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Real-time market depth, technical indicators, and predictive analytics powered by AI.</p>
+                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
                         <i class="fas fa-star mr-1"></i>
                         150+ indicators
-                    </div>
-                    <div
-                        class="absolute -top-1/2 -left-1/2 w-full h-full bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     </div>
                 </div>
 
                 <!-- Feature 4 -->
-                <div
-                    class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group">
-                    <div
-                        class="w-16 h-16 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center mb-4 relative">
-                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center mb-4 relative mx-auto">
+                        <i class="fas fa-shield-alt text-white text-xl md:text-2xl"></i>
                         <div class="absolute inset-0 rounded-full bg-emerald-400 opacity-30 blur-md"></div>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Risk Management</h3>
-                    <p class="text-gray-300 mb-4">Advanced risk controls, automatic stop-loss, and portfolio protection
-                        algorithms.</p>
-                    <div class="flex items-center text-amber-500 font-medium">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Risk Management</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Advanced risk controls, automatic stop-loss, and portfolio protection algorithms.</p>
+                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
                         <i class="fas fa-star mr-1"></i>
                         Zero security breaches
-                    </div>
-                    <div
-                        class="absolute -top-1/2 -left-1/2 w-full h-full bg-emerald-400/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     </div>
                 </div>
 
                 <!-- Feature 5 -->
-                <div
-                    class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group">
-                    <div
-                        class="w-16 h-16 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 flex items-center justify-center mb-4 relative">
-                        <i class="fas fa-globe text-white text-2xl"></i>
+                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 flex items-center justify-center mb-4 relative mx-auto">
+                        <i class="fas fa-globe text-white text-xl md:text-2xl"></i>
                         <div class="absolute inset-0 rounded-full bg-amber-500 opacity-30 blur-md"></div>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Global Markets</h3>
-                    <p class="text-gray-300 mb-4">Trade cryptocurrencies, forex, stocks, and commodities from a single
-                        platform.</p>
-                    <div class="flex items-center text-amber-500 font-medium">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Global Markets</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Trade cryptocurrencies, forex, stocks, and commodities from a single platform.</p>
+                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
                         <i class="fas fa-star mr-1"></i>
                         50+ markets
-                    </div>
-                    <div
-                        class="absolute -top-1/2 -left-1/2 w-full h-full bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     </div>
                 </div>
 
                 <!-- Feature 6 -->
-                <div
-                    class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group">
-                    <div
-                        class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center mb-4 relative">
-                        <i class="fas fa-lock text-white text-2xl"></i>
+                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center mb-4 relative mx-auto">
+                        <i class="fas fa-lock text-white text-xl md:text-2xl"></i>
                         <div class="absolute inset-0 rounded-full bg-purple-400 opacity-30 blur-md"></div>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Secure & Compliant</h3>
-                    <p class="text-gray-300 mb-4">Bank-level security, cold storage, and full regulatory compliance
-                        across all jurisdictions.</p>
-                    <div class="flex items-center text-amber-500 font-medium">
+                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Secure & Compliant</h3>
+                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Bank-level security, cold storage, and full regulatory compliance across all jurisdictions.</p>
+                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
                         <i class="fas fa-star mr-1"></i>
                         99.9% uptime
-                    </div>
-                    <div
-                        class="absolute -top-1/2 -left-1/2 w-full h-full bg-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
                     </div>
                 </div>
             </div>
@@ -690,136 +574,131 @@
     </section>
 
     <!-- Markets Section -->
-    <section id="markets" class="py-20 bg-dark-800/30">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">Global Markets Access</h2>
-                <p class="text-xl text-gray-300 max-w-2xl mx-auto">Trade across multiple asset classes with
-                    institutional pricing</p>
+    <section id="markets" class="py-16 md:py-20 bg-dark-800/30">
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 gradient-text break-words px-2">Global Markets Access</h2>
+                <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 break-words">Trade across multiple asset classes with institutional pricing</p>
             </div>
 
-            <div class="markets-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 w-full">
                 <!-- Market 1 -->
-                <div class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-1">
-                    <div class="flex justify-between items-center mb-4">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500">
-                            <i class="fas fa-rocket text-xl"></i>
+                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
+                                <i class="fas fa-rocket text-lg md:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold break-words">Cryptocurrency</h3>
                         </div>
-                        <h3 class="text-xl font-bold">Cryptocurrency</h3>
-                        <div class="bg-success-500/10 text-success-500 px-3 py-1 rounded-full text-sm font-medium">$128B
-                        </div>
+                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$128B</div>
                     </div>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                    <div class="space-y-2 md:space-y-3 mb-4">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             BTC/USD
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             ETH/USD
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             SOL/USD
                         </div>
                     </div>
                     <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend">
-                        </div>
+                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
                     </div>
                 </div>
 
                 <!-- Market 2 -->
-                <div class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-1">
-                    <div class="flex justify-between items-center mb-4">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500">
-                            <i class="fas fa-globe text-xl"></i>
+                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
+                                <i class="fas fa-globe text-lg md:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold break-words">Forex</h3>
                         </div>
-                        <h3 class="text-xl font-bold">Forex</h3>
-                        <div class="bg-success-500/10 text-success-500 px-3 py-1 rounded-full text-sm font-medium">$6.6T
-                        </div>
+                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$6.6T</div>
                     </div>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                    <div class="space-y-2 md:space-y-3 mb-4">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             EUR/USD
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             GBP/JPY
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             USD/JPY
                         </div>
                     </div>
                     <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend">
-                        </div>
+                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
                     </div>
                 </div>
 
                 <!-- Market 3 -->
-                <div class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-1">
-                    <div class="flex justify-between items-center mb-4">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500">
-                            <i class="fas fa-chart-line text-xl"></i>
+                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
+                                <i class="fas fa-chart-line text-lg md:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold break-words">Stocks</h3>
                         </div>
-                        <h3 class="text-xl font-bold">Stocks</h3>
-                        <div class="bg-success-500/10 text-success-500 px-3 py-1 rounded-full text-sm font-medium">$2.1T
-                        </div>
+                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$2.1T</div>
                     </div>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                    <div class="space-y-2 md:space-y-3 mb-4">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             AAPL
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             TSLA
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             NVDA
                         </div>
                     </div>
                     <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend">
-                        </div>
+                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
                     </div>
                 </div>
 
                 <!-- Market 4 -->
-                <div class="glass-effect p-6 rounded-xl transition-all hover:-translate-y-1">
-                    <div class="flex justify-between items-center mb-4">
-                        <div
-                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500">
-                            <i class="fas fa-fire text-xl"></i>
+                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
+                                <i class="fas fa-fire text-lg md:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold break-words">Commodities</h3>
                         </div>
-                        <h3 class="text-xl font-bold">Commodities</h3>
-                        <div class="bg-success-500/10 text-success-500 px-3 py-1 rounded-full text-sm font-medium">$450B
-                        </div>
+                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$450B</div>
                     </div>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                    <div class="space-y-2 md:space-y-3 mb-4">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             XAU/USD
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             XAG/USD
                         </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg">
+                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
                             <i class="fas fa-chart-line text-primary-500 mr-2"></i>
                             OIL
                         </div>
                     </div>
                     <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend">
-                        </div>
+                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
                     </div>
                 </div>
             </div>
@@ -827,88 +706,78 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section id="testimonials" class="py-20">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">Trusted by Professionals</h2>
-                <p class="text-xl text-gray-300 max-w-2xl mx-auto">What institutional traders say about our platform</p>
+    <section id="testimonials" class="py-16 md:py-20">
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 gradient-text break-words px-2">Trusted by Professionals</h2>
+                <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 break-words">What institutional traders say about our platform</p>
             </div>
 
             <div class="max-w-4xl mx-auto">
-                <div class="glass-effect p-8 rounded-xl relative overflow-hidden">
-                    <div class="text-primary-500 text-4xl mb-6">
+                <div class="glass-effect p-5 sm:p-6 md:p-8 rounded-xl relative overflow-hidden w-full">
+                    <div class="text-primary-500 text-3xl md:text-4xl mb-4 md:mb-6">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    <p class="text-xl italic mb-6">The AI algorithms have consistently outperformed our manual trading
-                        strategies. We've seen a 45% increase in portfolio returns.</p>
-                    <div class="flex mb-6">
-                        <i class="fas fa-star text-amber-500"></i>
-                        <i class="fas fa-star text-amber-500"></i>
-                        <i class="fas fa-star text-amber-500"></i>
-                        <i class="fas fa-star text-amber-500"></i>
-                        <i class="fas fa-star text-amber-500"></i>
+                    <p class="text-base md:text-xl italic mb-4 md:mb-6 break-words">The AI algorithms have consistently outperformed our manual trading strategies. We've seen a 45% increase in portfolio returns.</p>
+                    <div class="flex mb-4 md:mb-6">
+                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
+                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
+                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
+                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
+                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
                     </div>
-                    <div
-                        class="inline-flex items-center bg-success-500/10 text-success-500 px-4 py-2 rounded-full mb-6">
+                    <div class="inline-flex items-center bg-success-500/10 text-success-500 px-3 py-1 md:px-4 md:py-2 rounded-full mb-4 md:mb-6 text-sm md:text-base break-words">
                         <i class="fas fa-chart-line mr-2"></i>
                         +45% ROI
                     </div>
                     <div class="flex items-center">
-                        <div
-                            class="w-16 h-16 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 mr-4">
-                            <i class="fas fa-user text-2xl"></i>
+                        <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 mr-3 md:mr-4 flex-shrink-0">
+                            <i class="fas fa-user text-xl md:text-2xl"></i>
                         </div>
-                        <div>
-                            <div class="font-bold text-lg">Marcus Chen</div>
-                            <div class="text-gray-400">Quantitative Analyst</div>
-                            <div class="text-primary-500 font-medium">BlackRock</div>
+                        <div class="min-w-0">
+                            <div class="font-bold text-base md:text-lg break-words">Marcus Chen</div>
+                            <div class="text-gray-400 text-sm md:text-base break-words">Quantitative Analyst</div>
+                            <div class="text-primary-500 font-medium text-sm md:text-base break-words">BlackRock</div>
                         </div>
-                    </div>
-                    <div
-                        class="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full -translate-y-16 translate-x-16">
                     </div>
                 </div>
 
-                <div class="flex justify-center mt-8 space-x-2">
-                    <button class="w-3 h-3 bg-primary-500 rounded-full"></button>
-                    <button class="w-3 h-3 bg-white/20 rounded-full hover:bg-white/40"></button>
-                    <button class="w-3 h-3 bg-white/20 rounded-full hover:bg-white/40"></button>
+                <div class="flex justify-center mt-6 md:mt-8 space-x-2">
+                    <button class="w-3 h-3 bg-primary-500 rounded-full touch-button"></button>
+                    <button class="w-3 h-3 bg-white/20 rounded-full hover:bg-white/40 touch-button"></button>
+                    <button class="w-3 h-3 bg-white/20 rounded-full hover:bg-white/40 touch-button"></button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 bg-dark-800/50 relative overflow-hidden">
-        <div
-            class="absolute top-0 left-0 w-full h-full bg-radial-gradient from-primary-500/10 to-transparent opacity-30">
-        </div>
-        <div class="container mx-auto px-4 relative z-10">
+    <section class="py-16 md:py-20 bg-dark-800/50 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full bg-radial-gradient from-primary-500/10 to-transparent opacity-30"></div>
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding relative z-10">
             <div class="max-w-3xl mx-auto text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Trade Like a Professional?</h2>
-                <p class="text-xl text-gray-300 mb-8">Join thousands of successful traders using our institutional-grade
-                    platform</p>
-                <a href="auth"
-                    class="inline-block px-8 py-4 gradient-bg-primary rounded-lg font-semibold text-lg hover:shadow-xl transition-all mb-8">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 break-words px-2">Ready to Trade Like a Professional?</h2>
+                <p class="text-base md:text-xl text-gray-300 mb-8 break-words px-2">Join thousands of successful traders using our institutional-grade platform</p>
+                <a href="auth" class="inline-block px-6 py-3 md:px-8 md:py-4 gradient-bg-primary rounded-lg font-semibold text-base md:text-lg hover:shadow-xl transition-all mb-8 touch-button break-words w-full sm:w-auto">
                     <i class="fas fa-rocket mr-2"></i>
                     Start Free Trial
                 </a>
-                <div class="cta-grid grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="flex items-center justify-center text-gray-300">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
                         <i class="fas fa-check text-success-500 mr-2"></i>
                         14-day free trial
                     </div>
-                    <div class="flex items-center justify-center text-gray-300">
+                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
                         <i class="fas fa-check text-success-500 mr-2"></i>
-                        No credit card required
+                        No credit card
                     </div>
-                    <div class="flex items-center justify-center text-gray-300">
+                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
                         <i class="fas fa-check text-success-500 mr-2"></i>
-                        Full platform access
+                        Full access
                     </div>
-                    <div class="flex items-center justify-center text-gray-300">
+                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
                         <i class="fas fa-check text-success-500 mr-2"></i>
-                        Professional support
+                        Pro support
                     </div>
                 </div>
             </div>
@@ -916,70 +785,58 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 bg-dark-900 border-t border-white/10">
-        <div class="container mx-auto px-4">
-            <div class="footer-grid grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <div class="text-2xl font-bold gradient-text mb-4">Algocdk</div>
-                    <p class="text-gray-400 mb-4">Institutional-grade algorithmic trading platform powered by advanced
-                        AI and machine learning.</p>
-                    <div class="flex space-x-4">
-                        <a href="#"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors">
-                            <i class="fab fa-twitter"></i>
+    <footer class="py-10 md:py-12 bg-dark-900 border-t border-white/10 safe-area-left safe-area-right">
+        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 mb-6 md:mb-8">
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <div class="text-2xl font-bold gradient-text mb-4 break-words">Algocdk</div>
+                    <p class="text-gray-400 text-sm md:text-base mb-4 break-words">Institutional-grade algorithmic trading platform powered by advanced AI and machine learning.</p>
+                    <div class="flex space-x-3 md:space-x-4">
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors flex-shrink-0">
+                            <i class="fab fa-twitter text-sm md:text-base"></i>
                         </a>
-                        <a href="#"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors">
-                            <i class="fab fa-linkedin-in"></i>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors flex-shrink-0">
+                            <i class="fab fa-linkedin-in text-sm md:text-base"></i>
                         </a>
-                        <a href="#"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors">
-                            <i class="fab fa-github"></i>
+                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors flex-shrink-0">
+                            <i class="fab fa-github text-sm md:text-base"></i>
                         </a>
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-bold mb-4">Trading</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">AI Bots</a>
-                        </li>
-                        <li><a href="#markets" class="text-gray-400 hover:text-white transition-colors">Markets</a></li>
-                        <li><a href="#performance"
-                                class="text-gray-400 hover:text-white transition-colors">Analytics</a></li>
-                        <li><a href="#api" class="text-gray-400 hover:text-white transition-colors">API</a></li>
+                    <h4 class="font-bold mb-3 md:mb-4 text-base md:text-lg break-words">Trading</h4>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">AI Bots</a></li>
+                        <li><a href="#markets" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Markets</a></li>
+                        <li><a href="#performance" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Analytics</a></li>
+                        <li><a href="#api" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">API</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold mb-4">Company</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors">About</a></li>
-                        <li><a href="#careers" class="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-                        <li><a href="#security" class="text-gray-400 hover:text-white transition-colors">Security</a>
-                        </li>
-                        <li><a href="#compliance"
-                                class="text-gray-400 hover:text-white transition-colors">Compliance</a></li>
+                    <h4 class="font-bold mb-3 md:mb-4 text-base md:text-lg break-words">Company</h4>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">About</a></li>
+                        <li><a href="#careers" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Careers</a></li>
+                        <li><a href="#security" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Security</a></li>
+                        <li><a href="#compliance" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Compliance</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold mb-4">Support</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#help" class="text-gray-400 hover:text-white transition-colors">Help Center</a>
-                        </li>
-                        <li><a href="#contact" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                        <li><a href="#status" class="text-gray-400 hover:text-white transition-colors">System Status</a>
-                        </li>
-                        <li><a href="#docs" class="text-gray-400 hover:text-white transition-colors">Documentation</a>
-                        </li>
+                    <h4 class="font-bold mb-3 md:mb-4 text-base md:text-lg break-words">Support</h4>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="#help" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Help Center</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Contact</a></li>
+                        <li><a href="#status" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">System Status</a></li>
+                        <li><a href="#docs" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Documentation</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 mb-4 md:mb-0">&copy; 2026 Algocdk. All rights reserved. Trading involves risk.
-                </p>
-                <div class="flex space-x-6">
-                    <a href="#privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-                    <a href="#terms" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-                    <a href="#risk" class="text-gray-400 hover:text-white transition-colors">Risk Disclosure</a>
+            <div class="pt-6 md:pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-xs md:text-sm mb-4 md:mb-0 text-center md:text-left break-words px-2 sm:px-0">&copy; 2026 Algocdk. All rights reserved. Trading involves risk.</p>
+                <div class="flex flex-wrap justify-center gap-3 md:gap-6">
+                    <a href="#privacy" class="text-gray-400 hover:text-white transition-colors text-xs md:text-base break-words">Privacy</a>
+                    <a href="#terms" class="text-gray-400 hover:text-white transition-colors text-xs md:text-base break-words">Terms</a>
+                    <a href="#risk" class="text-gray-400 hover:text-white transition-colors text-xs md:text-base break-words">Risk</a>
                 </div>
             </div>
         </div>
@@ -989,50 +846,44 @@
         // Simple JavaScript for interactive elements
         document.addEventListener('DOMContentLoaded', function () {
             // Mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuButton');
             const mobileMenu = document.getElementById('mobileMenu');
-            const closeMobileMenu = document.getElementById('closeMobileMenu');
 
             if (mobileMenuBtn && mobileMenu) {
                 mobileMenuBtn.addEventListener('click', function () {
-                    mobileMenu.classList.add('active');
-                });
-            }
-            
-            if (closeMobileMenu && mobileMenu) {
-                closeMobileMenu.addEventListener('click', function () {
-                    mobileMenu.classList.remove('active');
-                });
-            }
-            
-            // Close mobile menu when clicking on links
-            const mobileMenuLinks = mobileMenu?.querySelectorAll('a');
-            mobileMenuLinks?.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('active');
-                });
-            });
-            
-            // Close mobile menu when clicking outside
-            mobileMenu?.addEventListener('click', function(e) {
-                if (e.target === mobileMenu) {
-                    mobileMenu.classList.remove('active');
-                }
-            });
-            
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
+                    mobileMenu.classList.toggle('open');
+                    // Change icon
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (mobileMenu.classList.contains('open')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
                     }
                 });
-            });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function (event) {
+                    if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                        mobileMenu.classList.remove('open');
+                        const icon = mobileMenuBtn.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+
+                // Close mobile menu when clicking a link
+                const mobileLinks = mobileMenu.querySelectorAll('a');
+                mobileLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('open');
+                        const icon = mobileMenuBtn.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    });
+                });
+            }
 
             // Testimonial slider dots
             const dots = document.querySelectorAll('.flex.justify-center.mt-8 button');
@@ -1044,13 +895,11 @@
                     dots.forEach(d => d.classList.add('bg-white/20'));
                     this.classList.remove('bg-white/20');
                     this.classList.add('bg-primary-500');
-
-                    // In a real implementation, this would change the testimonial content
                 });
             });
 
             // Animate stats when they come into view
-            const stats = document.querySelectorAll('.glass-effect.p-4 .text-2xl');
+            const stats = document.querySelectorAll('.glass-effect.p-4 .text-2xl, .glass-effect.p-3 .text-lg');
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -1084,6 +933,85 @@
             stats.forEach(stat => {
                 observer.observe(stat);
             });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    
+                    // Skip if it's not an internal anchor link
+                    if (href === '#' || href.startsWith('#!')) return;
+                    
+                    // Skip if it's not an anchor link
+                    if (!href.startsWith('#')) return;
+                    
+                    e.preventDefault();
+                    
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        // Calculate header height for offset
+                        const headerHeight = document.querySelector('header').offsetHeight;
+                        const targetPosition = targetElement.offsetTop - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Prevent horizontal scrolling
+            function preventHorizontalScroll() {
+                // Check if there's horizontal overflow
+                if (document.documentElement.scrollWidth > window.innerWidth) {
+                    // Force body width to viewport width
+                    document.body.style.width = '100vw';
+                    document.body.style.overflowX = 'hidden';
+                }
+            }
+
+            // Initial check
+            preventHorizontalScroll();
+            
+            // Check on resize and load
+            window.addEventListener('resize', preventHorizontalScroll);
+            window.addEventListener('load', preventHorizontalScroll);
+            
+            // Adjust ticker animation for mobile
+            function adjustTickerForMobile() {
+                const tickers = document.querySelectorAll('.animate-ticker');
+                tickers.forEach(ticker => {
+                    if (window.innerWidth < 768) {
+                        ticker.style.animationDuration = '20s';
+                    } else {
+                        ticker.style.animationDuration = '30s';
+                    }
+                });
+            }
+            
+            adjustTickerForMobile();
+            window.addEventListener('resize', adjustTickerForMobile);
+            
+            // Ensure all content fits within viewport
+            function ensureContentFits() {
+                const viewportWidth = window.innerWidth;
+                const bodyWidth = document.body.scrollWidth;
+                
+                if (bodyWidth > viewportWidth) {
+                    // Scale down content if needed
+                    document.body.style.transform = 'scale(' + (viewportWidth / bodyWidth) + ')';
+                    document.body.style.transformOrigin = 'top left';
+                } else {
+                    document.body.style.transform = 'none';
+                }
+            }
+            
+            // Run after everything loads
+            window.addEventListener('load', ensureContentFits);
+            window.addEventListener('resize', ensureContentFits);
         });
     </script>
 </body>
