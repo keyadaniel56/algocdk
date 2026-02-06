@@ -184,6 +184,35 @@
             </div>
             
             <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button id="userMenuBtn" class="text-gray-400 hover:text-white flex items-center space-x-2">
+                        <i class="fas fa-user"></i>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <div id="userMenu" class="absolute right-0 top-8 bg-[#0A0E1A] border border-gray-600 rounded-lg shadow-lg w-48 z-50 hidden">
+                        <a href="/profile" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                        <a href="/settings" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                        <a id="adminDashboardLink" href="/admin_dashboard.html" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300" style="display:none">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin Dashboard</span>
+                        </a>
+                        <a id="superadminDashboardLink" href="/superadmin_dashboard.html" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300" style="display:none">
+                            <i class="fas fa-crown"></i>
+                            <span>SuperAdmin Dashboard</span>
+                        </a>
+                        <div class="border-t border-gray-600 my-1"></div>
+                        <a href="#" onclick="exitApp()" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-red-400">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Exit App</span>
+                        </a>
+                    </div>
+                </div>
                 <button onclick="exitApp()" class="text-gray-400 hover:text-white">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
@@ -363,7 +392,64 @@
             isDemo = true;
             localStorage.setItem('accountType', 'demo');
             updateAccountDisplay();
+            
+            // Setup user menu
+            setupUserMenu();
+            
+            // Load user role and show dashboard links
+            loadUserRole();
         });
+        
+        function setupUserMenu() {
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userMenu = document.getElementById('userMenu');
+            
+            if (userMenuBtn && userMenu) {
+                userMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userMenu.classList.toggle('hidden');
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+            }
+        }
+        
+        async function loadUserRole() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken') || localStorage.getItem('jwt_token');
+                if (!token) return;
+                
+                const response = await fetch('/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const userData = data.data || data.user || data;
+                    const role = (userData.role || '').toString().toLowerCase();
+                    
+                    const adminLink = document.getElementById('adminDashboardLink');
+                    const superadminLink = document.getElementById('superadminDashboardLink');
+                    
+                    if (role.includes('admin') && adminLink) {
+                        adminLink.style.display = 'flex';
+                    }
+                    if (role.includes('superadmin') && superadminLink) {
+                        superadminLink.style.display = 'flex';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load user role:', error);
+            }
+        }
 
         function initializeData() {
             // Generate initial digit history

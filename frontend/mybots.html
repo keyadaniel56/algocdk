@@ -299,6 +299,12 @@
                             class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">My Bots</a>
                         <a href="settings"
                             class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">Settings</a>
+                        <a id="adminDashboardLink" href="admin_dashboard.html" style="display:none"
+                            class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">
+                            <i class="fas fa-user-shield mr-2"></i>Admin Dashboard</a>
+                        <a id="superadminDashboardLink" href="superadmin_dashboard.html" style="display:none"
+                            class="block px-4 py-2 text-sm transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.background='var(--bg-tertiary)'; this.style.color='var(--text-primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-secondary)'">
+                            <i class="fas fa-crown mr-2"></i>SuperAdmin Dashboard</a>
                         <div class="my-1" style="border-top: 1px solid var(--border-color);"></div>
                         <a href="#" id="logoutButton"
                             class="block px-4 py-2 text-sm transition-colors" style="color: var(--danger);" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
@@ -552,6 +558,18 @@
                 if (userData.name) {
                     userName.textContent = userData.name;
                     userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+                }
+                
+                // Show dashboard links based on role
+                const role = (userData.role || '').toString().toLowerCase();
+                const adminLink = document.getElementById('adminDashboardLink');
+                const superadminLink = document.getElementById('superadminDashboardLink');
+                
+                if (role.includes('admin') && adminLink) {
+                    adminLink.style.display = 'block';
+                }
+                if (role.includes('superadmin') && superadminLink) {
+                    superadminLink.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Failed to load user profile:', error);

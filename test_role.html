@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Role Test</title>
+</head>
+<body>
+    <h1>Role Detection Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testRole() {
+            const results = document.getElementById('results');
+            
+            // Test 1: Check JWT token
+            const token = localStorage.getItem('token');
+            results.innerHTML += `<p>Token exists: ${!!token}</p>`;
+            
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    results.innerHTML += `<p>JWT Payload: ${JSON.stringify(payload)}</p>`;
+                    const role = (payload.role || payload.user_role || '').toString().toLowerCase();
+                    results.innerHTML += `<p>JWT Role: ${role}</p>`;
+                } catch (e) {
+                    results.innerHTML += `<p>JWT Parse Error: ${e.message}</p>`;
+                }
+            }
+            
+            // Test 2: Check Profile API
+            try {
+                const fetchOptions = token ? { headers: { 'Authorization': `Bearer ${token}` } } : {};
+                const response = await fetch('/api/user/profile', fetchOptions);
+                const data = await response.json();
+                results.innerHTML += `<p>Profile API Response: ${JSON.stringify(data)}</p>`;
+                
+                if (data.user) {
+                    const role = (data.user.role || '').toString().toLowerCase();
+                    results.innerHTML += `<p>Profile API Role: ${role}</p>`;
+                    results.innerHTML += `<p>Should show admin link: ${role.includes('admin')}</p>`;
+                    results.innerHTML += `<p>Should show superadmin link: ${role.includes('superadmin')}</p>`;
+                }
+            } catch (e) {
+                results.innerHTML += `<p>Profile API Error: ${e.message}</p>`;
+            }
+        }
+        
+        testRole();
+    </script>
+</body>
+</html>
