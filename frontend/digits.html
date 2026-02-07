@@ -97,6 +97,26 @@
             box-shadow: 0 8px 30px rgba(255, 68, 68, 0.4);
         }
         
+        .trade-button.matches {
+            background: #00C851;
+            box-shadow: 0 4px 20px rgba(0, 200, 81, 0.3);
+        }
+        
+        .trade-button.matches:hover {
+            background: #00A843;
+            box-shadow: 0 8px 30px rgba(0, 200, 81, 0.4);
+        }
+        
+        .trade-button.differs {
+            background: #9C27B0;
+            box-shadow: 0 4px 20px rgba(156, 39, 176, 0.3);
+        }
+        
+        .trade-button.differs:hover {
+            background: #7B1FA2;
+            box-shadow: 0 8px 30px rgba(156, 39, 176, 0.4);
+        }
+        
         .input-field {
             background: #1E293B;
             border: 2px solid #475569;
@@ -127,10 +147,28 @@
             transition: all 0.3s ease;
         }
         
+        .price-display-compact {
+            background: #1E293B;
+            color: #E2E8F0;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(18px, 4vw, 24px);
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #374151;
+            transition: all 0.3s ease;
+        }
+        
         .price-update {
             border-color: #FF4500;
             box-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
             transform: scale(1.02);
+        }
+        
+        .price-display-compact.price-update {
+            border-color: #FF4500;
+            box-shadow: 0 0 15px rgba(255, 69, 0, 0.3);
+            transform: scale(1.05);
         }
         
         .digit-box {
@@ -240,13 +278,67 @@
             border: 1px solid #374151;
         }
         
-        .digit-grid {
+        .digit-pad {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
-            gap: 12px;
-            max-width: 100%;
-            overflow-x: auto;
-            padding: 8px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .digit-pad-cell {
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #1E293B;
+            border: 2px solid #374151;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .digit-pad-cell.active {
+            border-color: #FF4500;
+            background: linear-gradient(135deg, #FF4500 0%, #FF6347 100%);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+            z-index: 10;
+        }
+        
+        .digit-pad-cell .digit-num {
+            font-size: 18px;
+            font-weight: bold;
+            color: #E2E8F0;
+        }
+        
+        .digit-pad-cell.active .digit-num {
+            color: white;
+        }
+        
+        .digit-pad-cell .digit-percent {
+            font-size: 10px;
+            color: #94A3B8;
+            margin-top: 2px;
+        }
+        
+        .digit-pad-cell.active .digit-percent {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        @media (max-width: 480px) {
+            .digit-pad {
+                gap: 6px;
+            }
+            
+            .digit-pad-cell .digit-num {
+                font-size: 16px;
+            }
+            
+            .digit-pad-cell .digit-percent {
+                font-size: 9px;
+            }
         }
         
         .mobile-grid {
@@ -264,56 +356,105 @@
             }
             
             .digit-box {
-                width: 42px;
-                height: 42px;
-                font-size: 16px;
+                width: 40px;
+                height: 40px;
+                font-size: 15px;
             }
             
             .trade-button {
-                padding: 16px 20px;
-                font-size: 14px;
+                padding: 14px 16px;
+                font-size: 13px;
             }
             
             .analysis-tabs {
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
             }
             
             .analysis-tabs .tab-button {
                 width: 100%;
                 text-align: center;
+                padding: 10px 8px;
+                font-size: 11px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            header .flex {
+                gap: 8px;
+            }
+            
+            header .text-xl {
+                font-size: 16px;
             }
         }
         
         @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
+            
             .price-display {
-                padding: 20px;
-                font-size: 24px;
+                padding: 16px;
+                font-size: 28px;
+            }
+            
+            .price-display-compact {
+                padding: 6px 10px;
+                font-size: 16px;
             }
             
             .digit-box {
-                width: 38px;
-                height: 38px;
-                font-size: 14px;
-            }
-            
-            .trade-button {
-                padding: 14px 18px;
+                width: 36px;
+                height: 36px;
                 font-size: 13px;
             }
             
-            .input-field {
-                padding: 14px 18px;
-                font-size: 14px;
-            }
-            
-            .tab-button {
-                padding: 10px 16px;
+            .trade-button {
+                padding: 12px 14px;
                 font-size: 12px;
             }
             
+            .input-field {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+            
+            .tab-button {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+            
             .panel {
-                padding: 16px !important;
+                padding: 12px !important;
+            }
+            
+            .max-w-7xl {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            
+            header {
+                margin: 8px;
+                padding: 12px !important;
+            }
+            
+            .grid.gap-6 {
+                gap: 12px;
+            }
+            
+            .heat-cell {
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+                margin: 2px;
+            }
+            
+            .prediction-card {
+                padding: 12px;
             }
         }
         
@@ -327,29 +468,29 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="panel mx-4 mt-4 px-6 py-4 sticky top-4 z-50">
-        <div class="flex items-center justify-between flex-wrap gap-4">
-            <div class="flex items-center space-x-4">
-                <button onclick="window.location.href='/trading'" class="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-accent">
-                    <i class="fas fa-arrow-left mr-2"></i>Back
+    <header class="panel mx-2 sm:mx-4 mt-2 sm:mt-4 px-3 sm:px-6 py-3 sm:py-4 sticky top-2 sm:top-4 z-50">
+        <div class="flex items-center justify-between flex-wrap gap-2 sm:gap-4">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <button onclick="window.location.href='/trading'" class="text-gray-400 hover:text-white transition-colors p-1 sm:p-2 rounded-lg hover:bg-accent text-sm sm:text-base">
+                    <i class="fas fa-arrow-left mr-1 sm:mr-2"></i><span class="hidden sm:inline">Back</span>
                 </button>
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                        <i class="fas fa-hashtag text-white"></i>
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hashtag text-white text-sm sm:text-base"></i>
                     </div>
-                    <span class="text-xl font-bold text-white">Digits Trading</span>
+                    <span class="text-base sm:text-xl font-bold text-white">Digits</span>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-4 flex-wrap">
-                <button onclick="toggleAccountType()" class="px-4 py-2 text-sm rounded-lg font-semibold transition-all bg-success text-white" id="accountTypeBtn">
+            <div class="flex items-center space-x-2 sm:space-x-4 flex-wrap">
+                <button onclick="toggleAccountType()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg font-semibold transition-all bg-success text-white" id="accountTypeBtn">
                     Demo
                 </button>
                 <div class="text-right">
-                    <div class="text-xs text-gray-400" id="balanceLabel">Demo Balance</div>
-                    <div class="font-bold text-lg text-white" id="accountBalance">10,000.00 USD</div>
+                    <div class="text-xs text-gray-400" id="balanceLabel">Demo</div>
+                    <div class="font-bold text-sm sm:text-lg text-white" id="accountBalance">10,000 USD</div>
                 </div>
-                <div class="flex items-center space-x-2 text-sm">
+                <div class="hidden sm:flex items-center space-x-2 text-sm">
                     <div class="w-3 h-3 rounded-full bg-success" id="connectionStatus"></div>
                     <span class="text-gray-400" id="connectionText">Live</span>
                 </div>
@@ -358,12 +499,12 @@
     </header>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
             <!-- Trading Controls -->
-            <div class="panel p-6">
-                <h3 class="text-xl font-bold text-white mb-6">Choose Trade Type</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="panel p-3 sm:p-6">
+                <h3 class="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">Choose Trade Type</h3>
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8">
                     <button onclick="selectTradeType('evenodd')" class="tab-button text-base py-3 active" id="btn-evenodd">
                         <i class="fas fa-balance-scale mb-2"></i><br>
                         Even / Odd
@@ -383,41 +524,52 @@
             </div>
 
             <!-- Market Panel -->
-            <div class="panel p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Market</h3>
-                <select id="marketSelect" class="input-field mb-4" onchange="changeMarket()">
-                    <option value="R_10">Volatility 10 Index</option>
-                    <option value="R_25">Volatility 25 Index</option>
-                    <option value="R_50">Volatility 50 Index</option>
-                    <option value="R_75">Volatility 75 Index</option>
-                    <option value="R_100" selected>Volatility 100 Index</option>
+            <div class="panel p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 class="text-base sm:text-lg font-bold text-white">Market</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 rounded-full bg-success" id="connectionStatus"></div>
+                        <span class="text-xs text-gray-400 hidden sm:inline" id="connectionText">Live</span>
+                    </div>
+                </div>
+                <select id="marketSelect" class="input-field mb-3 sm:mb-4 text-xs sm:text-sm" onchange="changeMarket()">
+                    <option value="R_10">Vol 10</option>
+                    <option value="R_25">Vol 25</option>
+                    <option value="R_50">Vol 50</option>
+                    <option value="R_75">Vol 75</option>
+                    <option value="R_100" selected>Vol 100</option>
                 </select>
-                <div class="price-display mb-4" id="currentPrice">1234.567</div>
-                <div class="text-center">
-                    <div class="text-sm text-gray-400 mb-2">Last digit</div>
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-2xl font-bold" id="lastDigit">7</div>
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex-1">
+                        <div class="text-xs text-gray-400 mb-1">Price</div>
+                        <div class="price-display-compact" id="currentPrice">1234.567</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-gray-400 mb-1">Last</div>
+                        <div class="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg sm:text-xl font-bold" id="lastDigit">7</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Analytics Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <div class="panel p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Live Analytics</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 mt-3 sm:mt-6">
+            <div class="panel p-3 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Live Analytics</h3>
                 <div id="analyticsContent">
                     <!-- Dynamic analytics content -->
                 </div>
             </div>
             
-            <div class="panel p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Streak Detector</h3>
+            <div class="panel p-3 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Streak Detector</h3>
                 <div id="streakDetector">
                     <!-- Streak content -->
                 </div>
             </div>
             
-            <div class="panel p-6">
-                <h3 class="text-lg font-bold text-white mb-4">Quick Stats</h3>
+            <div class="panel p-3 sm:p-6">
+                <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Quick Stats</h3>
                 <div id="quickStats">
                     <!-- Quick stats content -->
                 </div>
@@ -425,16 +577,16 @@
         </div>
 
         <!-- Analysis Tools -->
-        <div class="panel p-6 mt-6">
-            <h3 class="text-lg font-bold text-white mb-4">Analysis Tools</h3>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="panel p-3 sm:p-6 mt-3 sm:mt-6">
+            <h3 class="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">Analysis Tools</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-3">Analysis Range</label>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="setTickRange(20)" class="tab-button" id="tick-20">20</button>
-                        <button onclick="setTickRange(50)" class="tab-button active" id="tick-50">50</button>
-                        <button onclick="setTickRange(100)" class="tab-button" id="tick-100">100</button>
-                        <input type="number" id="customTicks" placeholder="Custom" min="10" max="500" class="input-field w-20 text-sm" onchange="setTickRange(this.value)">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-2 sm:mb-3">Analysis Range</label>
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2">
+                        <button onclick="setTickRange(20)" class="tab-button text-xs" id="tick-20">20</button>
+                        <button onclick="setTickRange(50)" class="tab-button active text-xs" id="tick-50">50</button>
+                        <button onclick="setTickRange(100)" class="tab-button text-xs" id="tick-100">100</button>
+                        <input type="number" id="customTicks" placeholder="Custom" min="10" max="500" class="input-field w-16 sm:w-20 text-xs sm:text-sm" onchange="setTickRange(this.value)">
                     </div>
                 </div>
                 <div>
@@ -460,123 +612,8 @@
                     </div>
                 </div>
             </div>
-            <div id="analysisResults" class="mt-6">
+            <div id="analysisResults" class="mt-3 sm:mt-6">
                 <!-- Analysis results -->
-            </div>
-        </div>
-            
-            <!-- Trading Controls -->
-            <div class="lg:col-span-3">
-                <div class="panel p-6">
-                    <!-- Trade Type Selector -->
-                    <div class="mb-8">
-                        <h3 class="text-xl font-bold text-white mb-6">Choose Trade Type</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <button onclick="selectTradeType('evenodd')" class="tab-button text-base py-3 active" id="btn-evenodd">
-                                <i class="fas fa-balance-scale mb-2"></i><br>
-                                Even / Odd
-                            </button>
-                            <button onclick="selectTradeType('matches')" class="tab-button text-base py-3" id="btn-matches">
-                                <i class="fas fa-bullseye mb-2"></i><br>
-                                Matches / Differs
-                            </button>
-                            <button onclick="selectTradeType('overunder')" class="tab-button text-base py-3" id="btn-overunder">
-                                <i class="fas fa-arrows-alt-v mb-2"></i><br>
-                                Over / Under
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Trading Interface -->
-                    <div id="tradingInterface">
-                        <!-- Content will be dynamically loaded -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Market & Analytics Panel -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Market Panel -->
-                <div class="panel p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">Market</h3>
-                    <select id="marketSelect" class="input-field mb-4" onchange="changeMarket()">
-                        <option value="R_10">Volatility 10 Index</option>
-                        <option value="R_25">Volatility 25 Index</option>
-                        <option value="R_50">Volatility 50 Index</option>
-                        <option value="R_75">Volatility 75 Index</option>
-                        <option value="R_100" selected>Volatility 100 Index</option>
-                    </select>
-                    
-                    <div class="price-display mb-4" id="currentPrice">1234.567</div>
-                    
-                    <div class="text-center">
-                        <div class="text-sm text-gray-400 mb-2">Last digit</div>
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-2xl font-bold" id="lastDigit">7</div>
-                    </div>
-                </div>
-
-                <!-- Streak Detector -->
-                <div class="panel p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">Streak Detector</h3>
-                    <div id="streakDetector">
-                        <!-- Streak content -->
-                    </div>
-                </div>
-
-                <!-- Live Analytics -->
-                <div class="panel p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">Live Analytics</h3>
-                    <div id="analyticsContent">
-                        <!-- Dynamic analytics content -->
-                    </div>
-                </div>
-
-                <!-- Analysis Tools -->
-                <div class="panel p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">Analysis Tools</h3>
-                    
-                    <!-- Tick Range Selector -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-300 mb-3">Analysis Range</label>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="setTickRange(20)" class="tab-button" id="tick-20">20</button>
-                            <button onclick="setTickRange(50)" class="tab-button active" id="tick-50">50</button>
-                            <button onclick="setTickRange(100)" class="tab-button" id="tick-100">100</button>
-                            <input type="number" id="customTicks" placeholder="Custom" min="10" max="500" class="input-field w-20 text-sm" onchange="setTickRange(this.value)">
-                        </div>
-                    </div>
-                    
-                        <div class="analysis-tabs">
-                            <button class="tab-button active" onclick="selectAlgorithm('frequency')" id="btn-frequency">
-                                <i class="fas fa-chart-bar mr-1"></i>Frequency
-                            </button>
-                            <button class="tab-button" onclick="selectAlgorithm('markov')" id="btn-markov">
-                                <i class="fas fa-project-diagram mr-1"></i>Markov
-                            </button>
-                            <button class="tab-button" onclick="selectAlgorithm('pattern')" id="btn-pattern">
-                                <i class="fas fa-puzzle-piece mr-1"></i>Pattern
-                            </button>
-                            <button class="tab-button" onclick="selectAlgorithm('trend')" id="btn-trend">
-                                <i class="fas fa-trending-up mr-1"></i>Trend
-                            </button>
-                            <button class="tab-button" onclick="selectAlgorithm('streak')" id="btn-streak">
-                                <i class="fas fa-fire mr-1"></i>Streaks
-                            </button>
-                            <button class="tab-button" onclick="selectAlgorithm('heatmap')" id="btn-heatmap">
-                                <i class="fas fa-th mr-1"></i>Heat Map
-                            </button>
-                        </div>
-                    <div id="analysisResults">
-                        <!-- Analysis results -->
-                    </div>
-                </div>
-                
-                <!-- Quick Stats -->
-                <div class="panel p-6">
-                    <h3 class="text-lg font-bold text-white mb-4">Quick Stats</h3>
-                    <div id="quickStats">
-                        <!-- Quick stats content -->
-                    </div>
             </div>
         </div>
     </div>
@@ -1339,14 +1376,14 @@
                         <div class="mb-6">
                             <h4 class="text-lg font-semibold text-white mb-6">Choose Your Prediction</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <button class="trade-button" style="padding: 12px 16px;" onclick="placeTrade('DIGITMATCH')">
+                                <button class="trade-button matches" style="padding: 12px 16px;" onclick="placeTrade('DIGITMATCH')">
                                     <div class="text-center">
                                         <i class="fas fa-bullseye text-base mb-1"></i>
                                         <div class="text-sm font-bold">Matches</div>
                                         <div class="text-xs opacity-80">Exact digit match</div>
                                     </div>
                                 </button>
-                                <button class="trade-button" style="padding: 12px 16px;" onclick="placeTrade('DIGITDIFF')">
+                                <button class="trade-button differs" style="padding: 12px 16px;" onclick="placeTrade('DIGITDIFF')">
                                     <div class="text-center">
                                         <i class="fas fa-times text-base mb-1"></i>
                                         <div class="text-sm font-bold">Differs</div>
@@ -1409,26 +1446,53 @@
             
             switch(currentTradeType) {
                 case 'evenodd':
+                    const range = Math.min(50, digitHistory.length);
+                    const recentDigits = digitHistory.slice(-range);
+                    const digitFreq = Array(10).fill(0);
+                    recentDigits.forEach(d => digitFreq[d]++);
+                    
+                    const lastDigit = digitHistory[digitHistory.length - 1];
+                    
                     analyticsContent = `
-                        <div class="mb-6">
-                            <div class="text-sm text-gray-400 mb-4">Recent Digits</div>
-                            <div class="digit-grid">
-                                ${digitHistory.slice(-20).map(d => `<div class="digit-box ${d % 2 === 0 ? 'digit-even' : 'digit-odd'}">${d}</div>`).join('')}
+                        <div class="mb-3">
+                            <div class="text-xs sm:text-sm text-gray-400 mb-3">Digit Pad (Last ${range} ticks)</div>
+                            <div class="digit-pad">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const percent = ((digitFreq[i] / range) * 100).toFixed(1);
+                                    return `
+                                        <div class="digit-pad-cell ${lastDigit === i ? 'active' : ''}" id="pad-${i}">
+                                            <div class="digit-num">${i}</div>
+                                            <div class="digit-percent">${percent}%</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="digit-pad">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const digit = i + 5;
+                                    const percent = ((digitFreq[digit] / range) * 100).toFixed(1);
+                                    return `
+                                        <div class="digit-pad-cell ${lastDigit === digit ? 'active' : ''}" id="pad-${digit}">
+                                            <div class="digit-num">${digit}</div>
+                                            <div class="digit-percent">${percent}%</div>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-3">
                             <div class="stat-card">
-                                <div class="text-2xl font-bold text-success">${evenCount}</div>
-                                <div class="text-sm text-gray-400 mt-1">Even</div>
-                                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
-                                    <div class="bg-success h-2 rounded-full transition-all duration-500" style="width: ${(evenCount / digitHistory.length) * 100}%"></div>
+                                <div class="text-xl sm:text-2xl font-bold text-success">${((evenCount / digitHistory.length) * 100).toFixed(1)}%</div>
+                                <div class="text-xs sm:text-sm text-gray-400 mt-1">Even (${evenCount})</div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 sm:h-2 mt-2">
+                                    <div class="bg-success h-1.5 sm:h-2 rounded-full transition-all duration-500" style="width: ${(evenCount / digitHistory.length) * 100}%"></div>
                                 </div>
                             </div>
                             <div class="stat-card">
-                                <div class="text-2xl font-bold text-danger">${oddCount}</div>
-                                <div class="text-sm text-gray-400 mt-1">Odd</div>
-                                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
-                                    <div class="bg-danger h-2 rounded-full transition-all duration-500" style="width: ${(oddCount / digitHistory.length) * 100}%"></div>
+                                <div class="text-xl sm:text-2xl font-bold text-danger">${((oddCount / digitHistory.length) * 100).toFixed(1)}%</div>
+                                <div class="text-xs sm:text-sm text-gray-400 mt-1">Odd (${oddCount})</div>
+                                <div class="w-full bg-gray-700 rounded-full h-1.5 sm:h-2 mt-2">
+                                    <div class="bg-danger h-1.5 sm:h-2 rounded-full transition-all duration-500" style="width: ${(oddCount / digitHistory.length) * 100}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -1436,25 +1500,49 @@
                     break;
                     
                 case 'matches':
+                    const matchRange = Math.min(50, digitHistory.length);
+                    const matchRecentDigits = digitHistory.slice(-matchRange);
+                    const matchDigitFreq = Array(10).fill(0);
+                    matchRecentDigits.forEach(d => matchDigitFreq[d]++);
+                    const matchLastDigit = digitHistory[digitHistory.length - 1];
+                    
                     analyticsContent = `
-                        <div class="mb-6">
-                            <div class="text-sm text-gray-400 mb-4">Digit Frequency</div>
-                            <div class="grid grid-cols-5 gap-3">
-                                ${Array.from({length: 10}, (_, i) => `
-                                    <div class="stat-card">
-                                        <div class="text-lg font-bold text-primary">${i}</div>
-                                        <div class="text-xs text-gray-400 mt-1">${digitCounts[i]}x</div>
-                                        <div class="w-full bg-gray-200 rounded-full h-1 mt-2">
-                                            <div class="bg-primary h-1 rounded-full transition-all duration-500" style="width: ${(digitCounts[i] / digitHistory.length) * 100}%"></div>
+                        <div class="mb-3">
+                            <div class="text-xs sm:text-sm text-gray-400 mb-3">Digit Frequency (Last ${matchRange})</div>
+                            <div class="digit-pad">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const percent = ((matchDigitFreq[i] / matchRange) * 100).toFixed(1);
+                                    return `
+                                        <div class="digit-pad-cell ${matchLastDigit === i ? 'active' : ''}">
+                                            <div class="digit-num">${i}</div>
+                                            <div class="digit-percent">${percent}%</div>
                                         </div>
-                                    </div>
-                                `).join('')}
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="digit-pad">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const digit = i + 5;
+                                    const percent = ((matchDigitFreq[digit] / matchRange) * 100).toFixed(1);
+                                    return `
+                                        <div class="digit-pad-cell ${matchLastDigit === digit ? 'active' : ''}">
+                                            <div class="digit-num">${digit}</div>
+                                            <div class="digit-percent">${percent}%</div>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
                     `;
                     break;
                     
                 case 'overunder':
+                    const ouRange = Math.min(50, digitHistory.length);
+                    const ouRecentDigits = digitHistory.slice(-ouRange);
+                    const ouDigitFreq = Array(10).fill(0);
+                    ouRecentDigits.forEach(d => ouDigitFreq[d]++);
+                    const ouLastDigit = digitHistory[digitHistory.length - 1];
+                    
                     const overCounts = Array(9).fill(0);
                     const underCounts = Array(9).fill(0);
                     
@@ -1466,20 +1554,46 @@
                     }
                     
                     analyticsContent = `
-                        <div class="mb-6">
-                            <div class="text-sm text-gray-400 mb-4">Over/Under Analysis</div>
-                            <div class="space-y-3">
+                        <div class="mb-3">
+                            <div class="text-xs sm:text-sm text-gray-400 mb-3">Digit Pad (Last ${ouRange})</div>
+                            <div class="digit-pad">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const percent = ((ouDigitFreq[i] / ouRange) * 100).toFixed(1);
+                                    return `
+                                        <div class="digit-pad-cell ${ouLastDigit === i ? 'active' : ''}">
+                                            <div class="digit-num">${i}</div>
+                                            <div class="digit-percent">${percent}%</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="digit-pad">
+                                ${Array.from({length: 5}, (_, i) => {
+                                    const digit = i + 5;
+                                    const percent = ((ouDigitFreq[digit] / ouRange) * 100).toFixed(1);
+                                    return `
+                                        <div class="digit-pad-cell ${ouLastDigit === digit ? 'active' : ''}">
+                                            <div class="digit-num">${digit}</div>
+                                            <div class="digit-percent">${percent}%</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="text-xs sm:text-sm text-gray-400 mb-2">Barrier Stats</div>
+                            <div class="space-y-2">
                                 ${Array.from({length: 8}, (_, i) => {
                                     const barrier = i + 1;
                                     const overCount = overCounts[barrier];
                                     const underCount = underCounts[barrier];
                                     return `
-                                        <div class="stat-card">
-                                            <div class="flex items-center justify-between text-sm">
-                                                <span class="font-medium">Barrier ${barrier}</span>
-                                                <div class="flex space-x-4">
-                                                    <span class="text-success">Over: ${overCount}</span>
-                                                    <span class="text-warning">Under: ${underCount}</span>
+                                        <div class="stat-card p-2">
+                                            <div class="flex items-center justify-between text-xs sm:text-sm">
+                                                <span class="font-medium">B${barrier}</span>
+                                                <div class="flex space-x-2 sm:space-x-4">
+                                                    <span class="text-success">↑${overCount}</span>
+                                                    <span class="text-warning">↓${underCount}</span>
                                                 </div>
                                             </div>
                                         </div>
