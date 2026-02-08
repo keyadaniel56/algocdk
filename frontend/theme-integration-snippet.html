@@ -1,0 +1,112 @@
+<!-- 
+    DARK/LIGHT MODE INTEGRATION SNIPPET
+    
+    Copy and paste this into your dashboard HTML files:
+    
+    1. Add to <head> section (after other CSS):
+-->
+<link rel="stylesheet" href="/theme-enhanced.css">
+
+<!-- 
+    2. Add before closing </body> tag (after other scripts):
+-->
+<script src="/theme-toggle.js"></script>
+
+<!-- 
+    THAT'S IT! The theme toggle will automatically appear in your header.
+    
+    ============================================================
+    OPTIONAL: Manual Button Placement
+    ============================================================
+    
+    If you want to manually place the toggle button, add this
+    where you want it to appear (usually in the header):
+-->
+<button id="themeToggle" class="theme-toggle-btn" title="Toggle theme">
+    <i class="fas fa-sun"></i>
+</button>
+
+<!-- 
+    ============================================================
+    EXAMPLE: Full Header with Theme Toggle
+    ============================================================
+-->
+<header class="bg-gray-800 shadow-sm border-b border-gray-700">
+    <div class="px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold">Dashboard</h2>
+                <p class="text-gray-400 text-sm">Welcome back</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Theme toggle will auto-insert here -->
+                <button class="bg-primary hover:bg-secondary px-4 py-2 rounded-lg">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 
+    ============================================================
+    PROGRAMMATIC USAGE
+    ============================================================
+    
+    You can also control the theme via JavaScript:
+-->
+<script>
+    // Toggle theme
+    window.themeManager.toggle();
+    
+    // Set specific theme
+    window.themeManager.applyTheme('light'); // or 'dark'
+    
+    // Get current theme
+    const currentTheme = window.themeManager.theme;
+    console.log('Current theme:', currentTheme);
+</script>
+
+<!-- 
+    ============================================================
+    STYLING CUSTOM ELEMENTS
+    ============================================================
+    
+    Use CSS variables for theme-aware styling:
+-->
+<style>
+    .my-custom-element {
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+    
+    .my-custom-element:hover {
+        background-color: var(--hover-bg);
+    }
+</style>
+
+<!-- 
+    ============================================================
+    AVAILABLE CSS VARIABLES
+    ============================================================
+    
+    --bg-primary       : Main background color
+    --bg-secondary     : Secondary background
+    --bg-tertiary      : Tertiary background
+    --text-primary     : Main text color
+    --text-secondary   : Secondary text color
+    --text-tertiary    : Tertiary text color
+    --border-color     : Border color
+    --card-bg          : Card background
+    --sidebar-bg       : Sidebar background
+    --hover-bg         : Hover state background
+    
+    Brand colors (always consistent):
+    --primary          : #FF4500
+    --secondary        : #FF6347
+    --success          : #10B981
+    --danger           : #EF4444
+    --warning          : #F59E0B
+-->

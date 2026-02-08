@@ -202,6 +202,8 @@ func SetUpRouter(router *gin.Engine) {
 	router.StaticFile("/admin-dashboard.js", frontendPath+"/admin-dashboard.js")
 	router.StaticFile("/output.css", frontendPath+"/output.css")
 	router.StaticFile("/theme.css", frontendPath+"/theme.css")
+	router.StaticFile("/theme-toggle.js", frontendPath+"/theme-toggle.js")
+	router.StaticFile("/theme-enhanced.css", frontendPath+"/theme-enhanced.css")
 
 	// Serve HTML files manually
 	router.GET("/", func(c *gin.Context) {
