@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algocdk - Charting Platform for Traders & Investors</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
+            background-color: #0d1117;
+            color: #d1d4dc;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(13, 17, 23, 0.98);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(42, 46, 57, 0.8);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .logo span {
+            color: #ff6838;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #b2b5be;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #b2b5be;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .btn-text:hover {
+            color: #fff;
+        }
+
+        .btn-primary {
+            padding: 0.6rem 1.25rem;
+            background: linear-gradient(90deg, #ff6838 0%, #ff8c42 100%);
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 104, 56, 0.35);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-bg-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .hero-bg-slide.active {
+            opacity: 1;
+        }
+
+        .hero-bg-slide::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(13, 17, 23, 0.88) 0%, rgba(13, 17, 23, 0.82) 100%);
+        }
+
+        .hero-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-text h1 {
+            font-size: 3.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.15;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+
+        .hero-text h1 .highlight {
+            background: linear-gradient(135deg, #ff6838, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: #8b949e;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            padding: 0.875rem 2rem;
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(48, 54, 61, 0.4);
+            border-color: #8b949e;
+        }
+
+        /* Chart Preview */
+        .chart-preview {
+            position: relative;
+            animation: fadeInRight 0.9s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chart-window {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .chart-header {
+            background: #0d1117;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #30363d;
+        }
+
+        .chart-toolbar {
+            background: #0d1117;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #21262d;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .tool-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            padding: 0.35rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 400px;
+            background: #0d1117;
+        }
+
+        #mainChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Features Grid */
+        .features {
+            padding: 7rem 1.5rem;
+            background: #0d1117;
+        }
+
+        .features-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: #8b949e;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6838;
+            box-shadow: 0 8px 24px rgba(255, 104, 56, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.35rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #8b949e;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Stats Banner */
+        .stats {
+            padding: 5rem 1.5rem;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            border-bottom: 1px solid #30363d;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 7rem 1.5rem;
+            background: #0d1117;
+        }
+
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255, 104, 56, 0.1), rgba(255, 140, 66, 0.1));
+            border: 1px solid rgba(255, 104, 56, 0.2);
+            border-radius: 12px;
+            padding: 4rem 2rem;
+        }
+
+        .cta-container h2 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .cta-container p {
+            font-size: 1.2rem;
+            color: #8b949e;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            padding: 3rem 1.5rem 1.5rem;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h4 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.65rem;
+        }
+
+        .footer-section a {
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-section a:hover {
+            color: #ff6838;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #30363d;
+            color: #6e7681;
+            font-size: 0.875rem;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-20px) rotateY(10deg); }
+        }
+
+        @keyframes drift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-400px); }
+        }
+
+        @keyframes ping {
+            0% { transform: scale(1); opacity: 1; }
+            75%, 100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-canvas {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Algo<span>cdk</span></div>
+            <ul class="nav-links">
+                <li><a href="#products">Products</a></li>
+                <li><a href="#community">Community</a></li>
+                <li><a href="#markets">Markets</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#brokers">Brokers</a></li>
+                <li><a href="#more">More</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="/auth" class="btn-text" style="text-decoration: none;">Sign in</a>
+                <a href="/auth" class="btn-primary" style="text-decoration: none;">Get started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="hero-bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=80');"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Track all markets on <span class="highlight">Algocdk</span></h1>
+                <p>Stocks, futures, forex, crypto, and more. Professional charting platform and social network for traders and investors.</p>
+                <div class="hero-buttons">
+                    <a href="/auth" class="btn-primary btn-large" style="text-decoration: none;">Start charting now</a>
+                    <a href="#features" class="btn-secondary btn-large" style="text-decoration: none;">Learn more</a>
+                </div>
+            </div>
+            
+            <div class="chart-preview">
+                <div class="chart-window">
+                    <div class="chart-header">
+                        <div class="chart-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="tool-btn">Indicators</div>
+                        <div class="tool-btn">Strategies</div>
+                        <div class="tool-btn">1D</div>
+                        <div class="tool-btn">Candles</div>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Summary Section -->
+    <section class="stats">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; letter-spacing: -0.5px;">Market Summary</h2>
+                <p style="font-size: 1rem; color: #8b949e;">Live market data powered by Deriv</p>
+            </div>
+            
+            <div id="marketData" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0; border: 1px solid #2a2e39; border-radius: 8px; overflow: hidden; background: #131722;"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Everything you need to trade</h2>
+                <p>Professional tools and real-time data to make smarter trading decisions</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Advanced charting</h3>
+                    <p>100+ technical indicators, drawing tools, and customizable layouts for comprehensive market analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Real-time data</h3>
+                    <p>Live quotes from global exchanges with millisecond-level precision for instant market updates.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Pine Script</h3>
+                    <p>Build custom indicators and strategies with our proprietary coding language designed for traders.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Paper trading</h3>
+                    <p>Test your strategies risk-free with our paper trading simulator using real market data.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Mobile apps</h3>
+                    <p>Access full charting capabilities on iOS and Android. Trade and analyze anywhere, anytime.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Community ideas</h3>
+                    <p>Connect with millions of traders, share strategies, and learn from the best in the community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Section -->
+    <section style="padding: 7rem 1.5rem; background: #161b22; border-top: 1px solid #30363d; border-bottom: 1px solid #30363d; overflow: hidden;">
+        <div style="max-width: 1280px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 2.75rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;">Trade Globally</h2>
+            <p style="font-size: 1.2rem; color: #8b949e; margin-bottom: 4rem;">Connect with traders from every corner of the world</p>
+            <div style="display: flex; justify-content: center; perspective: 1000px;">
+                <div style="width: 350px; height: 350px; position: relative; transform-style: preserve-3d;">
+                    <div style="width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #1a4d7a, #0a1929); position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset -20px -20px 40px rgba(0, 0, 0, 0.4), inset 20px 20px 40px rgba(255, 255, 255, 0.05); animation: float 6s ease-in-out infinite;">
+                        <!-- Continents -->
+                        <div style="position: absolute; top: 25%; left: 15%; width: 60px; height: 40px; background: #2d5a3d; border-radius: 40% 60% 50% 50%; opacity: 0.8; animation: drift 40s linear infinite;"></div>
+                        <div style="position: absolute; top: 45%; right: 20%; width: 70px; height: 50px; background: #2d5a3d; border-radius: 50% 40% 60% 50%; opacity: 0.8; animation: drift 40s linear infinite;"></div>
+                        <div style="position: absolute; bottom: 30%; left: 25%; width: 50px; height: 35px; background: #2d5a3d; border-radius: 50% 50% 40% 60%; opacity: 0.8; animation: drift 40s linear infinite;"></div>
+                        
+                        <!-- Grid lines -->
+                        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1) 50%, transparent); animation: drift 40s linear infinite;"></div>
+                        <div style="position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.1) 50%, transparent);"></div>
+                        
+                        <!-- Location markers -->
+                        <div style="position: absolute; top: 30%; left: 35%; width: 10px; height: 10px;">
+                            <div style="width: 100%; height: 100%; background: #ff6838; border-radius: 50%; box-shadow: 0 0 20px #ff6838; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+                        </div>
+                        <div style="position: absolute; top: 50%; right: 30%; width: 10px; height: 10px;">
+                            <div style="width: 100%; height: 100%; background: #ff6838; border-radius: 50%; box-shadow: 0 0 20px #ff6838; animation: ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+                        </div>
+                        <div style="position: absolute; bottom: 35%; left: 40%; width: 10px; height: 10px;">
+                            <div style="width: 100%; height: 100%; background: #ff6838; border-radius: 50%; box-shadow: 0 0 20px #ff6838; animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+                        </div>
+                        <div style="position: absolute; top: 40%; left: 55%; width: 10px; height: 10px;">
+                            <div style="width: 100%; height: 100%; background: #ff6838; border-radius: 50%; box-shadow: 0 0 20px #ff6838; animation: ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+                        </div>
+                        
+                        <!-- Glow effect -->
+                        <div style="position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 104, 56, 0.2), transparent 70%); pointer-events: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <h2>Ready to start?</h2>
+            <p>Join millions of traders using Algocdk for market analysis and trading</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+                <div style="display: flex; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=1" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=2" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=3" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=4" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=5" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                </div>
+                <p style="color: #8b949e; font-size: 0.95rem; margin: 0;">Join 50,000+ active traders worldwide</p>
+            </div>
+            <a href="/auth" class="btn-primary btn-large" style="text-decoration: none;">Create free account</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Products</h4>
+                <ul>
+                    <li><a href="#">Supercharts</a></li>
+                    <li><a href="#">Pine Script</a></li>
+                    <li><a href="#">Stock Screener</a></li>
+                    <li><a href="#">ETF Screener</a></li>
+                    <li><a href="#">Forex Screener</a></li>
+                    <li><a href="#">Crypto Screener</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Wall of Love</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="#">Refer a friend</a></li>
+                    <li><a href="#">Ideas</a></li>
+                    <li><a href="#">Scripts</a></li>
+                    <li><a href="#">Streams</a></li>
+                    <li><a href="#">Moderators</a></li>
+                    <li><a href="#">Pine Wizards</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>For business</h4>
+                <ul>
+                    <li><a href="#">Widgets</a></li>
+                    <li><a href="#">Charting libraries</a></li>
+                    <li><a href="#">Lightweight charts</a></li>
+                    <li><a href="#">Advanced charts</a></li>
+                    <li><a href="#">Brokerage integration</a></li>
+                    <li><a href="#">Partner program</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Algocdk. All rights reserved. Market data provided by ICE Data services</p>
+        </div>
+    </footer>
+
+    <script>
+        // Candlestick Chart Drawing
+        const canvas = document.getElementById('mainChart');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.offsetWidth * window.devicePixelRatio;
+            canvas.height = parent.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Generate candlestick data
+        let candles = [];
+        const numCandles = 60;
+        let basePrice = 45000;
+
+        for (let i = 0; i < numCandles; i++) {
+            const open = basePrice + (Math.random() - 0.5) * 1000;
+            const close = open + (Math.random() - 0.5) * 800;
+            const high = Math.max(open, close) + Math.random() * 400;
+            const low = Math.min(open, close) - Math.random() * 400;
+            
+            candles.push({ open, high, low, close });
+            basePrice = close;
+        }
+
+        let animationProgress = 0;
+
+        function drawChart() {
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.5)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 6; i++) {
+                const y = (height / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Calculate price range
+            const prices = candles.flatMap(c => [c.high, c.low]);
+            const maxPrice = Math.max(...prices);
+            const minPrice = Math.min(...prices);
+            const priceRange = maxPrice - minPrice;
+
+            const candleWidth = width / (numCandles * 1.5);
+            const spacing = candleWidth * 0.3;
+
+            // Draw candlesticks
+            const visibleCandles = Math.floor(animationProgress * numCandles);
+            
+            for (let i = 0; i < visibleCandles; i++) {
+                const candle = candles[i];
+                const x = i * (candleWidth + spacing) + spacing;
+                
+                const openY = height - ((candle.open - minPrice) / priceRange) * height;
+                const closeY = height - ((candle.close - minPrice) / priceRange) * height;
+                const highY = height - ((candle.high - minPrice) / priceRange) * height;
+                const lowY = height - ((candle.low - minPrice) / priceRange) * height;
+
+                const isGreen = candle.close > candle.open;
+                ctx.strokeStyle = isGreen ? '#0ecb81' : '#f6465d';
+                ctx.fillStyle = isGreen ? '#0ecb81' : '#f6465d';
+
+                // Draw wick
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x + candleWidth / 2, highY);
+                ctx.lineTo(x + candleWidth / 2, lowY);
+                ctx.stroke();
+
+                // Draw body
+                const bodyHeight = Math.abs(openY - closeY);
+                const bodyY = Math.min(openY, closeY);
+                
+                if (isGreen) {
+                    ctx.fillRect(x, bodyY, candleWidth, bodyHeight || 1);
+                } else {
+                    ctx.fillRect(x, bodyY, candleWidth, bodyHeight || 1);
+                }
+            }
+
+            // Animate
+            if (animationProgress < 1) {
+                animationProgress += 0.01;
+                requestAnimationFrame(drawChart);
+            }
+        }
+
+        drawChart();
+
+        // Fetch Deriv market data
+        const markets = [
+            { symbol: 'frxEURUSD', name: 'EUR/USD', type: 'forex' },
+            { symbol: 'frxGBPUSD', name: 'GBP/USD', type: 'forex' },
+            { symbol: 'frxUSDJPY', name: 'USD/JPY', type: 'forex' },
+            { symbol: 'frxAUDUSD', name: 'AUD/USD', type: 'forex' },
+            { symbol: 'cryBTCUSD', name: 'Bitcoin', type: 'crypto' },
+            { symbol: 'cryETHUSD', name: 'Ethereum', type: 'crypto' },
+            { symbol: 'R_10', name: 'Volatility 10', type: 'synthetic' },
+            { symbol: 'R_25', name: 'Volatility 25', type: 'synthetic' },
+            { symbol: 'R_50', name: 'Volatility 50', type: 'synthetic' },
+            { symbol: 'R_75', name: 'Volatility 75', type: 'synthetic' },
+            { symbol: 'R_100', name: 'Volatility 100', type: 'synthetic' },
+            { symbol: 'BOOM1000', name: 'Boom 1000', type: 'synthetic' }
+        ];
+
+        let ws;
+        const marketDataMap = new Map();
+
+        function connectDerivWS() {
+            ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
+            
+            ws.onopen = () => {
+                markets.forEach(market => {
+                    ws.send(JSON.stringify({ ticks: market.symbol, subscribe: 1 }));
+                });
+            };
+
+            ws.onmessage = (msg) => {
+                const data = JSON.parse(msg.data);
+                if (data.tick) {
+                    const market = markets.find(m => m.symbol === data.tick.symbol);
+                    if (market) {
+                        const oldPrice = marketDataMap.get(market.symbol)?.quote || data.tick.quote;
+                        const change = ((data.tick.quote - oldPrice) / oldPrice * 100).toFixed(2);
+                        marketDataMap.set(market.symbol, { ...data.tick, change, market });
+                        updateMarketUI();
+                    }
+                }
+            };
+
+            ws.onerror = () => setTimeout(connectDerivWS, 3000);
+            ws.onclose = () => setTimeout(connectDerivWS, 3000);
+        }
+
+        function updateMarketUI() {
+            const container = document.getElementById('marketData');
+            container.innerHTML = '';
+            
+            marketDataMap.forEach((data, symbol) => {
+                const isPositive = parseFloat(data.change) >= 0;
+                const card = document.createElement('div');
+                card.style.cssText = 'background: #131722; border-right: 1px solid #2a2e39; border-bottom: 1px solid #2a2e39; padding: 1rem; cursor: pointer; transition: background 0.2s ease;';
+                card.onmouseenter = () => card.style.background = '#1e222d';
+                card.onmouseleave = () => card.style.background = '#131722';
+                
+                card.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div style="font-size: 0.95rem; font-weight: 600; color: #d1d4dc;">${data.market.name}</div>
+                    </div>
+                    <div style="font-size: 1.5rem; font-weight: 600; color: #ffffff; margin-bottom: 0.25rem;">${data.quote.toFixed(data.pip > 0.01 ? 2 : 5)}</div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="color: ${isPositive ? '#26a69a' : '#ef5350'}; font-size: 0.85rem; font-weight: 500;">
+                            ${isPositive ? '+' : ''}${data.change}%
+                        </div>
+                        <canvas id="chart-${symbol}" width="60" height="24" style="width: 60px; height: 24px;"></canvas>
+                    </div>
+                `;
+                container.appendChild(card);
+                setTimeout(() => drawMiniChart(symbol, data.quote), 10);
+            });
+        }
+
+        const chartHistory = new Map();
+
+        function drawMiniChart(symbol, price) {
+            if (!chartHistory.has(symbol)) chartHistory.set(symbol, []);
+            const history = chartHistory.get(symbol);
+            history.push(price);
+            if (history.length > 20) history.shift();
+
+            const canvas = document.getElementById(`chart-${symbol}`);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            if (history.length < 2) return;
+
+            const max = Math.max(...history);
+            const min = Math.min(...history);
+            const range = max - min || 1;
+            const isPositive = history[history.length - 1] >= history[0];
+
+            ctx.strokeStyle = isPositive ? '#26a69a' : '#ef5350';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+
+            history.forEach((val, i) => {
+                const x = (i / (history.length - 1)) * width;
+                const y = height - ((val - min) / range) * height;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+
+            ctx.stroke();
+        }
+
+        connectDerivWS();
+
+        // Hero background slideshow
+        const slides = document.querySelectorAll('.hero-bg-slide');
+        let currentSlide = 0;
+
+        function nextSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        setInterval(nextSlide, 4000);
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

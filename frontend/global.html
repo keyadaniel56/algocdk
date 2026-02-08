@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Algocdk</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #020617;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #e5e7eb;
+    }
+
+    /* Minimal brand header */
+    header {
+      position: absolute;
+      top: 22px;
+      left: 32px;
+      z-index: 1000;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      opacity: 0.95;
+    }
+
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* Global signal */
+    .signal {
+      width: 14px;
+      height: 14px;
+      background: #38bdf8;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.8);
+    }
+
+    .signal::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, 0.35);
+      animation: signal-pulse 3s ease-out infinite;
+    }
+
+    @keyframes signal-pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      100% {
+        transform: scale(7);
+        opacity: 0;
+      }
+    }
+
+    /* Leaflet UI subtlety */
+    .leaflet-control-zoom {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    .leaflet-control-zoom a {
+      background: rgba(2, 6, 23, 0.8) !important;
+      color: #e5e7eb !important;
+      border-radius: 6px !important;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Algocdk</header>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map', {
+      zoomControl: true,
+      attributionControl: false,
+      scrollWheelZoom: true,
+      dragging: true
+    }).setView([20, 0], 2);
+
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      { maxZoom: 18 }
+    ).addTo(map);
+
+    const signalIcon = L.divIcon({
+      className: '',
+      html: '<div class="signal"></div>',
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
+    });
+
+    // Center-of-world signal
+    L.marker([20, 0], { icon: signalIcon }).addTo(map);
+  </script>
+
+</body>
+</html>
