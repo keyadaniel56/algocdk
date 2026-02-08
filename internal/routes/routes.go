@@ -192,6 +192,7 @@ func SetUpRouter(router *gin.Engine) {
 	// Serve assets and JavaScript files
 	router.Static("/assets", frontendPath)
 	router.Static("/js", frontendPath)
+	router.Static("/images", frontendPath+"/images")
 	router.StaticFile("/api.js", frontendPath+"/api.js")
 	router.StaticFile("/auth.js", frontendPath+"/auth.js")
 	router.StaticFile("/dashboard.js", frontendPath+"/dashboard.js")
@@ -277,6 +278,9 @@ func SetUpRouter(router *gin.Engine) {
 	})
 	router.GET("/sites", func(c *gin.Context) {
 		c.File(frontendPath + "/sites.html")
+	})
+	router.GET("/global.html", func(c *gin.Context) {
+		c.File(frontendPath + "/global.html")
 	})
 
 	// Site viewer route

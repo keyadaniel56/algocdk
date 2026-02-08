@@ -1,476 +1,1474 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Algocdk - AI-Powered Algorithmic Trading Platform</title>
-    <link rel="stylesheet" href="output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#fff0f0',
-                            100: '#ffd6d6',
-                            500: '#ff4500',
-                            600: '#e63e00',
-                            700: '#cc3700',
-                        },
-                        dark: {
-                            900: '#000000',
-                            800: '#1a1a1a',
-                            700: '#333333',
-                        },
-                        success: {
-                            500: '#10b981',
-                            600: '#059669',
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'ticker': 'ticker 30s linear infinite',
-                        'trend': 'trend 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        ticker: {
-                            '0%': { transform: 'translateX(0)' },
-                            '100%': { transform: 'translateX(-100%)' },
-                        },
-                        trend: {
-                            '0%, 100%': { width: '70%' },
-                            '50%': { width: '90%' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algocdk - Charting Platform for Traders & Investors</title>
     <style>
-        /* Prevent horizontal scrolling */
-        html, body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
             overflow-x: hidden;
-            width: 100%;
             max-width: 100%;
-            position: relative;
-        }
-        
-        /* Force wrapping for long text */
-        .break-words {
-            word-break: break-word;
-            overflow-wrap: break-word;
-        }
-        
-        /* Responsive image and video */
-        img, video {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #ff4500, #ff6b35);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .gradient-bg-primary {
-            background: linear-gradient(135deg, #ff4500, #ff6b35);
-        }
-        
-        /* Mobile menu */
-        .mobile-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-in-out;
-        }
-        
-        .mobile-menu.open {
-            max-height: 500px;
-        }
-        
-        /* Touch-friendly buttons */
-        .touch-button {
-            min-height: 44px;
-            min-width: 44px;
-        }
-        
-        /* Mobile-specific styles */
-        @media (max-width: 768px) {
-            /* Prevent overflow */
-            .mobile-no-overflow {
-                overflow-x: hidden;
-            }
-            
-            /* Adjust ticker animation for mobile */
-            @keyframes mobile-ticker {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-200%); }
-            }
-            
-            /* Safe area support */
-            .safe-area-left {
-                padding-left: max(16px, env(safe-area-inset-left, 16px));
-            }
-            
-            .safe-area-right {
-                padding-right: max(16px, env(safe-area-inset-right, 16px));
-            }
-            
-            /* Hide scrollbar */
-            .hide-scrollbar {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-            
-            .hide-scrollbar::-webkit-scrollbar {
-                display: none;
-            }
-        }
-        
-        /* Extra small devices */
-        @media (max-width: 380px) {
-            /* Reduce padding further */
-            .xs-padding {
-                padding-left: 12px !important;
-                padding-right: 12px !important;
-            }
-            
-            /* Smaller text on tiny screens */
-            .xs-text {
-                font-size: 0.875rem !important;
-            }
-            
-            /* Stack elements vertically */
-            .xs-stack {
-                flex-direction: column !important;
-            }
-            
-            /* Full width on tiny screens */
-            .xs-full-width {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-        }
-        
-        /* Tablet adjustments */
-        @media (min-width: 641px) and (max-width: 768px) {
-            .tablet-padding {
-                padding-left: 20px !important;
-                padding-right: 20px !important;
-            }
-        }
-        
-        /* Ensure all containers don't exceed screen width */
-        .max-w-screen {
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
+            background-color: #0d1117;
+            color: #d1d4dc;
+            overflow-x: hidden;
+            line-height: 1.6;
             max-width: 100vw;
         }
-        
-        /* Prevent text overflow */
-        .truncate-multiline {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(13, 17, 23, 0.98);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(42, 46, 57, 0.8);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+        }
+
+        .logo span {
+            color: #ff6838;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #b2b5be;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #b2b5be;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .btn-text:hover {
+            color: #fff;
+        }
+
+        .btn-primary {
+            padding: 0.6rem 1.25rem;
+            background: linear-gradient(90deg, #ff6838 0%, #ff8c42 100%);
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 104, 56, 0.35);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+            display: flex;
+            align-items: center;
+            position: relative;
             overflow: hidden;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-bg-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .hero-bg-slide.active {
+            opacity: 1;
+        }
+
+        .hero-bg-slide::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(13, 17, 23, 0.88) 0%, rgba(13, 17, 23, 0.82) 100%);
+        }
+
+        .hero-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-text h1 {
+            font-size: 3.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.15;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+
+        .hero-text h1 .highlight {
+            background: linear-gradient(135deg, #ff6838, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: #8b949e;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            padding: 0.875rem 2rem;
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(48, 54, 61, 0.4);
+            border-color: #8b949e;
+        }
+
+        /* Chart Preview */
+        .chart-preview {
+            position: relative;
+            animation: fadeInRight 0.9s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chart-window {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .chart-header {
+            background: #0d1117;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #30363d;
+        }
+
+        .chart-toolbar {
+            background: #0d1117;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #21262d;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .tool-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            padding: 0.35rem 0.75rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .chart-canvas {
+            position: relative;
+            height: 400px;
+            background: #0d1117;
+        }
+
+        #mainChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Market Summary Section - Slideshow Style */
+        .market-summary {
+            padding: 5rem 1.5rem;
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            border-bottom: 1px solid #30363d;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem 1.5rem;
+        }
+
+        .summary-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .market-slideshow {
+            position: relative;
+            height: 400px;
+            background: #131722;
+            border: 1px solid #2a2e39;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .market-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            transform: translateX(100px);
+            pointer-events: none;
+        }
+
+        .market-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        .market-slide.next {
+            transform: translateX(100px);
+        }
+
+        .market-slide.prev {
+            transform: translateX(-100px);
+        }
+
+        .slide-category {
+            font-size: 0.85rem;
+            color: #ff6838;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .slide-description {
+            font-size: 1.1rem;
+            color: #8b949e;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .slide-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: auto;
+        }
+
+        .stat-card {
+            background: rgba(30, 34, 45, 0.6);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 104, 56, 0.1);
+            border-color: #ff6838;
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #d1d4dc;
+        }
+
+        .stat-symbol {
+            font-size: 0.8rem;
+            color: #8b949e;
+            background: rgba(42, 46, 57, 0.5);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .stat-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .change-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .change-positive {
+            color: #26a69a;
+        }
+
+        .change-negative {
+            color: #ef5350;
+        }
+
+        .change-arrow {
+            font-size: 1.2rem;
+        }
+
+        .market-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #30363d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: #ff6838;
+            transform: scale(1.2);
+        }
+
+        .slide-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid #30363d;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .slide-nav-btn:hover {
+            background: #ff6838;
+            border-color: #ff6838;
+        }
+
+        .slide-prev {
+            left: 1.5rem;
+        }
+
+        .slide-next {
+            right: 1.5rem;
+        }
+
+        /* Market Overview Cards */
+        .market-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .overview-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .overview-card:hover {
+            border-color: #ff6838;
+            transform: translateY(-2px);
+        }
+
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .overview-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #d1d4dc;
+        }
+
+        .overview-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .overview-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Features Grid */
+        .features {
+            padding: 7rem 1.5rem;
+            background: #0d1117;
+            border-radius: 12px;
+            margin: 2rem 1.5rem;
+        }
+
+        .features-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: #8b949e;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6838;
+            box-shadow: 0 8px 24px rgba(255, 104, 56, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.35rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #8b949e;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Trading Platform Section */
+        .trading-platform {
+            padding: 7rem 1.5rem;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+            border-radius: 12px;
+            margin: 2rem 1.5rem;
+        }
+
+        .trading-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .platform-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .platform-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .platform-header p {
+            font-size: 1rem;
+            color: #8b949e;
+        }
+
+        .main-platform-container {
+            display: flex;
+            height: 600px;
+            border: 1px solid #2a2e39;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            background: #131722;
+        }
+
+        /* Chart Container */
+        .platform-chart-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0d1117;
+            overflow: hidden;
+        }
+
+        .platform-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .symbol-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .symbol-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .symbol-price {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #26a69a;
+        }
+
+        .symbol-change {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #26a69a;
+        }
+
+        .platform-chart-tools {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .platform-tool-btn {
+            padding: 0.5rem 1rem;
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .platform-tool-btn:hover {
+            background: #30363d;
+            color: #fff;
+        }
+
+        .platform-tool-btn.active {
+            background: #ff6838;
+            color: #fff;
+            border-color: #ff6838;
+        }
+
+        .platform-chart-wrapper {
+            flex: 1;
+            background: #161b22;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #platformChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 17, 23, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b949e;
+            font-size: 1.2rem;
+        }
+
+        /* Market Symbols Container */
+        .platform-symbols-container {
+            width: 300px;
+            background: #161b22;
+            border-left: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .platform-symbols-header {
+            padding: 1rem;
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .platform-symbols-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .symbol-search {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            color: #d1d4dc;
+            font-size: 0.9rem;
+        }
+
+        .symbol-search:focus {
+            outline: none;
+            border-color: #ff6838;
+        }
+
+        .platform-symbols-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .symbol-category {
+            margin-bottom: 1rem;
+        }
+
+        .category-title {
+            font-size: 0.8rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .platform-symbol-item {
+            padding: 0.75rem;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .platform-symbol-item:hover {
+            background: #30363d;
+            border-color: #ff6838;
+            transform: translateX(-2px);
+        }
+
+        .platform-symbol-item.active {
+            background: rgba(255, 104, 56, 0.1);
+            border-color: #ff6838;
+        }
+
+        .platform-symbol-item-left {
+            flex: 1;
+        }
+
+        .platform-symbol-item-name {
+            font-weight: 500;
+            color: #d1d4dc;
+            font-size: 0.9rem;
+        }
+
+        .platform-symbol-item-desc {
+            font-size: 0.75rem;
+            color: #8b949e;
+            margin-top: 0.25rem;
+        }
+
+        .platform-symbol-item-right {
+            text-align: right;
+        }
+
+        .platform-symbol-item-price {
+            font-weight: 600;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .platform-symbol-item-change {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .change-positive {
+            color: #26a69a;
+        }
+
+        .change-negative {
+            color: #ef5350;
+        }
+
+        /* Timeframe Selector */
+        .timeframe-selector {
+            display: flex;
+            gap: 0.25rem;
+            margin-left: 1rem;
+        }
+
+        .timeframe-btn {
+            padding: 0.25rem 0.5rem;
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .timeframe-btn:hover {
+            background: #30363d;
+            color: #fff;
+        }
+
+        .timeframe-btn.active {
+            background: #ff6838;
+            color: #fff;
+            border-color: #ff6838;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 7rem 1.5rem;
+            background: #0d1117;
+            border-radius: 12px;
+            margin: 2rem 1.5rem;
+        }
+
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255, 104, 56, 0.1), rgba(255, 140, 66, 0.1));
+            border: 1px solid rgba(255, 104, 56, 0.2);
+            border-radius: 12px;
+            padding: 4rem 2rem;
+        }
+
+        .cta-container h2 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .cta-container p {
+            font-size: 1.2rem;
+            color: #8b949e;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #0d1117;
+            border-top: 1px solid #30363d;
+            padding: 3rem 1.5rem 1.5rem;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h4 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section li {
+            margin-bottom: 0.65rem;
+        }
+
+        .footer-section a {
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-section a:hover {
+            color: #ff6838;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #30363d;
+            color: #6e7681;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .market-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .slide-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Global map signal animation */
+        @keyframes signal-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(7);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-platform-container {
+                flex-direction: column;
+                height: 800px;
+            }
+
+            .platform-symbols-container {
+                width: 100%;
+                height: 300px;
+                border-left: none;
+                border-top: 1px solid #30363d;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .market-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-canvas {
+                height: 300px;
+            }
+
+            .main-platform-container {
+                height: 700px;
+            }
+
+            .slide-title {
+                font-size: 2rem;
+            }
+
+            .slide-description {
+                font-size: 1rem;
+            }
+
+            .stat-price {
+                font-size: 1.5rem;
+            }
+
+            .market-slideshow {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide-stats {
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .market-slideshow {
+                height: 550px;
+            }
         }
     </style>
 </head>
-
-<body class="gradient-bg text-white max-w-screen mobile-no-overflow">
-    <!-- Background Elements -->
-    <div class="fixed inset-0 overflow-hidden -z-10">
-        <!-- Animated Background Elements -->
-        <div class="absolute top-10 left-10 w-20 h-20 rounded-full bg-orange-500/10 animate-pulse hidden sm:block"></div>
-        <div class="absolute top-1/4 right-20 w-16 h-16 rounded-full bg-red-500/10 animate-pulse-slow hidden md:block"></div>
-        <div class="absolute bottom-20 left-1/4 w-24 h-24 rounded-full bg-orange-600/10 animate-float hidden lg:block"></div>
-        <div class="absolute bottom-10 right-10 w-12 h-12 rounded-full bg-red-600/10 animate-pulse"></div>
-
-        <!-- Grid Pattern -->
-        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), 
-                    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
-                    background-size: 50px 50px;">
-        </div>
-    </div>
-
-    <!-- Header -->
-    <header class="fixed top-0 left-0 w-full z-50 py-4 md:py-5 glass-effect border-b border-white/5 safe-area-left safe-area-right">
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <span class="text-xl md:text-2xl font-bold gradient-text break-words">Algocdk</span>
-                </div>
-
-                <nav class="hidden md:flex items-center space-x-4 lg:space-x-8">
-                    <a href="#features" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
-                        Features
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#markets" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
-                        Markets
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#performance" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
-                        Performance
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#testimonials" class="text-gray-300 hover:text-white transition-colors relative group px-2 py-1 text-sm md:text-base break-words">
-                        Testimonials
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-red-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <div class="flex items-center space-x-3 ml-4">
-                        <a href="auth" class="px-3 py-2 md:px-4 md:py-2 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-sm md:text-base break-words whitespace-nowrap">
-                            Sign In
-                        </a>
-                        <a href="auth" class="px-3 py-2 md:px-4 md:py-2 gradient-bg-primary rounded-lg font-medium hover:shadow-lg transition-all flex items-center text-sm md:text-base break-words whitespace-nowrap">
-                            <i class="fas fa-rocket mr-2"></i>
-                            <span class="hidden sm:inline">Automate</span>
-                            <span class="sm:hidden">Start</span>
-                        </a>
-                    </div>
-                </nav>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobileMenuButton" class="md:hidden text-white text-2xl touch-button p-2">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-            
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="mobile-menu md:hidden mt-4">
-                <div class="flex flex-col space-y-4 pb-4">
-                    <a href="#features" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
-                        Features
-                    </a>
-                    <a href="#markets" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
-                        Markets
-                    </a>
-                    <a href="#performance" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
-                        Performance
-                    </a>
-                    <a href="#testimonials" class="text-gray-300 hover:text-white transition-colors py-3 border-b border-white/10 text-base break-words">
-                        Testimonials
-                    </a>
-                    <div class="flex flex-col space-y-3 pt-2">
-                        <a href="auth" class="px-4 py-3 border border-white/20 rounded-lg hover:bg-white/5 transition-colors text-center text-base break-words">
-                            Sign In
-                        </a>
-                        <a href="auth" class="px-4 py-3 gradient-bg-primary rounded-lg font-medium hover:shadow-lg transition-all flex items-center justify-center text-base break-words">
-                            <i class="fas fa-rocket mr-2"></i>
-                            Automate Your Success
-                        </a>
-                    </div>
-                </div>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Algo<span>cdk</span></div>
+            <ul class="nav-links">
+                <li><a href="#products">Products</a></li>
+                <li><a href="#community">Community</a></li>
+                <li><a href="#markets">Markets</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#brokers">Brokers</a></li>
+                <li><a href="#more">More</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="/auth" class="btn-text" style="text-decoration: none;">Sign in</a>
+                <a href="/auth" class="btn-primary" style="text-decoration: none;">Get started</a>
             </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Hero Section -->
-    <section class="pt-28 md:pt-40 pb-16 md:pb-32 relative">
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
-            <div class="flex flex-col lg:flex-row items-center">
-                <div class="lg:w-1/2 mb-12 lg:mb-0 w-full">
-                    <div class="inline-flex items-center space-x-2 bg-primary-500/10 text-primary-500 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-primary-500/20 mb-6 text-xs md:text-sm break-words overflow-hidden">
-                        <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse flex-shrink-0"></span>
-                        <i class="fas fa-crown text-xs md:text-sm flex-shrink-0"></i>
-                        <span class="font-medium truncate">INSTITUTIONAL TRADING</span>
+    <section class="hero">
+        <div class="hero-bg">
+            <div class="hero-bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=80');"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Track all markets on <span class="highlight">Algocdk</span></h1>
+                <p>Stocks, futures, forex, crypto, and more. Professional charting platform and social network for traders and investors.</p>
+                <div class="hero-buttons">
+                    <a href="/auth" class="btn-primary btn-large" style="text-decoration: none;">Start charting now</a>
+                    <a href="#features" class="btn-secondary btn-large" style="text-decoration: none;">Learn more</a>
+                </div>
+            </div>
+            
+            <div class="chart-preview">
+                <div class="chart-window">
+                    <div class="chart-header">
+                        <div class="chart-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
                     </div>
+                    <div class="chart-toolbar">
+                        <div class="tool-btn">Indicators</div>
+                        <div class="tool-btn">Strategies</div>
+                        <div class="tool-btn">1D</div>
+                        <div class="tool-btn">Candles</div>
+                    </div>
+                    <div class="chart-canvas">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight break-words">
-                        Algorithmic Trading
-                        <span class="gradient-text block mt-2">Powered by AI</span>
-                    </h1>
-
-                    <p class="text-base md:text-lg lg:text-xl text-gray-300 mb-8 break-words max-w-full">
-                        Trade smarter with our advanced AI algorithms. Institutional-grade execution,
-                        real-time analytics, and automated strategies.
+    <!-- Market Summary Section - Slideshow Style -->
+    <section class="market-summary">
+        <div class="summary-container">
+            <div class="summary-header">
+                <h2>Live Market Overview</h2>
+                <p>Real-time data across all major markets powered by Deriv</p>
+            </div>
+            
+            <!-- Market Slideshow -->
+            <div class="market-slideshow">
+                <!-- Slide 1: Crypto Markets -->
+                <div class="market-slide active" data-category="crypto">
+                    <div class="slide-category">Cryptocurrencies</div>
+                    <h2 class="slide-title">Digital Assets Revolution</h2>
+                    <p class="slide-description">
+                        Track Bitcoin, Ethereum, and major cryptocurrencies with real-time pricing, 
+                        market dominance, and institutional adoption metrics.
                     </p>
-
-                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-12 w-full">
-                        <a href="auth" class="px-6 py-4 gradient-bg-primary rounded-lg font-semibold hover:shadow-xl transition-all flex items-center justify-center group relative overflow-hidden touch-button w-full sm:w-auto break-words">
-                            <i class="fas fa-rocket mr-2"></i>
-                            <span class="text-center">Automate Your Success</span>
-                            <div class="absolute top-0 left-0 w-full h-full bg-white/10 transform -translate-x-full group-hover:translate-x-0 transition-transform"></div>
-                        </a>
-                        <button class="px-6 py-4 bg-white/10 backdrop-blur-sm rounded-lg font-semibold hover:bg-white/15 transition-all flex items-center justify-center border border-white/10 touch-button w-full sm:w-auto break-words">
-                            <i class="fas fa-play mr-2"></i>
-                            Start Here
-                        </button>
+                    
+                    <div class="slide-stats">
+                        <div class="stat-card" data-symbol="cryBTCUSD">
+                            <div class="stat-header">
+                                <div class="stat-name">Bitcoin</div>
+                                <div class="stat-symbol">BTC/USD</div>
+                            </div>
+                            <div class="stat-price" id="price-cryBTCUSD">$70,657</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-cryBTCUSD">+2.04%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card" data-symbol="cryETHUSD">
+                            <div class="stat-header">
+                                <div class="stat-name">Ethereum</div>
+                                <div class="stat-symbol">ETH/USD</div>
+                            </div>
+                            <div class="stat-price" id="price-cryETHUSD">$3,850</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-cryETHUSD">+1.85%</span>
+                            </div>
+                        </div>
                     </div>
+                </div>
+                
+                <!-- Slide 2: Forex Markets -->
+                <div class="market-slide" data-category="forex">
+                    <div class="slide-category">Forex</div>
+                    <h2 class="slide-title">Global Currency Markets</h2>
+                    <p class="slide-description">
+                        Monitor major currency pairs with live exchange rates, central bank policies, 
+                        and economic indicators affecting global forex markets.
+                    </p>
+                    
+                    <div class="slide-stats">
+                        <div class="stat-card" data-symbol="frxEURUSD">
+                            <div class="stat-header">
+                                <div class="stat-name">Euro / Dollar</div>
+                                <div class="stat-symbol">EUR/USD</div>
+                            </div>
+                            <div class="stat-price" id="price-frxEURUSD">1.0854</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↘</span>
+                                <span class="change-value change-negative" id="change-frxEURUSD">-0.32%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card" data-symbol="frxUSDJPY">
+                            <div class="stat-header">
+                                <div class="stat-name">Dollar / Yen</div>
+                                <div class="stat-symbol">USD/JPY</div>
+                            </div>
+                            <div class="stat-price" id="price-frxUSDJPY">150.25</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-frxUSDJPY">+0.45%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 3: Indices -->
+                <div class="market-slide" data-category="indices">
+                    <div class="slide-category">Global Indices</div>
+                    <h2 class="slide-title">World Stock Markets</h2>
+                    <p class="slide-description">
+                        Follow major stock indices from US, Europe, and Asia with real-time performance, 
+                        sector rotation, and market breadth indicators.
+                    </p>
+                    
+                    <div class="slide-stats">
+                        <div class="stat-card" data-symbol="SPX">
+                            <div class="stat-header">
+                                <div class="stat-name">S&P 500</div>
+                                <div class="stat-symbol">SPX</div>
+                            </div>
+                            <div class="stat-price" id="price-SPX">6,932.31</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-SPX">+1.97%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card" data-symbol="NDX">
+                            <div class="stat-header">
+                                <div class="stat-name">Nasdaq 100</div>
+                                <div class="stat-symbol">NDX</div>
+                            </div>
+                            <div class="stat-price" id="price-NDX">25,075.77</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-NDX">+2.15%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 4: Commodities -->
+                <div class="market-slide" data-category="commodities">
+                    <div class="slide-category">Commodities</div>
+                    <h2 class="slide-title">Raw Materials & Energy</h2>
+                    <p class="slide-description">
+                        Track precious metals, energy markets, and agricultural commodities with 
+                        supply-demand dynamics and geopolitical factors analysis.
+                    </p>
+                    
+                    <div class="slide-stats">
+                        <div class="stat-card" data-symbol="GC!">
+                            <div class="stat-header">
+                                <div class="stat-name">Gold</div>
+                                <div class="stat-symbol">XAU/USD</div>
+                            </div>
+                            <div class="stat-price" id="price-GC">$4,979.80</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-GC">+1.85%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card" data-symbol="CL!">
+                            <div class="stat-header">
+                                <div class="stat-name">Crude Oil</div>
+                                <div class="stat-symbol">WTI</div>
+                            </div>
+                            <div class="stat-price" id="price-CL">$63.55</div>
+                            <div class="stat-change">
+                                <span class="change-arrow">↗</span>
+                                <span class="change-value change-positive" id="change-CL">+0.41%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide Navigation Buttons -->
+                <button class="slide-nav-btn slide-prev">‹</button>
+                <button class="slide-nav-btn slide-next">›</button>
+                
+                <!-- Slide Indicators -->
+                <div class="market-indicators">
+                    <div class="indicator active" data-slide="0"></div>
+                    <div class="indicator" data-slide="1"></div>
+                    <div class="indicator" data-slide="2"></div>
+                    <div class="indicator" data-slide="3"></div>
+                </div>
+            </div>
+            
+            <!-- Quick Market Overview -->
+            <div class="market-overview">
+                <div class="overview-card">
+                    <div class="overview-header">
+                        <div class="overview-title">Total Market Cap</div>
+                        <div class="stat-symbol">CRYPTO</div>
+                    </div>
+                    <div class="overview-price" id="totalMarketCap">2.38T</div>
+                    <div class="overview-change change-negative" id="changeMarketCap">-22.74%</div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-header">
+                        <div class="overview-title">Bitcoin Dominance</div>
+                        <div class="stat-symbol">BTC.D</div>
+                    </div>
+                    <div class="overview-price" id="btcDominance">59.48%</div>
+                    <div class="overview-change change-positive" id="changeBTCDom">+0.75%</div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-header">
+                        <div class="overview-title">US 10Y Yield</div>
+                        <div class="stat-symbol">TNX</div>
+                    </div>
+                    <div class="overview-price" id="yield10Y">4.215%</div>
+                    <div class="overview-change change-positive" id="changeYield">+0.81%</div>
+                </div>
+                
+                <div class="overview-card">
+                    <div class="overview-header">
+                        <div class="overview-title">Dollar Index</div>
+                        <div class="stat-symbol">DXY</div>
+                    </div>
+                    <div class="overview-price" id="dollarIndex">97.681</div>
+                    <div class="overview-change change-negative" id="changeDXY">-1.07%</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 w-full">
-                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
-                            <div class="text-primary-500 mb-2">
-                                <i class="fas fa-chart-bar text-lg md:text-xl"></i>
+    <!-- Trading Platform Section -->
+    <section class="trading-platform" id="trading-platform">
+        <div class="trading-container">
+            <div class="platform-header">
+                <h2>Trading Platform</h2>
+                <p>Interactive charting with real-time Deriv market data</p>
+            </div>
+            
+            <div class="main-platform-container">
+                <!-- Chart Container -->
+                <div class="platform-chart-container">
+                    <div class="platform-chart-header">
+                        <div class="symbol-info">
+                            <div class="symbol-name" id="currentSymbol">BTC/USD</div>
+                            <div class="symbol-price" id="currentPrice">$70,657</div>
+                            <div class="symbol-change" id="currentChange">+2.04%</div>
+                            <div class="timeframe-selector">
+                                <button class="timeframe-btn active" data-timeframe="1D">1D</button>
+                                <button class="timeframe-btn" data-timeframe="1W">1W</button>
+                                <button class="timeframe-btn" data-timeframe="1M">1M</button>
+                                <button class="timeframe-btn" data-timeframe="3M">3M</button>
+                                <button class="timeframe-btn" data-timeframe="1Y">1Y</button>
                             </div>
-                            <div class="text-lg md:text-2xl font-bold">$2.1B</div>
-                            <div class="text-gray-400 text-xs md:text-sm">Daily Volume</div>
-                            <div class="text-success-500 text-xs md:text-sm font-medium">+15.3%</div>
                         </div>
-                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
-                            <div class="text-primary-500 mb-2">
-                                <i class="fas fa-bullseye text-lg md:text-xl"></i>
-                            </div>
-                            <div class="text-lg md:text-2xl font-bold">98.7%</div>
-                            <div class="text-gray-400 text-xs md:text-sm">Accuracy</div>
-                            <div class="text-success-500 text-xs md:text-sm font-medium">+2.1%</div>
+                        <div class="platform-chart-tools">
+                            <button class="platform-tool-btn active">Candles</button>
+                            <button class="platform-tool-btn">Line</button>
+                            <button class="platform-tool-btn">Area</button>
+                            <button class="platform-tool-btn">Indicators</button>
+                            <button class="platform-tool-btn">Compare</button>
                         </div>
-                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
-                            <div class="text-primary-500 mb-2">
-                                <i class="fas fa-bolt text-lg md:text-xl"></i>
-                            </div>
-                            <div class="text-lg md:text-2xl font-bold">2.3ms</div>
-                            <div class="text-gray-400 text-xs md:text-sm">Avg Execution</div>
-                            <div class="text-success-500 text-xs md:text-sm font-medium">-0.4ms</div>
-                        </div>
-                        <div class="glass-effect p-3 md:p-4 rounded-lg text-center transition-all hover:-translate-y-1 break-words">
-                            <div class="text-primary-500 mb-2">
-                                <i class="fas fa-gem text-lg md:text-xl"></i>
-                            </div>
-                            <div class="text-lg md:text-2xl font-bold">99.97%</div>
-                            <div class="text-gray-400 text-xs md:text-sm">Uptime</div>
-                            <div class="text-gray-400 text-xs md:text-sm font-medium">Stable</div>
+                    </div>
+                    <div class="platform-chart-wrapper">
+                        <canvas id="platformChart"></canvas>
+                        <div class="chart-overlay" id="chartLoading">
+                            Loading chart data...
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:w-1/2 lg:pl-8 xl:pl-12 mt-8 lg:mt-0 w-full">
-                    <div class="glass-effect rounded-xl overflow-hidden shadow-2xl w-full max-w-full">
-                        <div class="bg-dark-800 p-3 md:p-4 flex items-center justify-between border-b border-white/10">
-                            <div class="flex space-x-2">
-                                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                            </div>
-                            <div class="flex items-center text-xs md:text-sm font-medium mx-2 truncate">
-                                <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                                Live Terminal
-                            </div>
-                            <div class="flex items-center bg-red-500/10 text-red-500 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0">
-                                <span class="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse"></span>
-                                <i class="fas fa-bolt mr-1"></i>
-                                LIVE
-                            </div>
-                        </div>
-
-                        <div class="bg-dark-900 p-2 md:p-3 overflow-hidden hide-scrollbar">
-                            <div class="animate-ticker whitespace-nowrap">
-                                <div class="inline-flex space-x-4 md:space-x-8 pr-8">
-                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
-                                        <span class="font-medium text-xs md:text-sm">BTC</span>
-                                        <span class="font-bold text-xs md:text-sm">$67.4K</span>
-                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
-                                            <i class="fas fa-arrow-trend-up mr-1"></i>
-                                            2.34%
-                                        </span>
-                                    </div>
-                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
-                                        <span class="font-medium text-xs md:text-sm">ETH</span>
-                                        <span class="font-bold text-xs md:text-sm">$3.8K</span>
-                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
-                                            <i class="fas fa-arrow-trend-up mr-1"></i>
-                                            1.56%
-                                        </span>
-                                    </div>
-                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
-                                        <span class="font-medium text-xs md:text-sm">SOL</span>
-                                        <span class="font-bold text-xs md:text-sm">$182</span>
-                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
-                                            <i class="fas fa-arrow-trend-up mr-1"></i>
-                                            5.23%
-                                        </span>
-                                    </div>
-                                    <div class="inline-flex items-center space-x-1 md:space-x-2 flex-shrink-0">
-                                        <span class="font-medium text-xs md:text-sm">EUR</span>
-                                        <span class="font-bold text-xs md:text-sm">$1.08</span>
-                                        <span class="text-success-500 flex items-center text-xs md:text-sm">
-                                            <i class="fas fa-arrow-trend-up mr-1"></i>
-                                            0.24%
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-3 md:p-4">
-                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
-                                <div class="font-medium text-sm md:text-base break-words">EUR/USD Chart</div>
-                                <div class="flex space-x-1 md:space-x-2 text-xs md:text-sm">
-                                    <span class="bg-primary-500/20 text-primary-500 px-2 py-1 rounded flex-shrink-0">1H</span>
-                                    <span class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer flex-shrink-0">4H</span>
-                                    <span class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer flex-shrink-0">1D</span>
-                                    <span class="bg-white/5 px-2 py-1 rounded hover:bg-white/10 cursor-pointer flex-shrink-0">1W</span>
-                                </div>
-                            </div>
-                            <div class="h-40 md:h-48 bg-dark-800 rounded-lg relative overflow-hidden">
-                                <!-- Chart grid lines -->
-                                <div class="absolute inset-0 flex flex-col justify-between">
-                                    <div class="border-t border-white/5"></div>
-                                    <div class="border-t border-white/5"></div>
-                                    <div class="border-t border-white/5"></div>
-                                    <div class="border-t border-white/5"></div>
-                                    <div class="border-t border-white/5"></div>
-                                </div>
-                                <!-- Price line -->
-                                <div class="absolute top-1/2 left-0 right-0 border-t border-primary-500/30"></div>
-                                <!-- Candles -->
-                                <div class="absolute bottom-0 left-0 right-0 h-full flex items-end justify-around px-2">
-                                    <div class="w-1 md:w-2 h-3/5 bg-success-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-2/5 bg-red-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-4/5 bg-success-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-3/5 bg-success-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-1/3 bg-red-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-2/3 bg-success-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-1/2 bg-red-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-3/4 bg-success-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-2/5 bg-red-500 rounded-sm flex-shrink-0"></div>
-                                    <div class="w-1 md:w-2 h-3/5 bg-success-500 rounded-sm flex-shrink-0"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-3 md:p-4 bg-dark-800 border-t border-white/10">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-                                <div class="md:col-span-3 lg:col-span-1">
-                                    <label class="text-gray-400 text-xs md:text-sm mb-1 block break-words">Amount</label>
-                                    <input type="text" placeholder="0.00" class="w-full bg-dark-700 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base" style="-webkit-appearance: none;">
-                                </div>
-                                <div class="md:col-span-3 lg:col-span-1">
-                                    <label class="text-gray-400 text-xs md:text-sm mb-1 block break-words">Leverage</label>
-                                    <select class="w-full bg-dark-700 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base" style="-webkit-appearance: none;">
-                                        <option>10x</option>
-                                        <option>25x</option>
-                                        <option>50x</option>
-                                    </select>
-                                </div>
-                                <div class="flex space-x-2 md:col-span-3 lg:col-span-1 xs-stack xs-full-width">
-                                    <button class="flex-1 bg-success-500 hover:bg-success-600 text-white font-medium py-2 px-2 md:py-2 md:px-4 rounded flex items-center justify-center transition-colors text-sm md:text-base touch-button break-words">
-                                        <i class="fas fa-arrow-trend-up mr-1 md:mr-2"></i>
-                                        BUY
-                                    </button>
-                                    <button class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-2 md:py-2 md:px-4 rounded flex items-center justify-center transition-colors text-sm md:text-base touch-button break-words">
-                                        <i class="fas fa-arrow-trend-down mr-1 md:mr-2"></i>
-                                        SELL
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Market Symbols Container -->
+                <div class="platform-symbols-container">
+                    <div class="platform-symbols-header">
+                        <h3>Markets</h3>
+                        <input type="text" class="symbol-search" placeholder="Search symbols..." id="symbolSearch">
+                    </div>
+                    <div class="platform-symbols-list" id="symbolsList">
+                        <!-- Symbols will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -478,542 +1476,1012 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-16 md:py-20">
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
-            <div class="text-center mb-12 md:mb-16">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 gradient-text break-words px-2">Advanced Trading Features</h2>
-                <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 break-words">Professional tools and technologies used by institutional traders</p>
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="section-header">
+                <h2>Everything you need to trade</h2>
+                <p>Professional tools and real-time data to make smarter trading decisions</p>
             </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Advanced charting</h3>
+                    <p>100+ technical indicators, drawing tools, and customizable layouts for comprehensive market analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Real-time data</h3>
+                    <p>Live quotes from global exchanges with millisecond-level precision for instant market updates.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Pine Script</h3>
+                    <p>Build custom indicators and strategies with our proprietary coding language designed for traders.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Paper trading</h3>
+                    <p>Test your strategies risk-free with our paper trading simulator using real market data.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Mobile apps</h3>
+                    <p>Access full charting capabilities on iOS and Android. Trade and analyze anywhere, anytime.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Community ideas</h3>
+                    <p>Connect with millions of traders, share strategies, and learn from the best in the community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full">
-                <!-- Feature 1 -->
-                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full gradient-bg-primary flex items-center justify-center mb-4 relative mx-auto">
-                        <i class="fas fa-robot text-white text-xl md:text-2xl"></i>
-                        <div class="absolute inset-0 rounded-full bg-primary-500 opacity-30 blur-md"></div>
+    <!-- Forex Ideas Section -->
+    <section style="padding: 7rem 1.5rem; background: #ffffff; border-radius: 12px; margin: 2rem 1.5rem;">
+        <div style="max-width: 1280px; margin: 0 auto;">
+            <h2 style="font-size: 2.4rem; margin: 0 0 8px; color: #0f172a;">Forex and currencies</h2>
+            <div style="color: #64748b; margin-bottom: 28px; font-size: 1rem;">Market ideas and technical analysis</div>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;">
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Market summary</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">US stocks</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Crypto</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Futures</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: white; border: 1px solid #0f172a; cursor: pointer; background: #0f172a;">Forex</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Economy</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Brokers</div>
+            </div>
+            
+            <div style="font-size: 1.4rem; margin-bottom: 16px; color: #0f172a;">Trade ideas</div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
+                <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(15, 23, 42, 0.08)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                    <div style="height: 180px; background: linear-gradient(135deg, #e2e8f0, #c7d2fe); position: relative;">
+                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=180&fit=crop&q=80" alt="EURUSD Chart" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 8px; border-radius: 999px;">EURUSD</div>
                     </div>
-                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">AI Trading Bots</h3>
-                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Automate your strategies with machine learning algorithms that adapt to market conditions.</p>
-                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
-                        <i class="fas fa-star mr-1"></i>
-                        98.7% accuracy
+                    <div style="padding: 16px;">
+                        <div style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #0f172a;">EURUSD: Triangle resistance holds – bearish bias</div>
+                        <div style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">Price is respecting key resistance as momentum weakens on lower timeframes.</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
+                            <span>by Ratner</span>
+                            <div style="display: flex; gap: 12px;">
+                                <span>💬 16</span>
+                                <span>🚀 32</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center mb-4 relative mx-auto">
-                        <i class="fas fa-bolt text-white text-xl md:text-2xl"></i>
-                        <div class="absolute inset-0 rounded-full bg-pink-500 opacity-30 blur-md"></div>
+                
+                <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(15, 23, 42, 0.08)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                    <div style="height: 180px; background: linear-gradient(135deg, #e2e8f0, #c7d2fe); position: relative;">
+                        <img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=400&h=180&fit=crop&q=80" alt="EURUSD Chart" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 8px; border-radius: 999px;">EURUSD</div>
                     </div>
-                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Lightning Execution</h3>
-                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Execute trades in under 10ms with our direct market access and colocated servers.</p>
-                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
-                        <i class="fas fa-star mr-1"></i>
-                        2.3ms average
-                    </div>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center mb-4 relative mx-auto">
-                        <i class="fas fa-chart-line text-white text-xl md:text-2xl"></i>
-                        <div class="absolute inset-0 rounded-full bg-cyan-500 opacity-30 blur-md"></div>
-                    </div>
-                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Advanced Analytics</h3>
-                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Real-time market depth, technical indicators, and predictive analytics powered by AI.</p>
-                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
-                        <i class="fas fa-star mr-1"></i>
-                        150+ indicators
+                    <div style="padding: 16px;">
+                        <div style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #0f172a;">Don't rush to buy EURUSD – bearish trend intact</div>
+                        <div style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">Short-term structure remains bearish as price reacts from supply zones.</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
+                            <span>by Paradise_Noir</span>
+                            <div style="display: flex; gap: 12px;">
+                                <span>💬 27</span>
+                                <span>🚀 224</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Feature 4 -->
-                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 flex items-center justify-center mb-4 relative mx-auto">
-                        <i class="fas fa-shield-alt text-white text-xl md:text-2xl"></i>
-                        <div class="absolute inset-0 rounded-full bg-emerald-400 opacity-30 blur-md"></div>
+                
+                <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(15, 23, 42, 0.08)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                    <div style="height: 180px; background: linear-gradient(135deg, #e2e8f0, #c7d2fe); position: relative;">
+                        <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=180&fit=crop&q=80" alt="EUR/USD Chart" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 8px; border-radius: 999px;">EUR/USD</div>
                     </div>
-                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Risk Management</h3>
-                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Advanced risk controls, automatic stop-loss, and portfolio protection algorithms.</p>
-                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
-                        <i class="fas fa-star mr-1"></i>
-                        Zero security breaches
-                    </div>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 flex items-center justify-center mb-4 relative mx-auto">
-                        <i class="fas fa-globe text-white text-xl md:text-2xl"></i>
-                        <div class="absolute inset-0 rounded-full bg-amber-500 opacity-30 blur-md"></div>
-                    </div>
-                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Global Markets</h3>
-                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Trade cryptocurrencies, forex, stocks, and commodities from a single platform.</p>
-                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
-                        <i class="fas fa-star mr-1"></i>
-                        50+ markets
-                    </div>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="glass-effect p-4 sm:p-5 md:p-6 rounded-xl transition-all hover:-translate-y-2 relative overflow-hidden group w-full">
-                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center mb-4 relative mx-auto">
-                        <i class="fas fa-lock text-white text-xl md:text-2xl"></i>
-                        <div class="absolute inset-0 rounded-full bg-purple-400 opacity-30 blur-md"></div>
-                    </div>
-                    <h3 class="text-lg md:text-xl font-bold mb-3 text-center break-words">Secure & Compliant</h3>
-                    <p class="text-gray-300 text-sm md:text-base mb-4 break-words">Bank-level security, cold storage, and full regulatory compliance across all jurisdictions.</p>
-                    <div class="flex items-center text-amber-500 font-medium text-sm md:text-base justify-center break-words">
-                        <i class="fas fa-star mr-1"></i>
-                        99.9% uptime
+                    <div style="padding: 16px;">
+                        <div style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #0f172a;">EUR/USD at key level: expansion or reversal?</div>
+                        <div style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">Price is consolidating after a strong impulse, setting up a decision point.</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
+                            <span>by EdgeTradingJourney</span>
+                            <div style="display: flex; gap: 12px;">
+                                <span>💬 11</span>
+                                <span>🚀 12</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Markets Section -->
-    <section id="markets" class="py-16 md:py-20 bg-dark-800/30">
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
-            <div class="text-center mb-12 md:mb-16">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 gradient-text break-words px-2">Global Markets Access</h2>
-                <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 break-words">Trade across multiple asset classes with institutional pricing</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 w-full">
-                <!-- Market 1 -->
-                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
-                                <i class="fas fa-rocket text-lg md:text-xl"></i>
-                            </div>
-                            <h3 class="text-lg md:text-xl font-bold break-words">Cryptocurrency</h3>
-                        </div>
-                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$128B</div>
-                    </div>
-                    <div class="space-y-2 md:space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            BTC/USD
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            ETH/USD
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            SOL/USD
-                        </div>
-                    </div>
-                    <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
-                    </div>
-                </div>
-
-                <!-- Market 2 -->
-                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
-                                <i class="fas fa-globe text-lg md:text-xl"></i>
-                            </div>
-                            <h3 class="text-lg md:text-xl font-bold break-words">Forex</h3>
-                        </div>
-                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$6.6T</div>
-                    </div>
-                    <div class="space-y-2 md:space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            EUR/USD
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            GBP/JPY
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            USD/JPY
-                        </div>
-                    </div>
-                    <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
-                    </div>
-                </div>
-
-                <!-- Market 3 -->
-                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
-                                <i class="fas fa-chart-line text-lg md:text-xl"></i>
-                            </div>
-                            <h3 class="text-lg md:text-xl font-bold break-words">Stocks</h3>
-                        </div>
-                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$2.1T</div>
-                    </div>
-                    <div class="space-y-2 md:space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            AAPL
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            TSLA
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            NVDA
-                        </div>
-                    </div>
-                    <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
-                    </div>
-                </div>
-
-                <!-- Market 4 -->
-                <div class="glass-effect p-4 md:p-5 lg:p-6 rounded-xl transition-all hover:-translate-y-1 w-full">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
-                                <i class="fas fa-fire text-lg md:text-xl"></i>
-                            </div>
-                            <h3 class="text-lg md:text-xl font-bold break-words">Commodities</h3>
-                        </div>
-                        <div class="bg-success-500/10 text-success-500 px-2 py-1 rounded-full text-xs md:text-sm font-medium whitespace-nowrap flex-shrink-0">$450B</div>
-                    </div>
-                    <div class="space-y-2 md:space-y-3 mb-4">
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            XAU/USD
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            XAG/USD
-                        </div>
-                        <div class="flex items-center bg-white/5 p-2 rounded-lg text-sm md:text-base break-words">
-                            <i class="fas fa-chart-line text-primary-500 mr-2"></i>
-                            OIL
-                        </div>
-                    </div>
-                    <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-success-500 to-primary-500 rounded-full animate-trend"></div>
-                    </div>
-                </div>
-            </div>
+    <!-- Global Section -->
+    <section style="padding: 0; background: #161b22; border-top: 1px solid #30363d; border-bottom: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin: 2rem 1.5rem; position: relative; min-height: 500px;">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <div id="globalMap" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(13, 17, 23, 0.7), rgba(22, 27, 34, 0.6)); z-index: 1; pointer-events: none;"></div>
+        <div style="max-width: 1280px; margin: 0 auto; text-align: center; position: relative; z-index: 2; padding: 7rem 1.5rem;">
+            <h2 style="font-size: 2.75rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;">Trade Globally</h2>
+            <p style="font-size: 1.2rem; color: #d1d4dc; margin-bottom: 0;">Connect with traders from every corner of the world</p>
         </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-16 md:py-20">
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
-            <div class="text-center mb-12 md:mb-16">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 gradient-text break-words px-2">Trusted by Professionals</h2>
-                <p class="text-base md:text-xl text-gray-300 max-w-2xl mx-auto px-2 sm:px-4 break-words">What institutional traders say about our platform</p>
-            </div>
-
-            <div class="max-w-4xl mx-auto">
-                <div class="glass-effect p-5 sm:p-6 md:p-8 rounded-xl relative overflow-hidden w-full">
-                    <div class="text-primary-500 text-3xl md:text-4xl mb-4 md:mb-6">
-                        <i class="fas fa-quote-left"></i>
-                    </div>
-                    <p class="text-base md:text-xl italic mb-4 md:mb-6 break-words">The AI algorithms have consistently outperformed our manual trading strategies. We've seen a 45% increase in portfolio returns.</p>
-                    <div class="flex mb-4 md:mb-6">
-                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
-                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
-                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
-                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
-                        <i class="fas fa-star text-amber-500 text-sm md:text-base"></i>
-                    </div>
-                    <div class="inline-flex items-center bg-success-500/10 text-success-500 px-3 py-1 md:px-4 md:py-2 rounded-full mb-4 md:mb-6 text-sm md:text-base break-words">
-                        <i class="fas fa-chart-line mr-2"></i>
-                        +45% ROI
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 mr-3 md:mr-4 flex-shrink-0">
-                            <i class="fas fa-user text-xl md:text-2xl"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <div class="font-bold text-base md:text-lg break-words">Marcus Chen</div>
-                            <div class="text-gray-400 text-sm md:text-base break-words">Quantitative Analyst</div>
-                            <div class="text-primary-500 font-medium text-sm md:text-base break-words">BlackRock</div>
+    <!-- Bot Containers Section -->
+    <section style="padding: 7rem 1.5rem; background: radial-gradient(circle at top, #020617, #000); border-radius: 12px; margin: 2rem 1.5rem;">
+        <div style="max-width: 1100px; margin: 0 auto; text-align: center;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 14px; color: #e5e7eb;">Autonomous Bot Containers</h2>
+            <p style="color: #94a3b8; max-width: 680px; margin: 0 auto 70px; line-height: 1.7;">Each Algocdk bot runs inside an isolated container, continuously monitoring markets and executing strategies.</p>
+            
+            <div style="position: relative; height: 520px; overflow: hidden;">
+                <div class="bot-slide active" style="position: absolute; inset: 0; opacity: 1; transform: scale(1); transition: opacity 1s ease, transform 1s ease;">
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
+                        <img src="https://images.unsplash.com/photo-1581091870627-3d5b28d47d8b?auto=format&fit=crop&w=1600&q=80" alt="Momentum Bot" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
+                            <div style="padding: 36px; text-align: left; max-width: 520px;">
+                                <div style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">LIVE · MOMENTUM</div>
+                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">Momentum Bot</div>
+                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Executes high-confidence trend-following strategies with real-time signal validation and low-latency routing.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="flex justify-center mt-6 md:mt-8 space-x-2">
-                    <button class="w-3 h-3 bg-primary-500 rounded-full touch-button"></button>
-                    <button class="w-3 h-3 bg-white/20 rounded-full hover:bg-white/40 touch-button"></button>
-                    <button class="w-3 h-3 bg-white/20 rounded-full hover:bg-white/40 touch-button"></button>
+                
+                <div class="bot-slide" style="position: absolute; inset: 0; opacity: 0; transform: scale(0.96); transition: opacity 1s ease, transform 1s ease;">
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
+                        <img src="https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&w=1600&q=80" alt="Breakout Bot" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
+                            <div style="padding: 36px; text-align: left; max-width: 520px;">
+                                <div style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">LIVE · BREAKOUT</div>
+                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">Breakout Bot</div>
+                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Monitors volatility expansions and enters breakouts using adaptive risk and event-driven execution.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bot-slide" style="position: absolute; inset: 0; opacity: 0; transform: scale(0.96); transition: opacity 1s ease, transform 1s ease;">
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
+                        <img src="https://images.unsplash.com/photo-1593376893114-1aed528d80cf?auto=format&fit=crop&w=1600&q=80" alt="Statistical Bot" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
+                            <div style="padding: 36px; text-align: left; max-width: 520px;">
+                                <div style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">LIVE · STATISTICAL</div>
+                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">Mean Reversion Bot</div>
+                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Applies statistical models to exploit temporary price deviations across commodity markets.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="py-16 md:py-20 bg-dark-800/50 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-full bg-radial-gradient from-primary-500/10 to-transparent opacity-30"></div>
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding relative z-10">
-            <div class="max-w-3xl mx-auto text-center">
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 break-words px-2">Ready to Trade Like a Professional?</h2>
-                <p class="text-base md:text-xl text-gray-300 mb-8 break-words px-2">Join thousands of successful traders using our institutional-grade platform</p>
-                <a href="auth" class="inline-block px-6 py-3 md:px-8 md:py-4 gradient-bg-primary rounded-lg font-semibold text-base md:text-lg hover:shadow-xl transition-all mb-8 touch-button break-words w-full sm:w-auto">
-                    <i class="fas fa-rocket mr-2"></i>
-                    Start Free Trial
-                </a>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
-                        <i class="fas fa-check text-success-500 mr-2"></i>
-                        14-day free trial
-                    </div>
-                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
-                        <i class="fas fa-check text-success-500 mr-2"></i>
-                        No credit card
-                    </div>
-                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
-                        <i class="fas fa-check text-success-500 mr-2"></i>
-                        Full access
-                    </div>
-                    <div class="flex items-center justify-center text-gray-300 text-sm md:text-base px-2 break-words">
-                        <i class="fas fa-check text-success-500 mr-2"></i>
-                        Pro support
-                    </div>
+    <section class="cta">
+        <div class="cta-container">
+            <h2>Ready to start?</h2>
+            <p>Join millions of traders using Algocdk for market analysis and trading</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+                <div style="display: flex; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=1" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=2" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=3" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=4" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=5" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
                 </div>
+                <p style="color: #8b949e; font-size: 0.95rem; margin: 0;">Join 50,000+ active traders worldwide</p>
             </div>
+            <a href="/auth" class="btn-primary btn-large" style="text-decoration: none;">Create free account</a>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-10 md:py-12 bg-dark-900 border-t border-white/10 safe-area-left safe-area-right">
-        <div class="w-full mx-auto px-4 sm:px-5 md:px-6 xs-padding tablet-padding">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 mb-6 md:mb-8">
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <div class="text-2xl font-bold gradient-text mb-4 break-words">Algocdk</div>
-                    <p class="text-gray-400 text-sm md:text-base mb-4 break-words">Institutional-grade algorithmic trading platform powered by advanced AI and machine learning.</p>
-                    <div class="flex space-x-3 md:space-x-4">
-                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors flex-shrink-0">
-                            <i class="fab fa-twitter text-sm md:text-base"></i>
-                        </a>
-                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors flex-shrink-0">
-                            <i class="fab fa-linkedin-in text-sm md:text-base"></i>
-                        </a>
-                        <a href="#" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-primary-500 transition-colors flex-shrink-0">
-                            <i class="fab fa-github text-sm md:text-base"></i>
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3 md:mb-4 text-base md:text-lg break-words">Trading</h4>
-                    <ul class="space-y-1 md:space-y-2">
-                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">AI Bots</a></li>
-                        <li><a href="#markets" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Markets</a></li>
-                        <li><a href="#performance" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Analytics</a></li>
-                        <li><a href="#api" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">API</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3 md:mb-4 text-base md:text-lg break-words">Company</h4>
-                    <ul class="space-y-1 md:space-y-2">
-                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">About</a></li>
-                        <li><a href="#careers" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Careers</a></li>
-                        <li><a href="#security" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Security</a></li>
-                        <li><a href="#compliance" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Compliance</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold mb-3 md:mb-4 text-base md:text-lg break-words">Support</h4>
-                    <ul class="space-y-1 md:space-y-2">
-                        <li><a href="#help" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Help Center</a></li>
-                        <li><a href="#contact" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Contact</a></li>
-                        <li><a href="#status" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">System Status</a></li>
-                        <li><a href="#docs" class="text-gray-400 hover:text-white transition-colors text-sm md:text-base break-words">Documentation</a></li>
-                    </ul>
-                </div>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Products</h4>
+                <ul>
+                    <li><a href="#">Supercharts</a></li>
+                    <li><a href="#">Pine Script</a></li>
+                    <li><a href="#">Stock Screener</a></li>
+                    <li><a href="#">ETF Screener</a></li>
+                    <li><a href="#">Forex Screener</a></li>
+                    <li><a href="#">Crypto Screener</a></li>
+                </ul>
             </div>
-            <div class="pt-6 md:pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 text-xs md:text-sm mb-4 md:mb-0 text-center md:text-left break-words px-2 sm:px-0">&copy; 2026 Algocdk. All rights reserved. Trading involves risk.</p>
-                <div class="flex flex-wrap justify-center gap-3 md:gap-6">
-                    <a href="#privacy" class="text-gray-400 hover:text-white transition-colors text-xs md:text-base break-words">Privacy</a>
-                    <a href="#terms" class="text-gray-400 hover:text-white transition-colors text-xs md:text-base break-words">Terms</a>
-                    <a href="#risk" class="text-gray-400 hover:text-white transition-colors text-xs md:text-base break-words">Risk</a>
-                </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Wall of Love</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
             </div>
+            <div class="footer-section">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="#">Refer a friend</a></li>
+                    <li><a href="#">Ideas</a></li>
+                    <li><a href="#">Scripts</a></li>
+                    <li><a href="#">Streams</a></li>
+                    <li><a href="#">Moderators</a></li>
+                    <li><a href="#">Pine Wizards</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>For business</h4>
+                <ul>
+                    <li><a href="#">Widgets</a></li>
+                    <li><a href="#">Charting libraries</a></li>
+                    <li><a href="#">Lightweight charts</a></li>
+                    <li><a href="#">Advanced charts</a></li>
+                    <li><a href="#">Brokerage integration</a></li>
+                    <li><a href="#">Partner program</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Algocdk. All rights reserved. Market data provided by ICE Data services</p>
         </div>
     </footer>
 
     <script>
-        // Simple JavaScript for interactive elements
-        document.addEventListener('DOMContentLoaded', function () {
-            // Mobile menu toggle
-            const mobileMenuBtn = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-
-            if (mobileMenuBtn && mobileMenu) {
-                mobileMenuBtn.addEventListener('click', function () {
-                    mobileMenu.classList.toggle('open');
-                    // Change icon
-                    const icon = mobileMenuBtn.querySelector('i');
-                    if (mobileMenu.classList.contains('open')) {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-times');
+        // Market Summary Slideshow
+        class MarketSlideshow {
+            constructor() {
+                this.slides = document.querySelectorAll('.market-slide');
+                this.indicators = document.querySelectorAll('.indicator');
+                this.currentSlide = 0;
+                this.slideInterval = null;
+                this.autoSlideDuration = 8000; // 8 seconds
+                
+                this.initialize();
+            }
+            
+            initialize() {
+                this.setupEventListeners();
+                this.startAutoSlide();
+                this.updateMarketData();
+            }
+            
+            setupEventListeners() {
+                // Next/Prev buttons
+                document.querySelector('.slide-next').addEventListener('click', () => this.nextSlide());
+                document.querySelector('.slide-prev').addEventListener('click', () => this.prevSlide());
+                
+                // Indicators
+                this.indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.goToSlide(index));
+                });
+                
+                // Card clicks - go to trading platform
+                document.querySelectorAll('.stat-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const symbol = e.currentTarget.dataset.symbol;
+                        this.selectSymbol(symbol);
+                        
+                        // Scroll to trading platform
+                        document.getElementById('trading-platform').scrollIntoView({ 
+                            behavior: 'smooth' 
+                        });
+                    });
+                });
+                
+                // Pause auto-slide on hover
+                const slideshow = document.querySelector('.market-slideshow');
+                slideshow.addEventListener('mouseenter', () => this.pauseAutoSlide());
+                slideshow.addEventListener('mouseleave', () => this.startAutoSlide());
+            }
+            
+            nextSlide() {
+                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+                this.updateSlides();
+            }
+            
+            prevSlide() {
+                this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+                this.updateSlides();
+            }
+            
+            goToSlide(index) {
+                this.currentSlide = index;
+                this.updateSlides();
+            }
+            
+            updateSlides() {
+                // Update slides
+                this.slides.forEach((slide, index) => {
+                    slide.classList.remove('active', 'prev', 'next');
+                    
+                    if (index === this.currentSlide) {
+                        slide.classList.add('active');
+                    } else if (index === (this.currentSlide + 1) % this.slides.length) {
+                        slide.classList.add('next');
+                    } else if (index === (this.currentSlide - 1 + this.slides.length) % this.slides.length) {
+                        slide.classList.add('prev');
+                    }
+                });
+                
+                // Update indicators
+                this.indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+            
+            startAutoSlide() {
+                this.pauseAutoSlide();
+                this.slideInterval = setInterval(() => this.nextSlide(), this.autoSlideDuration);
+            }
+            
+            pauseAutoSlide() {
+                if (this.slideInterval) {
+                    clearInterval(this.slideInterval);
+                    this.slideInterval = null;
+                }
+            }
+            
+            selectSymbol(symbol) {
+                if (window.tradingPlatform) {
+                    window.tradingPlatform.selectSymbol(symbol);
+                }
+            }
+            
+            updateMarketData() {
+                // Simulate live price updates
+                setInterval(() => {
+                    this.updateRandomPrices();
+                }, 3000);
+            }
+            
+            updateRandomPrices() {
+                // Update prices with small random changes
+                const priceElements = document.querySelectorAll('.stat-price');
+                const changeElements = document.querySelectorAll('.change-value');
+                
+                priceElements.forEach((element, index) => {
+                    const currentPrice = parseFloat(element.textContent.replace(/[^0-9.-]+/g, ''));
+                    const change = (Math.random() * 0.2 - 0.1); // -0.05% to +0.05%
+                    const newPrice = currentPrice * (1 + change / 100);
+                    
+                    // Format based on symbol
+                    let formattedPrice;
+                    const symbolId = element.id.replace('price-', '');
+                    
+                    if (symbolId.includes('cryBTCUSD')) {
+                        formattedPrice = `$${newPrice.toFixed(0)}`;
+                    } else if (symbolId.includes('cryETHUSD')) {
+                        formattedPrice = `$${newPrice.toFixed(0)}`;
+                    } else if (symbolId.includes('frxEURUSD')) {
+                        formattedPrice = newPrice.toFixed(4);
+                    } else if (symbolId.includes('frxUSDJPY')) {
+                        formattedPrice = newPrice.toFixed(2);
+                    } else if (symbolId.includes('SPX')) {
+                        formattedPrice = newPrice.toFixed(2);
+                    } else if (symbolId.includes('NDX')) {
+                        formattedPrice = newPrice.toFixed(2);
+                    } else if (symbolId.includes('GC')) {
+                        formattedPrice = `$${newPrice.toFixed(1)}`;
+                    } else if (symbolId.includes('CL')) {
+                        formattedPrice = `$${newPrice.toFixed(2)}`;
                     } else {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
+                        formattedPrice = newPrice.toFixed(2);
+                    }
+                    
+                    element.textContent = formattedPrice;
+                    
+                    // Update change indicator
+                    if (changeElements[index]) {
+                        const isPositive = change >= 0;
+                        changeElements[index].textContent = `${isPositive ? '+' : ''}${change.toFixed(2)}%`;
+                        changeElements[index].className = `change-value ${isPositive ? 'change-positive' : 'change-negative'}`;
+                        
+                        // Update arrow
+                        const arrow = changeElements[index].previousElementSibling;
+                        if (arrow && arrow.classList.contains('change-arrow')) {
+                            arrow.textContent = isPositive ? '↗' : '↘';
+                        }
                     }
                 });
-
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function (event) {
-                    if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
-                        mobileMenu.classList.remove('open');
-                        const icon = mobileMenuBtn.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
+                
+                // Update overview cards
+                this.updateOverviewCards();
+            }
+            
+            updateOverviewCards() {
+                // Update overview cards with random changes
+                const overviewValues = [
+                    { id: 'totalMarketCap', min: 2.0, max: 2.5, suffix: 'T' },
+                    { id: 'btcDominance', min: 58.0, max: 61.0, suffix: '%' },
+                    { id: 'yield10Y', min: 4.1, max: 4.3, suffix: '%' },
+                    { id: 'dollarIndex', min: 97.5, max: 98.0, suffix: '' }
+                ];
+                
+                overviewValues.forEach(item => {
+                    const element = document.getElementById(item.id);
+                    if (element) {
+                        const currentValue = parseFloat(element.textContent.replace(/[^0-9.-]+/g, ''));
+                        const change = (Math.random() * 0.1 - 0.05); // -0.025% to +0.025%
+                        let newValue = currentValue * (1 + change / 100);
+                        
+                        // Keep within reasonable bounds
+                        newValue = Math.max(item.min, Math.min(item.max, newValue));
+                        
+                        element.textContent = `${newValue.toFixed(2)}${item.suffix}`;
+                        
+                        // Update change
+                        const changeElement = document.getElementById(`change${item.id.charAt(0).toUpperCase() + item.id.slice(1)}`);
+                        if (changeElement) {
+                            const isPositive = change >= 0;
+                            changeElement.textContent = `${isPositive ? '+' : ''}${change.toFixed(2)}%`;
+                            changeElement.className = `overview-change ${isPositive ? 'change-positive' : 'change-negative'}`;
+                        }
                     }
                 });
+            }
+        }
 
-                // Close mobile menu when clicking a link
-                const mobileLinks = mobileMenu.querySelectorAll('a');
-                mobileLinks.forEach(link => {
-                    link.addEventListener('click', () => {
-                        mobileMenu.classList.remove('open');
-                        const icon = mobileMenuBtn.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
+        // Original Hero Chart
+        const canvas = document.getElementById('mainChart');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.offsetWidth * window.devicePixelRatio;
+            canvas.height = parent.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Generate candlestick data for hero chart
+        let candles = [];
+        const numCandles = 60;
+        let basePrice = 45000;
+
+        for (let i = 0; i < numCandles; i++) {
+            const open = basePrice + (Math.random() - 0.5) * 1000;
+            const close = open + (Math.random() - 0.5) * 800;
+            const high = Math.max(open, close) + Math.random() * 400;
+            const low = Math.min(open, close) - Math.random() * 400;
+            
+            candles.push({ open, high, low, close });
+            basePrice = close;
+        }
+
+        let animationProgress = 0;
+
+        function drawChart() {
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.5)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 6; i++) {
+                const y = (height / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Calculate price range
+            const prices = candles.flatMap(c => [c.high, c.low]);
+            const maxPrice = Math.max(...prices);
+            const minPrice = Math.min(...prices);
+            const priceRange = maxPrice - minPrice;
+
+            const candleWidth = width / (numCandles * 1.5);
+            const spacing = candleWidth * 0.3;
+
+            // Draw candlesticks
+            const visibleCandles = Math.floor(animationProgress * numCandles);
+            
+            for (let i = 0; i < visibleCandles; i++) {
+                const candle = candles[i];
+                const x = i * (candleWidth + spacing) + spacing;
+                
+                const openY = height - ((candle.open - minPrice) / priceRange) * height;
+                const closeY = height - ((candle.close - minPrice) / priceRange) * height;
+                const highY = height - ((candle.high - minPrice) / priceRange) * height;
+                const lowY = height - ((candle.low - minPrice) / priceRange) * height;
+
+                const isGreen = candle.close > candle.open;
+                ctx.strokeStyle = isGreen ? '#0ecb81' : '#f6465d';
+                ctx.fillStyle = isGreen ? '#0ecb81' : '#f6465d';
+
+                // Draw wick
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x + candleWidth / 2, highY);
+                ctx.lineTo(x + candleWidth / 2, lowY);
+                ctx.stroke();
+
+                // Draw body
+                const bodyHeight = Math.abs(openY - closeY);
+                const bodyY = Math.min(openY, closeY);
+                
+                if (isGreen) {
+                    ctx.fillRect(x, bodyY, candleWidth, bodyHeight || 1);
+                } else {
+                    ctx.fillRect(x, bodyY, candleWidth, bodyHeight || 1);
+                }
+            }
+
+            // Animate
+            if (animationProgress < 1) {
+                animationProgress += 0.01;
+                requestAnimationFrame(drawChart);
+            }
+        }
+
+        drawChart();
+
+        // Trading Platform Application
+        let ws;
+        
+        function connectDerivWS() {
+            ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
+            
+            ws.onopen = () => {
+                if (window.tradingPlatform) {
+                    window.tradingPlatform.subscribeToSymbols();
+                }
+            };
+
+            ws.onmessage = (msg) => {
+                const data = JSON.parse(msg.data);
+                if (data.tick && window.tradingPlatform) {
+                    window.tradingPlatform.handleTickData(data.tick);
+                }
+            };
+
+            ws.onerror = () => setTimeout(connectDerivWS, 3000);
+            ws.onclose = () => setTimeout(connectDerivWS, 3000);
+        }
+        
+        class TradingPlatform {
+            constructor() {
+                this.currentSymbol = 'cryBTCUSD';
+                this.currentTimeframe = '1D';
+                this.chart = null;
+                this.ctx = null;
+                this.candles = [];
+                this.symbolsData = new Map();
+                this.appId = 1089;
+                this.symbols = [
+                    // Forex
+                    { symbol: 'frxEURUSD', name: 'EUR/USD', category: 'forex', description: 'Euro vs US Dollar' },
+                    { symbol: 'frxGBPUSD', name: 'GBP/USD', category: 'forex', description: 'British Pound vs US Dollar' },
+                    { symbol: 'frxUSDJPY', name: 'USD/JPY', category: 'forex', description: 'US Dollar vs Japanese Yen' },
+                    { symbol: 'frxAUDUSD', name: 'AUD/USD', category: 'forex', description: 'Australian Dollar vs US Dollar' },
+                    
+                    // Crypto
+                    { symbol: 'cryBTCUSD', name: 'BTC/USD', category: 'crypto', description: 'Bitcoin vs US Dollar' },
+                    { symbol: 'cryETHUSD', name: 'ETH/USD', category: 'crypto', description: 'Ethereum vs US Dollar' },
+                    { symbol: 'cryLTCUSD', name: 'LTC/USD', category: 'crypto', description: 'Litecoin vs US Dollar' },
+                    { symbol: 'cryXRPUSD', name: 'XRP/USD', category: 'crypto', description: 'Ripple vs US Dollar' },
+                    
+                    // Synthetic Indices
+                    { symbol: 'R_10', name: 'Volatility 10', category: 'synthetic', description: 'Volatility 10 Index' },
+                    { symbol: 'R_25', name: 'Volatility 25', category: 'synthetic', description: 'Volatility 25 Index' },
+                    { symbol: 'R_50', name: 'Volatility 50', category: 'synthetic', description: 'Volatility 50 Index' },
+                    { symbol: 'R_75', name: 'Volatility 75', category: 'synthetic', description: 'Volatility 75 Index' },
+                    { symbol: 'R_100', name: 'Volatility 100', category: 'synthetic', description: 'Volatility 100 Index' },
+                    
+                    // Boom & Crash
+                    { symbol: 'BOOM1000', name: 'Boom 1000', category: 'synthetic', description: 'Boom 1000 Index' },
+                    { symbol: 'CRASH1000', name: 'Crash 1000', category: 'synthetic', description: 'Crash 1000 Index' }
+                ];
+                
+                this.initialize();
+            }
+            
+            initialize() {
+                this.setupEventListeners();
+                this.renderSymbolsList();
+                this.initializeChart();
+            }
+            
+            setupEventListeners() {
+                const searchInput = document.getElementById('symbolSearch');
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        this.filterSymbols(e.target.value);
+                    });
+                }
+                
+                document.querySelectorAll('.timeframe-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentTimeframe = e.target.dataset.timeframe;
+                        this.updateChart();
+                    });
+                });
+                
+                document.querySelectorAll('.platform-tool-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.platform-tool-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
                     });
                 });
             }
-
-            // Testimonial slider dots
-            const dots = document.querySelectorAll('.flex.justify-center.mt-8 button');
-
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', function () {
-                    // Update active dot
-                    dots.forEach(d => d.classList.remove('bg-primary-500'));
-                    dots.forEach(d => d.classList.add('bg-white/20'));
-                    this.classList.remove('bg-white/20');
-                    this.classList.add('bg-primary-500');
+            
+            subscribeToSymbols() {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    this.symbols.forEach(symbolObj => {
+                        ws.send(JSON.stringify({
+                            ticks: symbolObj.symbol,
+                            subscribe: 1
+                        }));
+                    });
+                }
+            }
+            
+            handleTickData(tick) {
+                const symbol = this.symbols.find(s => s.symbol === tick.symbol);
+                if (!symbol) return;
+                
+                const oldData = this.symbolsData.get(tick.symbol);
+                this.symbolsData.set(tick.symbol, {
+                    quote: tick.quote,
+                    epoch: tick.epoch,
+                    pip: tick.pip || 0.00001
                 });
-            });
-
-            // Animate stats when they come into view
-            const stats = document.querySelectorAll('.glass-effect.p-4 .text-2xl, .glass-effect.p-3 .text-lg');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const stat = entry.target;
-                        const originalText = stat.textContent;
-                        const target = parseFloat(originalText.replace(/[^\d.]/g, ''));
-                        const suffix = originalText.replace(/[\d.]/g, '');
-
-                        let counter = 0;
-                        const increment = target / 50;
-
-                        const updateCounter = () => {
-                            if (counter < target) {
-                                counter += increment;
-                                stat.textContent = suffix.includes('%')
-                                    ? `${Math.min(counter, target).toFixed(1)}${suffix}`
-                                    : `${Math.min(Math.floor(counter), target).toLocaleString()}${suffix}`;
-                                setTimeout(updateCounter, 30);
-                            } else {
-                                stat.textContent = originalText;
-                            }
-                        };
-
-                        updateCounter();
-                        observer.unobserve(stat);
+                
+                const priceElement = document.getElementById(`platform-price-${tick.symbol}`);
+                const changeElement = document.getElementById(`platform-change-${tick.symbol}`);
+                
+                if (priceElement && changeElement) {
+                    const formattedPrice = this.formatPrice(tick.quote, tick.pip);
+                    priceElement.textContent = formattedPrice;
+                    
+                    if (oldData && oldData.quote) {
+                        const change = ((tick.quote - oldData.quote) / oldData.quote * 100).toFixed(2);
+                        changeElement.textContent = `${change >= 0 ? '+' : ''}${change}%`;
+                        changeElement.className = `platform-symbol-item-change ${change >= 0 ? 'change-positive' : 'change-negative'}`;
+                    } else {
+                        changeElement.textContent = '+0.00%';
+                        changeElement.className = 'platform-symbol-item-change change-positive';
+                    }
+                }
+                
+                if (tick.symbol === this.currentSymbol) {
+                    this.updateCurrentSymbolPrice(tick.quote, tick.pip);
+                }
+            }
+            
+            formatPrice(price, pip) {
+                let decimalPlaces = 2;
+                if (pip && pip < 0.01) {
+                    decimalPlaces = 5;
+                } else if (pip && pip < 0.1) {
+                    decimalPlaces = 3;
+                }
+                return price.toFixed(decimalPlaces);
+            }
+            
+            updateCurrentSymbolPrice(price, pip) {
+                const symbolData = this.symbolsData.get(this.currentSymbol);
+                if (!symbolData) return;
+                
+                const formattedPrice = this.formatPrice(price, pip);
+                document.getElementById('currentPrice').textContent = `$${formattedPrice}`;
+                
+                const oldPrice = symbolData.quote;
+                const change = ((price - oldPrice) / oldPrice * 100).toFixed(2);
+                const isPositive = change >= 0;
+                document.getElementById('currentChange').textContent = `${isPositive ? '+' : ''}${change}%`;
+                document.getElementById('currentChange').style.color = isPositive ? '#26a69a' : '#ef5350';
+            }
+            
+            renderSymbolsList() {
+                const container = document.getElementById('symbolsList');
+                if (!container) return;
+                
+                const groupedSymbols = this.groupSymbolsByCategory();
+                
+                let html = '';
+                
+                for (const [category, symbols] of Object.entries(groupedSymbols)) {
+                    html += `
+                        <div class="symbol-category">
+                            <div class="category-title">${this.formatCategoryName(category)}</div>
+                    `;
+                    
+                    symbols.forEach(symbol => {
+                        const isActive = symbol.symbol === this.currentSymbol;
+                        html += `
+                            <div class="platform-symbol-item ${isActive ? 'active' : ''}" data-symbol="${symbol.symbol}">
+                                <div class="platform-symbol-item-left">
+                                    <div class="platform-symbol-item-name">${symbol.name}</div>
+                                    <div class="platform-symbol-item-desc">${symbol.description}</div>
+                                </div>
+                                <div class="platform-symbol-item-right">
+                                    <div class="platform-symbol-item-price" id="platform-price-${symbol.symbol}">--</div>
+                                    <div class="platform-symbol-item-change" id="platform-change-${symbol.symbol}">--</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                }
+                
+                container.innerHTML = html;
+                
+                // Add click listeners to symbol items
+                document.querySelectorAll('.platform-symbol-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const symbol = e.currentTarget.dataset.symbol;
+                        this.selectSymbol(symbol);
+                    });
+                });
+            }
+            
+            groupSymbolsByCategory() {
+                return this.symbols.reduce((groups, symbol) => {
+                    if (!groups[symbol.category]) {
+                        groups[symbol.category] = [];
+                    }
+                    groups[symbol.category].push(symbol);
+                    return groups;
+                }, {});
+            }
+            
+            formatCategoryName(category) {
+                const names = {
+                    'forex': 'Forex',
+                    'crypto': 'Cryptocurrencies',
+                    'synthetic': 'Synthetic Indices'
+                };
+                return names[category] || category;
+            }
+            
+            filterSymbols(searchTerm) {
+                const items = document.querySelectorAll('.platform-symbol-item');
+                const searchLower = searchTerm.toLowerCase();
+                
+                items.forEach(item => {
+                    const name = item.querySelector('.platform-symbol-item-name').textContent.toLowerCase();
+                    const desc = item.querySelector('.platform-symbol-item-desc').textContent.toLowerCase();
+                    
+                    if (name.includes(searchLower) || desc.includes(searchLower)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
                     }
                 });
-            }, { threshold: 0.5 });
+            }
+            
+            selectSymbol(symbol) {
+                // Update active symbol
+                document.querySelectorAll('.platform-symbol-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const activeItem = document.querySelector(`[data-symbol="${symbol}"]`);
+                if (activeItem) activeItem.classList.add('active');
+                
+                // Update current symbol
+                this.currentSymbol = symbol;
+                
+                // Update header
+                const symbolData = this.symbols.find(s => s.symbol === symbol);
+                if (symbolData) {
+                    document.getElementById('currentSymbol').textContent = symbolData.name;
+                }
+                
+                // Update chart
+                this.updateChart();
+            }
+            
+            initializeChart() {
+                const canvas = document.getElementById('platformChart');
+                this.ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions
+                const resizeChart = () => {
+                    const parent = canvas.parentElement;
+                    canvas.width = parent.clientWidth * window.devicePixelRatio;
+                    canvas.height = parent.clientHeight * window.devicePixelRatio;
+                    this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                    
+                    if (this.candles.length > 0) {
+                        this.drawPlatformChart();
+                    }
+                };
+                
+                resizeChart();
+                window.addEventListener('resize', resizeChart);
+                
+                // Generate initial candle data
+                this.generateSampleCandles();
+                this.drawPlatformChart();
+            }
+            
+            generateSampleCandles() {
+                this.candles = [];
+                let basePrice = 70000;
+                
+                // Generate 100 candles
+                for (let i = 0; i < 100; i++) {
+                    const open = basePrice + (Math.random() - 0.5) * 1000;
+                    const close = open + (Math.random() - 0.5) * 800;
+                    const high = Math.max(open, close) + Math.random() * 400;
+                    const low = Math.min(open, close) - Math.random() * 400;
+                    const volume = 1000 + Math.random() * 5000;
+                    
+                    this.candles.push({
+                        time: Date.now() - (100 - i) * 3600000, // Last 100 hours
+                        open,
+                        high,
+                        low,
+                        close,
+                        volume
+                    });
+                    
+                    basePrice = close;
+                }
+            }
+            
+            drawPlatformChart() {
+                const canvas = document.getElementById('platformChart');
+                const ctx = this.ctx;
+                const width = canvas.offsetWidth;
+                const height = canvas.offsetHeight;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                if (this.candles.length === 0) return;
+                
+                // Draw grid
+                ctx.strokeStyle = 'rgba(48, 54, 61, 0.5)';
+                ctx.lineWidth = 1;
+                
+                // Horizontal grid lines
+                for (let i = 0; i <= 10; i++) {
+                    const y = (height / 10) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                }
+                
+                // Vertical grid lines
+                for (let i = 0; i <= 20; i++) {
+                    const x = (width / 20) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                }
+                
+                // Calculate price range
+                const prices = this.candles.flatMap(c => [c.high, c.low]);
+                const maxPrice = Math.max(...prices);
+                const minPrice = Math.min(...prices);
+                const priceRange = maxPrice - minPrice;
+                
+                // Draw candlesticks
+                const candleWidth = width / (this.candles.length * 1.5);
+                const spacing = candleWidth * 0.3;
+                
+                this.candles.forEach((candle, i) => {
+                    const x = i * (candleWidth + spacing) + spacing;
+                    
+                    const openY = height - ((candle.open - minPrice) / priceRange) * height;
+                    const closeY = height - ((candle.close - minPrice) / priceRange) * height;
+                    const highY = height - ((candle.high - minPrice) / priceRange) * height;
+                    const lowY = height - ((candle.low - minPrice) / priceRange) * height;
+                    
+                    const isGreen = candle.close > candle.open;
+                    ctx.strokeStyle = isGreen ? '#26a69a' : '#ef5350';
+                    ctx.fillStyle = isGreen ? '#26a69a' : '#ef5350';
+                    
+                    // Draw wick
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(x + candleWidth / 2, highY);
+                    ctx.lineTo(x + candleWidth / 2, lowY);
+                    ctx.stroke();
+                    
+                    // Draw body
+                    const bodyHeight = Math.abs(openY - closeY);
+                    const bodyY = Math.min(openY, closeY);
+                    
+                    ctx.fillRect(x, bodyY, candleWidth, Math.max(bodyHeight, 1));
+                });
+                
+                // Hide loading overlay
+                const loadingOverlay = document.getElementById('chartLoading');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+            
+            updateChart() {
+                // Show loading
+                const loadingOverlay = document.getElementById('chartLoading');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                }
+                
+                // Simulate loading new data
+                setTimeout(() => {
+                    this.generateSampleCandles();
+                    this.drawPlatformChart();
+                }, 500);
+            }
+        }
 
-            stats.forEach(stat => {
-                observer.observe(stat);
-            });
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.marketSlideshow = new MarketSlideshow();
+            window.tradingPlatform = new TradingPlatform();
+            connectDerivWS();
+            
+            // Initialize Leaflet map for Trade Globally section
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            script.onload = () => {
+                const globalMap = L.map('globalMap', {
+                    zoomControl: true,
+                    attributionControl: false,
+                    scrollWheelZoom: true,
+                    dragging: true
+                }).setView([20, 0], 2);
 
-            // Smooth scrolling for anchor links
+                L.tileLayer(
+                    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                    { maxZoom: 18 }
+                ).addTo(globalMap);
+
+                const signalIcon = L.divIcon({
+                    className: '',
+                    html: '<div style="width: 14px; height: 14px; background: #ff6838; border-radius: 50%; position: relative; box-shadow: 0 0 14px rgba(255, 104, 56, 0.8);"><div style="position: absolute; inset: 0; border-radius: 50%; background: rgba(255, 104, 56, 0.35); animation: signal-pulse 3s ease-out infinite;"></div></div>',
+                    iconSize: [14, 14],
+                    iconAnchor: [7, 7]
+                });
+
+                L.marker([20, 0], { icon: signalIcon }).addTo(globalMap);
+            };
+            document.head.appendChild(script);
+            
+            // Hero background slideshow
+            const slides = document.querySelectorAll('.hero-bg-slide');
+            let currentSlide = 0;
+            
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            
+            setInterval(nextSlide, 4000);
+            
+            // Smooth scroll
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    const href = this.getAttribute('href');
-                    
-                    // Skip if it's not an internal anchor link
-                    if (href === '#' || href.startsWith('#!')) return;
-                    
-                    // Skip if it's not an anchor link
-                    if (!href.startsWith('#')) return;
-                    
                     e.preventDefault();
-                    
-                    const targetId = href.substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    
-                    if (targetElement) {
-                        // Calculate header height for offset
-                        const headerHeight = document.querySelector('header').offsetHeight;
-                        const targetPosition = targetElement.offsetTop - headerHeight - 20;
-                        
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 });
             });
-
-            // Prevent horizontal scrolling
-            function preventHorizontalScroll() {
-                // Check if there's horizontal overflow
-                if (document.documentElement.scrollWidth > window.innerWidth) {
-                    // Force body width to viewport width
-                    document.body.style.width = '100vw';
-                    document.body.style.overflowX = 'hidden';
-                }
-            }
-
-            // Initial check
-            preventHorizontalScroll();
             
-            // Check on resize and load
-            window.addEventListener('resize', preventHorizontalScroll);
-            window.addEventListener('load', preventHorizontalScroll);
-            
-            // Adjust ticker animation for mobile
-            function adjustTickerForMobile() {
-                const tickers = document.querySelectorAll('.animate-ticker');
-                tickers.forEach(ticker => {
-                    if (window.innerWidth < 768) {
-                        ticker.style.animationDuration = '20s';
-                    } else {
-                        ticker.style.animationDuration = '30s';
-                    }
-                });
-            }
-            
-            adjustTickerForMobile();
-            window.addEventListener('resize', adjustTickerForMobile);
-            
-            // Ensure all content fits within viewport
-            function ensureContentFits() {
-                const viewportWidth = window.innerWidth;
-                const bodyWidth = document.body.scrollWidth;
-                
-                if (bodyWidth > viewportWidth) {
-                    // Scale down content if needed
-                    document.body.style.transform = 'scale(' + (viewportWidth / bodyWidth) + ')';
-                    document.body.style.transformOrigin = 'top left';
-                } else {
-                    document.body.style.transform = 'none';
-                }
-            }
-            
-            // Run after everything loads
-            window.addEventListener('load', ensureContentFits);
-            window.addEventListener('resize', ensureContentFits);
+            // Bot Containers Slideshow
+            const botSlides = document.querySelectorAll('.bot-slide');
+            let currentBotSlide = 0;
+            setInterval(() => {
+                botSlides[currentBotSlide].style.opacity = '0';
+                botSlides[currentBotSlide].style.transform = 'scale(0.96)';
+                botSlides[currentBotSlide].classList.remove('active');
+                currentBotSlide = (currentBotSlide + 1) % botSlides.length;
+                botSlides[currentBotSlide].style.opacity = '1';
+                botSlides[currentBotSlide].style.transform = 'scale(1)';
+                botSlides[currentBotSlide].classList.add('active');
+            }, 5000);
         });
     </script>
 </body>
-
 </html>
