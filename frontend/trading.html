@@ -1,54 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algocdk Trading | Deriv-Style Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Trading Terminal | AlgoCDK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'deriv-red': '#FF444F',
-                        'deriv-blue': '#377CFC',
-                        'deriv-green': '#4BB4B3',
-                        'deriv-orange': '#FF6444',
-                        'deriv-gray': '#999999',
-                        'deriv-dark': '#0E0E0E',
-                        'deriv-light': '#F2F3F4'
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="theme-enhanced.css">
+    <script src="api.js"></script>
+    <script src="components.js"></script>
+    <script src="theme-toggle.js"></script>
     <style>
-        body {
-            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0D1421;
-            color: #ffffff;
-        }
-        
+        /* Page Specific Styles for Trading Interface */
+
         .deriv-card {
-            background: #0A0E1A;
-            border: 1px solid #1E293B;
-            border-radius: 8px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
             transition: all 0.2s ease;
             cursor: pointer;
+            height: 100%;
         }
-        
+
         .deriv-card:hover {
-            border-color: #FF4500;
-            box-shadow: 0 4px 16px rgba(255, 69, 0, 0.15);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
-        
+
         .deriv-card.active {
-            border-color: #FF4500;
-            background: #1E293B;
+            border-color: var(--primary);
+            background-color: var(--bg-accent);
         }
-        
+
         .contract-icon {
             width: 48px;
             height: 48px;
@@ -60,30 +44,56 @@
             color: white;
             margin-bottom: 16px;
         }
-        
-        .trade-panel {
-            background: #0A0E1A;
-            border: 1px solid #1E293B;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+
+        /* Deriv specific colors for icons */
+        .icon-blue {
+            background-color: var(--deriv-blue);
         }
-        
+
+        .icon-green {
+            background-color: var(--deriv-green);
+        }
+
+        .icon-orange {
+            background-color: var(--deriv-orange);
+        }
+
+        .icon-purple {
+            background-color: #8B5CF6;
+        }
+
+        .icon-yellow {
+            background-color: #F59E0B;
+        }
+
+        .icon-indigo {
+            background-color: #6366F1;
+        }
+
+        .trade-panel {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
         .deriv-input {
-            border: 1px solid #334155;
-            background: #1E293B;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-accent);
             border-radius: 4px;
             padding: 12px 16px;
             font-size: 14px;
-            color: #ffffff;
+            color: var(--text-primary);
             transition: border-color 0.2s ease;
+            width: 100%;
         }
-        
+
         .deriv-input:focus {
             outline: none;
-            border-color: #FF4500;
-            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
         }
-        
+
         .deriv-button {
             border-radius: 4px;
             font-weight: 600;
@@ -92,47 +102,52 @@
             transition: all 0.2s ease;
             border: none;
             cursor: pointer;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        
+
         .deriv-button-primary {
-            background: #FF4500;
+            background-color: var(--primary);
             color: white;
         }
-        
+
         .deriv-button-primary:hover {
-            background: #e63e00;
+            filter: brightness(1.1);
         }
-        
+
         .deriv-button-success {
-            background: #4BB4B3;
+            background-color: var(--deriv-green);
             color: white;
         }
-        
+
         .deriv-button-success:hover {
-            background: #059669;
+            filter: brightness(1.1);
         }
-        
+
         .deriv-button-danger {
-            background: #FF444F;
+            background-color: var(--deriv-red);
             color: white;
         }
-        
+
         .deriv-button-danger:hover {
-            background: #dc2626;
+            filter: brightness(1.1);
         }
-        
+
         .price-display {
             font-family: 'Courier New', monospace;
             font-size: 24px;
             font-weight: bold;
-            color: #ffffff;
+            color: var(--text-primary);
             text-align: center;
             padding: 16px;
-            background: #1E293B;
+            background-color: var(--bg-accent);
             border-radius: 8px;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
         }
-        
+
         .digit-box {
             width: 32px;
             height: 32px;
@@ -144,197 +159,187 @@
             font-size: 14px;
             margin: 2px;
         }
-        
-        .digit-even { background: #4BB4B3; color: white; }
-        .digit-odd { background: #FF444F; color: white; }
-        
-        @media (max-width: 768px) {
-            .contract-grid {
-                grid-template-columns: 1fr !important;
-            }
-            
+
+        .digit-even {
+            background-color: var(--deriv-green);
+            color: white;
+        }
+
+        .digit-odd {
+            background-color: var(--deriv-red);
+            color: white;
+        }
+
+        .contract-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .trading-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1024px) {
             .trading-layout {
-                flex-direction: column !important;
+                flex-direction: row;
             }
-            
-            .contract-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
+
+            .trading-sidebar {
+                width: 33.333%;
             }
+
+            .trading-main {
+                width: 66.666%;
+            }
+        }
+
+        /* Utility overrides for legacy classes */
+        .text-gray-300 {
+            color: var(--text-secondary);
+        }
+
+        .text-gray-400 {
+            color: var(--text-tertiary);
+        }
+
+        .text-white {
+            color: var(--text-primary);
         }
     </style>
 </head>
+
 <body>
-    <!-- Header -->
-    <header class="bg-[#0A0E1A] border-b border-gray-700 px-4 py-3 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-[#FF4500] rounded flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">A</span>
-                    </div>
-                    <span class="text-xl font-bold text-white">Algocdk</span>
-                </div>
-                <nav class="hidden md:flex space-x-6">
-                    <a href="/app" class="text-gray-400 hover:text-white">Chart</a>
-                    <a href="/trading" class="text-[#FF4500] font-semibold">Trade</a>
-                    <a href="/mybots" class="text-gray-400 hover:text-white">Bots</a>
-                </nav>
-            </div>
-            
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <button id="userMenuBtn" class="text-gray-400 hover:text-white flex items-center space-x-2">
-                        <i class="fas fa-user"></i>
-                        <i class="fas fa-chevron-down text-xs"></i>
-                    </button>
-                    <div id="userMenu" class="absolute right-0 top-8 bg-[#0A0E1A] border border-gray-600 rounded-lg shadow-lg w-48 z-50 hidden">
-                        <a href="/profile" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300">
-                            <i class="fas fa-user"></i>
-                            <span>Profile</span>
-                        </a>
-                        <a href="/settings" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </a>
-                        <a id="adminDashboardLink" href="/admin_dashboard.html" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300" style="display:none">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Admin Dashboard</span>
-                        </a>
-                        <a id="superadminDashboardLink" href="/superadmin_dashboard.html" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-gray-300" style="display:none">
-                            <i class="fas fa-crown"></i>
-                            <span>SuperAdmin Dashboard</span>
-                        </a>
-                        <div class="border-t border-gray-600 my-1"></div>
-                        <a href="#" onclick="exitApp()" class="flex items-center space-x-2 px-4 py-3 hover:bg-gray-700 transition-colors text-red-400">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Exit App</span>
-                        </a>
-                    </div>
-                </div>
-                <button onclick="exitApp()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </div>
-        </div>
-    </header>
+
+    <!-- Standard Navigation -->
+    <div id="nav-container"></div>
+    <script>
+        document.getElementById('nav-container').innerHTML = Components.renderNav('trading');
+        Components.init();
+    </script>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        
+    <div class="w-full max-w-7xl mx-auto px-4 py-6">
+
         <!-- Contract Types Grid -->
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-white mb-6">Choose a contract type</h2>
-            <div class="contract-grid grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
+            <h2 class="text-xl font-bold mb-6">Choose a contract type</h2>
+            <div class="contract-grid">
+
                 <!-- Ups & Downs / Rise & Fall -->
                 <div class="deriv-card p-6" onclick="selectContract('updown')" id="card-updown">
-                    <div class="contract-icon bg-deriv-blue">
+                    <div class="contract-icon icon-blue">
                         <i class="fas fa-arrow-up"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Ups & Downs</h3>
-                    <p class="text-gray-300 text-sm mb-4">Predict whether the market will rise or fall from its current level.</p>
-                    <div class="text-xs text-gray-400">
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Rise/Fall</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Higher/Lower</span>
+                    <h3 class="text-lg font-bold mb-2">Ups & Downs</h3>
+                    <p class="text-secondary text-sm mb-4">Predict whether the market will rise or fall from its current
+                        level.</p>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="bg-accent px-2 py-1 rounded">Rise/Fall</span>
+                        <span class="bg-accent px-2 py-1 rounded">Higher/Lower</span>
                     </div>
                 </div>
 
                 <!-- Highs & Lows (Barriers) -->
                 <div class="deriv-card p-6" onclick="selectContract('barriers')" id="card-barriers">
-                    <div class="contract-icon bg-deriv-green">
+                    <div class="contract-icon icon-green">
                         <i class="fas fa-hand-pointer"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Highs & Lows</h3>
-                    <p class="text-gray-300 text-sm mb-4">Predict whether the market will touch or stay within given barriers.</p>
-                    <div class="text-xs text-gray-400">
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Touch/No Touch</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Ends In/Out</span>
+                    <h3 class="text-lg font-bold mb-2">Highs & Lows</h3>
+                    <p class="text-secondary text-sm mb-4">Predict whether the market will touch or stay within given
+                        barriers.</p>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="bg-accent px-2 py-1 rounded">Touch/No Touch</span>
+                        <span class="bg-accent px-2 py-1 rounded">Ends In/Out</span>
                     </div>
                 </div>
 
                 <!-- Digits -->
                 <div class="deriv-card p-6" onclick="selectContract('digits')" id="card-digits">
-                    <div class="contract-icon bg-deriv-orange">
+                    <div class="contract-icon icon-orange">
                         <i class="fas fa-hashtag"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Digits</h3>
-                    <p class="text-gray-300 text-sm mb-4">Predict the last digit of the spot price at the end of the contract.</p>
-                    <div class="text-xs text-gray-400">
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Matches/Differs</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Even/Odd</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Over/Under</span>
+                    <h3 class="text-lg font-bold mb-2">Digits</h3>
+                    <p class="text-secondary text-sm mb-4">Predict the last digit of the spot price at the end of the
+                        contract.</p>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="bg-accent px-2 py-1 rounded">Matches/Differs</span>
+                        <span class="bg-accent px-2 py-1 rounded">Even/Odd</span>
+                        <span class="bg-accent px-2 py-1 rounded">Over/Under</span>
                     </div>
                 </div>
 
                 <!-- Multipliers -->
                 <div class="deriv-card p-6" onclick="selectContract('multipliers')" id="card-multipliers">
-                    <div class="contract-icon bg-purple-500">
+                    <div class="contract-icon icon-purple">
                         <i class="fas fa-times"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Multipliers</h3>
-                    <p class="text-gray-300 text-sm mb-4">Combine the upside of leverage trading with the security of limited risk.</p>
-                    <div class="text-xs text-gray-400">
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">x5 - x1000</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Stop Loss</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Take Profit</span>
+                    <h3 class="text-lg font-bold mb-2">Multipliers</h3>
+                    <p class="text-secondary text-sm mb-4">Combine the upside of leverage trading with the security of
+                        limited risk.</p>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="bg-accent px-2 py-1 rounded">x5 - x1000</span>
+                        <span class="bg-accent px-2 py-1 rounded">Stop Loss</span>
                     </div>
                 </div>
 
                 <!-- Accumulators -->
                 <div class="deriv-card p-6" onclick="selectContract('accumulators')" id="card-accumulators">
-                    <div class="contract-icon bg-yellow-500">
+                    <div class="contract-icon icon-yellow">
                         <i class="fas fa-layer-group"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Accumulators</h3>
-                    <p class="text-gray-300 text-sm mb-4">Earn fixed payouts with every tick the spot price stays within range.</p>
-                    <div class="text-xs text-gray-400">
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">1% - 5%</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">Growth Rate</span>
+                    <h3 class="text-lg font-bold mb-2">Accumulators</h3>
+                    <p class="text-secondary text-sm mb-4">Earn fixed payouts with every tick the spot price stays
+                        within range.</p>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="bg-accent px-2 py-1 rounded">1% - 5%</span>
+                        <span class="bg-accent px-2 py-1 rounded">Growth Rate</span>
                     </div>
                 </div>
 
                 <!-- Digital Options -->
                 <div class="deriv-card p-6" onclick="selectContract('options')" id="card-options">
-                    <div class="contract-icon bg-indigo-500">
+                    <div class="contract-icon icon-indigo">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Digital Options</h3>
-                    <p class="text-gray-300 text-sm mb-4">Earn a fixed payout if your prediction is correct, or lose your stake if not.</p>
-                    <div class="text-xs text-gray-400">
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded mr-2">Fixed Payout</span>
-                        <span class="inline-block bg-gray-600 text-white px-2 py-1 rounded">All or Nothing</span>
+                    <h3 class="text-lg font-bold mb-2">Digital Options</h3>
+                    <p class="text-secondary text-sm mb-4">Earn a fixed payout if your prediction is correct, or lose
+                        your stake if not.</p>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="bg-accent px-2 py-1 rounded">Fixed Payout</span>
+                        <span class="bg-accent px-2 py-1 rounded">All or Nothing</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Trading Interface -->
-        <div class="trading-layout flex flex-col lg:flex-row gap-6" id="tradingInterface" style="display: none;">
-            
+        <div class="trading-layout hidden" id="tradingInterface">
+
             <!-- Left Panel - Market & Price -->
-            <div class="lg:w-1/3">
+            <div class="trading-sidebar">
                 <div class="trade-panel p-6 mb-6">
-                    <h3 class="text-lg font-bold text-white mb-4">Market</h3>
-                    <select id="marketSelect" class="deriv-input w-full mb-4">
+                    <h3 class="text-lg font-bold mb-4">Market</h3>
+                    <select id="marketSelect" class="deriv-input mb-4">
                         <option value="R_10">Volatility 10 Index</option>
                         <option value="R_25">Volatility 25 Index</option>
                         <option value="R_50">Volatility 50 Index</option>
                         <option value="R_75">Volatility 75 Index</option>
                         <option value="R_100" selected>Volatility 100 Index</option>
                     </select>
-                    
+
                     <div class="price-display mb-4" id="currentPrice">1234.567</div>
-                    
-                    <div class="text-center text-sm text-gray-300" id="priceInfo">
-                        Last digit: <span class="font-bold text-[#FF4500]">7</span>
+
+                    <div class="text-center text-sm text-secondary" id="priceInfo">
+                        Last digit: <span class="font-bold text-primary">7</span>
                     </div>
                 </div>
 
                 <!-- Analytics Panel -->
                 <div class="trade-panel p-6" id="analyticsPanel">
-                    <h3 class="text-lg font-bold text-white mb-4">Analytics</h3>
+                    <h3 class="text-lg font-bold mb-4">Analytics</h3>
                     <div id="analyticsContent">
                         <!-- Dynamic content -->
                     </div>
@@ -342,11 +347,11 @@
             </div>
 
             <!-- Right Panel - Trading Controls -->
-            <div class="lg:w-2/3">
+            <div class="trading-main">
                 <div class="trade-panel p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-bold text-white" id="contractTitle">Contract Details</h3>
-                        <button onclick="closeTrading()" class="text-gray-500 hover:text-gray-700">
+                        <h3 class="text-lg font-bold" id="contractTitle">Contract Details</h3>
+                        <button onclick="closeTrading()" class="btn btn-ghost text-secondary hover:text-primary">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -362,14 +367,14 @@
                     </div>
 
                     <!-- Trade Summary -->
-                    <div class="mt-6 p-4 bg-[#1E293B] rounded-lg">
+                    <div class="mt-6 p-4 bg-accent rounded-lg border border-gray-700">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-300">Potential payout:</span>
-                            <span class="font-bold text-green-400" id="potentialPayout">1.95 USD</span>
+                            <span class="text-sm text-secondary">Potential payout:</span>
+                            <span class="font-bold text-success" id="potentialPayout">1.95 USD</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-300">Potential profit:</span>
-                            <span class="font-bold text-green-400" id="potentialProfit">0.95 USD</span>
+                            <span class="text-sm text-secondary">Potential profit:</span>
+                            <span class="font-bold text-success" id="potentialProfit">0.95 USD</span>
                         </div>
                     </div>
                 </div>
@@ -385,60 +390,60 @@
         let isDemo = true;
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initializeData();
             connectWebSocket();
             // Force demo account on page load
             isDemo = true;
             localStorage.setItem('accountType', 'demo');
             updateAccountDisplay();
-            
+
             // Setup user menu
             setupUserMenu();
-            
+
             // Load user role and show dashboard links
             loadUserRole();
         });
-        
+
         function setupUserMenu() {
             const userMenuBtn = document.getElementById('userMenuBtn');
             const userMenu = document.getElementById('userMenu');
-            
+
             if (userMenuBtn && userMenu) {
-                userMenuBtn.addEventListener('click', function(e) {
+                userMenuBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     userMenu.classList.toggle('hidden');
                 });
-                
+
                 // Close menu when clicking outside
-                document.addEventListener('click', function(e) {
+                document.addEventListener('click', function (e) {
                     if (!userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) {
                         userMenu.classList.add('hidden');
                     }
                 });
             }
         }
-        
+
         async function loadUserRole() {
             try {
                 const token = localStorage.getItem('token') || localStorage.getItem('authToken') || localStorage.getItem('jwt_token');
                 if (!token) return;
-                
+
                 const response = await fetch('/api/user/profile', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     const userData = data.data || data.user || data;
                     const role = (userData.role || '').toString().toLowerCase();
-                    
+
                     const adminLink = document.getElementById('adminDashboardLink');
                     const superadminLink = document.getElementById('superadminDashboardLink');
-                    
+
                     if (role.includes('admin') && adminLink) {
                         adminLink.style.display = 'flex';
                     }
@@ -461,18 +466,18 @@
 
         function connectWebSocket() {
             ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
-            
+
             ws.onopen = () => {
                 ws.send(JSON.stringify({ ticks: 'R_100', subscribe: 1 }));
             };
-            
+
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.tick) {
                     updatePrice(parseFloat(data.tick.quote));
                 }
             };
-            
+
             ws.onclose = () => {
                 setTimeout(connectWebSocket, 3000);
             };
@@ -481,13 +486,13 @@
         function updatePrice(price) {
             currentPrice = price;
             const lastDigit = parseInt(price.toString().slice(-1));
-            
+
             document.getElementById('currentPrice').textContent = price.toFixed(3);
-            
+
             // Update digit history
             digitHistory.push(lastDigit);
             if (digitHistory.length > 20) digitHistory.shift();
-            
+
             // Update analytics if contract is selected
             if (currentContract) {
                 updateAnalytics();
@@ -505,27 +510,27 @@
                 'accumulators': '/accumulators',
                 'options': '/options'
             };
-            
+
             if (redirectMap[contractType]) {
                 window.location.href = redirectMap[contractType];
                 return;
             }
-            
+
             // Fallback for any unmapped contract types
             currentContract = contractType;
-            
+
             // Update card states
             document.querySelectorAll('.deriv-card').forEach(card => {
                 card.classList.remove('active');
             });
             document.getElementById(`card-${contractType}`).classList.add('active');
-            
+
             // Show trading interface
             document.getElementById('tradingInterface').style.display = 'flex';
-            
+
             // Load contract-specific content
             loadContractContent(contractType);
-            
+
             // Scroll to trading interface
             document.getElementById('tradingInterface').scrollIntoView({ behavior: 'smooth' });
         }
@@ -539,9 +544,9 @@
                 accumulators: 'Accumulators',
                 options: 'Digital Options'
             };
-            
+
             document.getElementById('contractTitle').textContent = titles[contractType];
-            
+
             loadTradingControls(contractType);
             loadPurchaseButtons(contractType);
             updateAnalytics();
@@ -550,7 +555,7 @@
 
         function loadTradingControls(contractType) {
             const container = document.getElementById('tradingControls');
-            
+
             if (contractType === 'digits') {
                 container.innerHTML = `
                     <div class="mb-6">
@@ -573,20 +578,20 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Select Digit (for Matches/Differs)</label>
                             <select id="digitPrediction" class="deriv-input w-full" onchange="updatePayout()">
-                                ${Array.from({length: 10}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
+                                ${Array.from({ length: 10 }, (_, i) => `<option value="${i}">${i}</option>`).join('')}
                             </select>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Over/Under Barrier</label>
                             <select id="overUnderBarrier" class="deriv-input w-full" onchange="updatePayout()">
-                                ${Array.from({length: 9}, (_, i) => `<option value="${i+1}" ${i+4 === 5 ? 'selected' : ''}>${i+1}</option>`).join('')}
+                                ${Array.from({ length: 9 }, (_, i) => `<option value="${i + 1}" ${i + 4 === 5 ? 'selected' : ''}>${i + 1}</option>`).join('')}
                             </select>
                         </div>
                     </div>
                 `;
                 return;
             }
-            
+
             const baseControls = `
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
                     <div>
@@ -609,8 +614,8 @@
             `;
 
             let specificControls = '';
-            
-            switch(contractType) {
+
+            switch (contractType) {
                 case 'barriers':
                     specificControls = `
                         <div class="mb-4">
@@ -659,14 +664,14 @@
                     `;
                     break;
             }
-            
+
             container.innerHTML = baseControls + specificControls;
         }
 
         function loadPurchaseButtons(contractType) {
             const container = document.getElementById('purchaseButtons');
-            
-            switch(contractType) {
+
+            switch (contractType) {
                 case 'updown':
                     container.innerHTML = `
                         <div class="grid grid-cols-2 gap-4">
@@ -772,11 +777,11 @@
 
         function updateAnalytics() {
             const container = document.getElementById('analyticsContent');
-            
+
             if (currentContract === 'digits') {
                 const evenCount = digitHistory.filter(d => d % 2 === 0).length;
                 const oddCount = digitHistory.length - evenCount;
-                
+
                 container.innerHTML = `
                     <div class="mb-4">
                         <div class="text-sm text-gray-600 mb-2">Last 20 digits</div>
@@ -808,7 +813,7 @@
         function updatePriceInfo() {
             const priceInfo = document.getElementById('priceInfo');
             const lastDigit = parseInt(currentPrice.toString().slice(-1));
-            
+
             if (currentContract === 'digits') {
                 priceInfo.innerHTML = `Last digit: <span class="font-bold text-deriv-blue">${lastDigit}</span>`;
             } else {
@@ -821,7 +826,7 @@
             const multiplier = 1.95;
             const payout = stake * multiplier;
             const profit = payout - stake;
-            
+
             document.getElementById('potentialPayout').textContent = `${payout.toFixed(2)} USD`;
             document.getElementById('potentialProfit').textContent = `${profit.toFixed(2)} USD`;
         }
@@ -829,9 +834,9 @@
         function placeTrade(tradeType) {
             const stake = parseFloat(document.getElementById('stakeAmount').value) || 1;
             const duration = parseInt(document.getElementById('duration').value) || 5;
-            
+
             let tradeDetails = `${tradeType} trade placed for ${stake} USD`;
-            
+
             if (currentContract === 'digits') {
                 if (tradeType === 'DIGITMATCH' || tradeType === 'DIGITDIFF') {
                     const digit = document.getElementById('digitPrediction').value;
@@ -842,7 +847,7 @@
                 }
                 tradeDetails += ` for ${duration} ticks`;
             }
-            
+
             // Simulate trade placement
             const trade = {
                 id: Date.now(),
@@ -852,15 +857,15 @@
                 time: new Date().toLocaleTimeString(),
                 details: tradeDetails
             };
-            
+
             // Show success message
             alert(tradeDetails);
-            
+
             // Update balance and save to localStorage using same keys as main app
             const currentBalance = parseFloat(document.getElementById('accountBalance').textContent.replace(/[^0-9.]/g, ''));
             const newBalance = currentBalance - stake;
             document.getElementById('accountBalance').textContent = `${formatBalance(newBalance)} USD`;
-            
+
             // Save updated balance to localStorage
             if (isDemo) {
                 localStorage.setItem('demoBalance', newBalance.toFixed(2));
@@ -886,10 +891,10 @@
             const btn = document.getElementById('accountTypeBtn');
             const label = document.getElementById('balanceLabel');
             const balance = document.getElementById('accountBalance');
-            
+
             const demoBalance = '10000.00';
             const realBalance = '0.00';
-            
+
             if (isDemo) {
                 btn.textContent = 'Demo';
                 btn.style.background = '#10b981';
@@ -914,4 +919,5 @@
         }
     </script>
 </body>
+
 </html>
