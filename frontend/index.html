@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,21 +30,31 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(13, 17, 23, 0.95);
+            background: rgba(13, 17, 23, 0.98);
             backdrop-filter: blur(12px);
             z-index: 1000;
             border-bottom: 1px solid rgba(42, 46, 57, 0.8);
-            height: 60px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .nav-container {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 0.75rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 100%;
         }
 
         .logo {
@@ -54,7 +63,6 @@
             color: #fff;
             letter-spacing: -0.5px;
             cursor: pointer;
-            margin-right: 2rem;
         }
 
         .logo span {
@@ -63,38 +71,45 @@
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             list-style: none;
             align-items: center;
-            margin-right: auto;
         }
 
         .nav-links a {
-            color: #d1d4dc;
+            color: #b2b5be;
             text-decoration: none;
-            font-size: 1rem;
-            transition: color 0.1s ease;
-            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            font-weight: 500;
         }
 
         .nav-links a:hover {
             color: #fff;
-            font-weight: 500;
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
         }
 
         .nav-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             align-items: center;
         }
 
         .btn-text {
             background: none;
             border: none;
-            color: #d1d4dc;
+            color: #b2b5be;
             cursor: pointer;
             padding: 0.5rem 1rem;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             transition: color 0.2s ease;
         }
@@ -104,98 +119,31 @@
         }
 
         .btn-primary {
-            padding: 0.5rem 1.25rem;
-            background: #2962ff;
-            /* TradingView blue-ish/primary logic, using our accent? No, user said theme should remain same. Using accent */
-            background: #ff6838;
+            padding: 0.6rem 1.25rem;
+            background: linear-gradient(90deg, #ff6838 0%, #ff8c42 100%);
             border: none;
             color: #fff;
-            border-radius: 20px;
-            /* More rounded like TV */
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
-            opacity: 0.9;
             transform: translateY(-1px);
-        }
-
-        /* Ticker Tape */
-        .ticker-wrap {
-            position: fixed;
-            top: 60px;
-            /* Below nav */
-            width: 100%;
-            overflow: hidden;
-            height: 40px;
-            background-color: #0d1117;
-            padding-left: 100%;
-            box-sizing: border-box;
-            border-bottom: 1px solid rgba(42, 46, 57, 0.8);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-        }
-
-        .ticker {
-            display: inline-block;
-            height: 40px;
-            line-height: 40px;
-            white-space: nowrap;
-            padding-right: 100%;
-            box-sizing: border-box;
-            animation-iteration-count: infinite;
-            animation-timing-function: linear;
-            animation-name: ticker;
-            animation-duration: 30s;
-        }
-
-        .ticker__item {
-            display: inline-block;
-            padding: 0 2rem;
-            font-size: 0.9rem;
-            color: #d1d4dc;
-        }
-
-        .ticker__value {
-            font-weight: 600;
-            margin-left: 5px;
-        }
-
-        .ticker__change--pos {
-            color: #26a69a;
-        }
-
-        .ticker__change--neg {
-            color: #ef5350;
-        }
-
-        @keyframes ticker {
-            0% {
-                transform: translate3d(0, 0, 0);
-                visibility: visible;
-            }
-
-            100% {
-                transform: translate3d(-100%, 0, 0);
-            }
+            box-shadow: 0 4px 12px rgba(255, 104, 56, 0.35);
         }
 
         /* Hero Section */
         .hero {
-            margin-top: 100px;
-            /* Adjusted for ticker tape */
-            min-height: 85vh;
-            /* Slightly tighter vertical height */
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
             display: flex;
-            align-items: flex-start;
-            /* Align to top */
-            padding-top: 4rem;
+            align-items: center;
             position: relative;
             overflow: hidden;
+            border-radius: 0 0 12px 12px;
         }
 
         .hero-bg {
@@ -205,8 +153,6 @@
             width: 100%;
             height: 100%;
             z-index: 0;
-            opacity: 0.2;
-            /* Subtle background */
         }
 
         .hero-bg-slide {
@@ -232,49 +178,30 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(13, 17, 23, 0.5) 0%, #0d1117 100%);
-        }
-
-        /* Aurora Effect for Depth */
-        .aurora-bg {
-            position: absolute;
-            top: -20%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120%;
-            height: 80%;
-            background: radial-gradient(ellipse at center, rgba(255, 104, 56, 0.15), transparent 60%),
-                radial-gradient(circle at 20% 40%, rgba(41, 98, 255, 0.1), transparent 40%);
-            filter: blur(80px);
-            z-index: 0;
-            pointer-events: none;
+            background: linear-gradient(135deg, rgba(13, 17, 23, 0.88) 0%, rgba(13, 17, 23, 0.82) 100%);
         }
 
         .hero-content {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            flex-direction: column;
+            padding: 4rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 4rem;
             align-items: center;
-            text-align: center;
             position: relative;
             z-index: 1;
-            width: 100%;
         }
 
         .hero-text {
-            max-width: 900px;
-            margin-bottom: 3rem;
             animation: fadeInUp 0.8s ease-out;
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -282,59 +209,57 @@
         }
 
         .hero-text h1 {
-            font-size: 5rem;
+            font-size: 3.75rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            line-height: 1.15;
             color: #ffffff;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
         }
 
         .hero-text h1 .highlight {
-            color: #ff6838;
-            background: none;
-            -webkit-text-fill-color: initial;
+            background: linear-gradient(135deg, #ff6838, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero-text p {
-            font-size: 1.5rem;
-            color: #d1d4dc;
+            font-size: 1.25rem;
+            color: #8b949e;
             margin-bottom: 2.5rem;
-            line-height: 1.5;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
+            line-height: 1.7;
+            max-width: 540px;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 1.5rem;
-            justify-content: center;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
         .btn-large {
-            padding: 1rem 2.5rem;
-            font-size: 1.25rem;
-            border-radius: 40px;
-            font-weight: 500;
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            font-weight: 600;
         }
 
         .btn-secondary {
-            padding: 1rem 2.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: #ffffff;
-            border-radius: 40px;
+            padding: 0.875rem 2rem;
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1.25rem;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
             transition: all 0.2s ease;
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: rgba(48, 54, 61, 0.4);
+            border-color: #8b949e;
         }
 
         /* Chart Preview */
@@ -348,7 +273,6 @@
                 opacity: 0;
                 transform: translateX(40px);
             }
-
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -416,13 +340,14 @@
 
         /* Market Summary Section - Slideshow Style */
         .market-summary {
-            padding: 2rem 1.5rem;
+            padding: 5rem 1.5rem;
             background: #0d1117;
             border-top: 1px solid #30363d;
+            border-bottom: 1px solid #30363d;
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
-            border-radius: 0;
-            margin: 0;
+            margin: 2rem 1.5rem;
         }
 
         .summary-container {
@@ -432,12 +357,12 @@
 
         .market-slideshow {
             position: relative;
-            height: 450px;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 24px;
+            height: 400px;
+            background: #131722;
+            border: 1px solid #2a2e39;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .market-slide {
@@ -446,10 +371,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            padding: 4rem;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             opacity: 0;
             transition: opacity 0.8s ease, transform 0.8s ease;
             transform: translateX(100px);
@@ -462,12 +386,6 @@
             pointer-events: all;
         }
 
-        .course-title {
-            font-size: 3rem;
-            line-height: 1;
-            margin-bottom: 20px;
-        }
-
         .market-slide.next {
             transform: translateX(100px);
         }
@@ -477,53 +395,50 @@
         }
 
         .slide-category {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #ff6838;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
+            margin-bottom: 1rem;
+            font-weight: 600;
         }
 
         .slide-title {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 1rem;
-            line-height: 1.1;
-            letter-spacing: -1px;
+            line-height: 1.2;
         }
 
         .slide-description {
-            font-size: 1.25rem;
-            color: #d1d4dc;
-            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            color: #8b949e;
+            margin-bottom: 2rem;
             line-height: 1.6;
-            max-width: 650px;
+            max-width: 600px;
         }
 
         .slide-stats {
-            display: flex;
-            gap: 2rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
             margin-top: auto;
         }
 
         .stat-card {
-            background: rgba(13, 17, 23, 0.6);
+            background: rgba(30, 34, 45, 0.6);
             border: 1px solid #30363d;
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 8px;
+            padding: 1.5rem;
             transition: all 0.3s ease;
             cursor: pointer;
-            min-width: 280px;
-            backdrop-filter: blur(10px);
         }
 
         .stat-card:hover {
-            background: rgba(255, 104, 56, 0.05);
+            background: rgba(255, 104, 56, 0.1);
             border-color: #ff6838;
-            transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
         }
 
         .stat-header {
@@ -561,6 +476,7 @@
         }
 
         .change-value {
+            font-size: 1.1rem;
             font-weight: 600;
         }
 
@@ -642,34 +558,17 @@
         }
 
         .overview-card {
-            background: rgba(22, 27, 34, 0.7);
-            border: 1px solid rgba(48, 54, 61, 0.6);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .overview-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
-            pointer-events: none;
         }
 
         .overview-card:hover {
-            border-color: rgba(255, 104, 56, 0.5);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 104, 56, 0.1);
-            background: rgba(22, 27, 34, 0.9);
+            border-color: #ff6838;
+            transform: translateY(-2px);
         }
 
         .overview-header {
@@ -697,37 +596,37 @@
             font-weight: 500;
         }
 
-        /* Features Grid - Modern SaaS Style */
+        /* Features Grid */
         .features {
-            padding: 8rem 1.5rem;
+            padding: 7rem 1.5rem;
             background: #0d1117;
-            position: relative;
+            border-radius: 12px;
+            margin: 2rem 1.5rem;
         }
 
         .features-container {
-            max-width: 1400px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 5rem;
+            margin-bottom: 4rem;
         }
 
         .section-header h2 {
-            font-size: 3.5rem;
+            font-size: 2.75rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 1.5rem;
-            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
         }
 
         .section-header p {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #8b949e;
-            max-width: 800px;
+            max-width: 640px;
             margin: 0 auto;
-            line-height: 1.6;
         }
 
         .features-grid {
@@ -737,110 +636,39 @@
         }
 
         .feature-card {
-            background: rgba(22, 27, 34, 0.6);
-            border: 1px solid rgba(48, 54, 61, 0.6);
-            border-radius: 24px;
-            padding: 2.5rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
             opacity: 0;
             animation: fadeInUp 0.6s ease-out forwards;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(5px);
         }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at top right, rgba(255, 104, 56, 0.08), transparent 40%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .feature-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .feature-card:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .feature-card:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        .feature-card:nth-child(5) {
-            animation-delay: 0.5s;
-        }
-
-        .feature-card:nth-child(6) {
-            animation-delay: 0.6s;
-        }
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
 
         .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: #586069;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+            border-color: #ff6838;
+            box-shadow: 0 8px 24px rgba(255, 104, 56, 0.15);
         }
 
         .feature-card h3 {
-            font-size: 1.75rem;
+            font-size: 1.35rem;
             color: #ffffff;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             font-weight: 600;
-            z-index: 1;
         }
 
         .feature-card p {
             color: #8b949e;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             line-height: 1.6;
-            z-index: 1;
-        }
-
-        /* Span columns for Bento Grid look */
-        .feature-card:nth-child(1) {
-            grid-column: span 2;
-        }
-
-        .feature-card:nth-child(4) {
-            grid-column: span 2;
-        }
-
-        @media (max-width: 1024px) {
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .feature-card:nth-child(1),
-            .feature-card:nth-child(4) {
-                grid-column: span 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-header h2 {
-                font-size: 2.5rem;
-            }
         }
 
         /* Trading Platform Section */
@@ -1217,7 +1045,7 @@
             .market-overview {
                 grid-template-columns: repeat(2, 1fr);
             }
-
+            
             .slide-stats {
                 grid-template-columns: 1fr;
             }
@@ -1229,7 +1057,6 @@
                 transform: scale(1);
                 opacity: 0.6;
             }
-
             100% {
                 transform: scale(7);
                 opacity: 0;
@@ -1313,18 +1140,17 @@
             .slide-stats {
                 gap: 1rem;
             }
-
+            
             .stat-card {
                 padding: 1rem;
             }
-
+            
             .market-slideshow {
                 height: 550px;
             }
         }
     </style>
 </head>
-
 <body>
     <!-- Navigation -->
     <nav>
@@ -1345,57 +1171,25 @@
         </div>
     </nav>
 
-    <!-- Ticker Tape -->
-    <div class="ticker-wrap">
-        <div class="ticker">
-            <div class="ticker__item">BTC/USD <span class="ticker__value">70,657</span> <span
-                    class="ticker__value ticker__change--pos">+2.04%</span></div>
-            <div class="ticker__item">ETH/USD <span class="ticker__value">3,850</span> <span
-                    class="ticker__value ticker__change--pos">+1.85%</span></div>
-            <div class="ticker__item">SPX <span class="ticker__value">6,932.31</span> <span
-                    class="ticker__value ticker__change--pos">+1.97%</span></div>
-            <div class="ticker__item">NDX <span class="ticker__value">25,075.77</span> <span
-                    class="ticker__value ticker__change--pos">+2.15%</span></div>
-            <div class="ticker__item">EUR/USD <span class="ticker__value">1.0854</span> <span
-                    class="ticker__value ticker__change--neg">-0.32%</span></div>
-            <div class="ticker__item">USD/JPY <span class="ticker__value">150.25</span> <span
-                    class="ticker__value ticker__change--pos">+0.45%</span></div>
-            <div class="ticker__item">Gold <span class="ticker__value">4,979.80</span> <span
-                    class="ticker__value ticker__change--pos">+1.85%</span></div>
-            <div class="ticker__item">Oil <span class="ticker__value">63.55</span> <span
-                    class="ticker__value ticker__change--pos">+0.41%</span></div>
-            <div class="ticker__item">BTC/USD <span class="ticker__value">70,657</span> <span
-                    class="ticker__value ticker__change--pos">+2.04%</span></div>
-            <div class="ticker__item">ETH/USD <span class="ticker__value">3,850</span> <span
-                    class="ticker__value ticker__change--pos">+1.85%</span></div>
-            <div class="ticker__item">SPX <span class="ticker__value">6,932.31</span> <span
-                    class="ticker__value ticker__change--pos">+1.97%</span></div>
-            <div class="ticker__item">NDX <span class="ticker__value">25,075.77</span> <span
-                    class="ticker__value ticker__change--pos">+2.15%</span></div>
-        </div>
-    </div>
-
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-bg">
-            <div class="aurora-bg"></div>
-            <div class="hero-bg-slide active" style="background-image: url('/images/hero-bg-1.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/images/hero-bg-2.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/images/hero-bg-3.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/images/hero-bg-4.jpg');"></div>
-            <div class="hero-bg-slide" style="background-image: url('/images/hero-bg-5.jpg');"></div>
+            <div class="hero-bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80');"></div>
+            <div class="hero-bg-slide" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&q=80');"></div>
         </div>
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Automate your <br><span class="highlight">success.</span></h1>
-                <p>The best trades require the best tools. Join millions of traders and investors who trust Algocdk for
-                    their market analysis.</p>
+                <h1>Track all markets on <span class="highlight">Algocdk</span></h1>
+                <p>Stocks, futures, forex, crypto, and more. Professional charting platform and social network for traders and investors.</p>
                 <div class="hero-buttons">
-                    <a href="/auth" class="btn-primary btn-large" style="text-decoration: none;">Get started</a>
-                    <a href="#features" class="btn-secondary btn-large" style="text-decoration: none;">Launch Chart</a>
+                    <a href="/auth" class="btn-primary btn-large" style="text-decoration: none;">Start charting now</a>
+                    <a href="#features" class="btn-secondary btn-large" style="text-decoration: none;">Learn more</a>
                 </div>
             </div>
-
+            
             <div class="chart-preview">
                 <div class="chart-window">
                     <div class="chart-header">
@@ -1426,7 +1220,7 @@
                 <h2>Live Market Overview</h2>
                 <p>Real-time data across all major markets powered by Deriv</p>
             </div>
-
+            
             <!-- Market Slideshow -->
             <div class="market-slideshow">
                 <!-- Slide 1: Crypto Markets -->
@@ -1434,10 +1228,10 @@
                     <div class="slide-category">Cryptocurrencies</div>
                     <h2 class="slide-title">Digital Assets Revolution</h2>
                     <p class="slide-description">
-                        Track Bitcoin, Ethereum, and major cryptocurrencies with real-time pricing,
+                        Track Bitcoin, Ethereum, and major cryptocurrencies with real-time pricing, 
                         market dominance, and institutional adoption metrics.
                     </p>
-
+                    
                     <div class="slide-stats">
                         <div class="stat-card" data-symbol="cryBTCUSD">
                             <div class="stat-header">
@@ -1450,7 +1244,7 @@
                                 <span class="change-value change-positive" id="change-cryBTCUSD">+2.04%</span>
                             </div>
                         </div>
-
+                        
                         <div class="stat-card" data-symbol="cryETHUSD">
                             <div class="stat-header">
                                 <div class="stat-name">Ethereum</div>
@@ -1464,16 +1258,16 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Slide 2: Forex Markets -->
                 <div class="market-slide" data-category="forex">
                     <div class="slide-category">Forex</div>
                     <h2 class="slide-title">Global Currency Markets</h2>
                     <p class="slide-description">
-                        Monitor major currency pairs with live exchange rates, central bank policies,
+                        Monitor major currency pairs with live exchange rates, central bank policies, 
                         and economic indicators affecting global forex markets.
                     </p>
-
+                    
                     <div class="slide-stats">
                         <div class="stat-card" data-symbol="frxEURUSD">
                             <div class="stat-header">
@@ -1486,7 +1280,7 @@
                                 <span class="change-value change-negative" id="change-frxEURUSD">-0.32%</span>
                             </div>
                         </div>
-
+                        
                         <div class="stat-card" data-symbol="frxUSDJPY">
                             <div class="stat-header">
                                 <div class="stat-name">Dollar / Yen</div>
@@ -1499,18 +1293,17 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
+                
                 <!-- Slide 3: Indices -->
                 <div class="market-slide" data-category="indices">
                     <div class="slide-category">Global Indices</div>
                     <h2 class="slide-title">World Stock Markets</h2>
                     <p class="slide-description">
-                        Follow major stock indices from US, Europe, and Asia with real-time performance,
+                        Follow major stock indices from US, Europe, and Asia with real-time performance, 
                         sector rotation, and market breadth indicators.
                     </p>
-
+                    
                     <div class="slide-stats">
                         <div class="stat-card" data-symbol="SPX">
                             <div class="stat-header">
@@ -1523,7 +1316,7 @@
                                 <span class="change-value change-positive" id="change-SPX">+1.97%</span>
                             </div>
                         </div>
-
+                        
                         <div class="stat-card" data-symbol="NDX">
                             <div class="stat-header">
                                 <div class="stat-name">Nasdaq 100</div>
@@ -1537,16 +1330,16 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Slide 4: Commodities -->
                 <div class="market-slide" data-category="commodities">
                     <div class="slide-category">Commodities</div>
                     <h2 class="slide-title">Raw Materials & Energy</h2>
                     <p class="slide-description">
-                        Track precious metals, energy markets, and agricultural commodities with
+                        Track precious metals, energy markets, and agricultural commodities with 
                         supply-demand dynamics and geopolitical factors analysis.
                     </p>
-
+                    
                     <div class="slide-stats">
                         <div class="stat-card" data-symbol="GC!">
                             <div class="stat-header">
@@ -1559,7 +1352,7 @@
                                 <span class="change-value change-positive" id="change-GC">+1.85%</span>
                             </div>
                         </div>
-
+                        
                         <div class="stat-card" data-symbol="CL!">
                             <div class="stat-header">
                                 <div class="stat-name">Crude Oil</div>
@@ -1573,11 +1366,11 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Slide Navigation Buttons -->
                 <button class="slide-nav-btn slide-prev">‹</button>
                 <button class="slide-nav-btn slide-next">›</button>
-
+                
                 <!-- Slide Indicators -->
                 <div class="market-indicators">
                     <div class="indicator active" data-slide="0"></div>
@@ -1586,7 +1379,7 @@
                     <div class="indicator" data-slide="3"></div>
                 </div>
             </div>
-
+            
             <!-- Quick Market Overview -->
             <div class="market-overview">
                 <div class="overview-card">
@@ -1597,7 +1390,7 @@
                     <div class="overview-price" id="totalMarketCap">2.38T</div>
                     <div class="overview-change change-negative" id="changeMarketCap">-22.74%</div>
                 </div>
-
+                
                 <div class="overview-card">
                     <div class="overview-header">
                         <div class="overview-title">Bitcoin Dominance</div>
@@ -1606,7 +1399,7 @@
                     <div class="overview-price" id="btcDominance">59.48%</div>
                     <div class="overview-change change-positive" id="changeBTCDom">+0.75%</div>
                 </div>
-
+                
                 <div class="overview-card">
                     <div class="overview-header">
                         <div class="overview-title">US 10Y Yield</div>
@@ -1615,7 +1408,7 @@
                     <div class="overview-price" id="yield10Y">4.215%</div>
                     <div class="overview-change change-positive" id="changeYield">+0.81%</div>
                 </div>
-
+                
                 <div class="overview-card">
                     <div class="overview-header">
                         <div class="overview-title">Dollar Index</div>
@@ -1635,7 +1428,7 @@
                 <h2>Trading Platform</h2>
                 <p>Interactive charting with real-time Deriv market data</p>
             </div>
-
+            
             <div class="main-platform-container">
                 <!-- Chart Container -->
                 <div class="platform-chart-container">
@@ -1692,18 +1485,15 @@
             <div class="features-grid">
                 <div class="feature-card">
                     <h3>Advanced charting</h3>
-                    <p>100+ technical indicators, drawing tools, and customizable layouts for comprehensive market
-                        analysis.</p>
+                    <p>100+ technical indicators, drawing tools, and customizable layouts for comprehensive market analysis.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Real-time data</h3>
-                    <p>Live quotes from global exchanges with millisecond-level precision for instant market updates.
-                    </p>
+                    <p>Live quotes from global exchanges with millisecond-level precision for instant market updates.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Pine Script</h3>
-                    <p>Build custom indicators and strategies with our proprietary coding language designed for traders.
-                    </p>
+                    <p>Build custom indicators and strategies with our proprietary coding language designed for traders.</p>
                 </div>
                 <div class="feature-card">
                     <h3>Paper trading</h3>
@@ -1722,107 +1512,74 @@
     </section>
 
     <!-- Forex Ideas Section -->
-    <section
-        style="padding: 7rem 1.5rem; background: #0d1117; border-top: 1px solid #30363d; border-radius: 12px; margin: 2rem 1.5rem;">
+    <section style="padding: 7rem 1.5rem; background: #ffffff; border-radius: 12px; margin: 2rem 1.5rem;">
         <div style="max-width: 1280px; margin: 0 auto;">
-            <h2 style="font-size: 2.4rem; margin: 0 0 8px; color: #ffffff;">Forex and currencies</h2>
-            <div style="color: #8b949e; margin-bottom: 28px; font-size: 1rem;">Market ideas and technical analysis</div>
-
+            <h2 style="font-size: 2.4rem; margin: 0 0 8px; color: #0f172a;">Forex and currencies</h2>
+            <div style="color: #64748b; margin-bottom: 28px; font-size: 1rem;">Market ideas and technical analysis</div>
+            
             <div style="display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;">
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #d1d4dc; border: 1px solid #30363d; cursor: pointer; background: #161b22; transition: all 0.2s ease;">
-                    Market summary</div>
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #d1d4dc; border: 1px solid #30363d; cursor: pointer; background: #161b22; transition: all 0.2s ease;">
-                    US stocks</div>
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #d1d4dc; border: 1px solid #30363d; cursor: pointer; background: #161b22; transition: all 0.2s ease;">
-                    Crypto</div>
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #d1d4dc; border: 1px solid #30363d; cursor: pointer; background: #161b22; transition: all 0.2s ease;">
-                    Futures</div>
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #ffffff; border: 1px solid #ff6838; cursor: pointer; background: rgba(255, 104, 56, 0.1);">
-                    Forex</div>
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #d1d4dc; border: 1px solid #30363d; cursor: pointer; background: #161b22; transition: all 0.2s ease;">
-                    Economy</div>
-                <div
-                    style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #d1d4dc; border: 1px solid #30363d; cursor: pointer; background: #161b22; transition: all 0.2s ease;">
-                    Brokers</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Market summary</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">US stocks</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Crypto</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Futures</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: white; border: 1px solid #0f172a; cursor: pointer; background: #0f172a;">Forex</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Economy</div>
+                <div style="padding: 8px 14px; border-radius: 999px; font-size: 0.9rem; color: #64748b; border: 1px solid #e5e7eb; cursor: pointer; background: white;">Brokers</div>
             </div>
-
-            <div style="font-size: 1.4rem; margin-bottom: 16px; color: #ffffff;">Trade ideas</div>
-
+            
+            <div style="font-size: 1.4rem; margin-bottom: 16px; color: #0f172a;">Trade ideas</div>
+            
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;">
-                <div style="border: 1px solid #30363d; border-radius: 14px; overflow: hidden; background: #161b22; transition: all 0.2s ease; cursor: pointer;"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#ff6838'"
-                    onmouseout="this.style.transform=''; this.style.borderColor='#30363d'">
-                    <div
-                        style="height: 180px; background: linear-gradient(135deg, #1e2530, #2a3140); position: relative;">
-                        <img src="/images/forex-chart-1.jpg" alt="EURUSD Chart"
-                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-                        <div
-                            style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(13, 17, 23, 0.9); color: #d1d4dc; padding: 4px 8px; border-radius: 999px; border: 1px solid #30363d;">
-                            EURUSD</div>
+                <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(15, 23, 42, 0.08)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                    <div style="height: 180px; background: linear-gradient(135deg, #e2e8f0, #c7d2fe); position: relative;">
+                        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=180&fit=crop&q=80" alt="EURUSD Chart" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 8px; border-radius: 999px;">EURUSD</div>
                     </div>
                     <div style="padding: 16px;">
-                        <div
-                            style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #ffffff;">
-                            EURUSD: Triangle resistance holds – bearish bias</div>
-                        <div style="font-size: 0.9rem; color: #8b949e; line-height: 1.5; margin-bottom: 14px;">Price is
-                            respecting key resistance as momentum weakens on lower timeframes.</div>
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #8b949e;">
+                        <div style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #0f172a;">EURUSD: Triangle resistance holds – bearish bias</div>
+                        <div style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">Price is respecting key resistance as momentum weakens on lower timeframes.</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
                             <span>by Ratner</span>
+                            <div style="display: flex; gap: 12px;">
+                                <span>💬 16</span>
+                                <span>🚀 32</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div style="border: 1px solid #30363d; border-radius: 14px; overflow: hidden; background: #161b22; transition: all 0.2s ease; cursor: pointer;"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#ff6838'"
-                    onmouseout="this.style.transform=''; this.style.borderColor='#30363d'">
-                    <div
-                        style="height: 180px; background: linear-gradient(135deg, #1e2530, #2a3140); position: relative;">
-                        <img src="/images/forex-chart-2.jpg" alt="EURUSD Chart"
-                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-                        <div
-                            style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(13, 17, 23, 0.9); color: #d1d4dc; padding: 4px 8px; border-radius: 999px; border: 1px solid #30363d;">
-                            EURUSD</div>
+                
+                <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(15, 23, 42, 0.08)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                    <div style="height: 180px; background: linear-gradient(135deg, #e2e8f0, #c7d2fe); position: relative;">
+                        <img src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=400&h=180&fit=crop&q=80" alt="EURUSD Chart" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 8px; border-radius: 999px;">EURUSD</div>
                     </div>
                     <div style="padding: 16px;">
-                        <div
-                            style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #ffffff;">
-                            Don't rush to buy EURUSD – bearish trend intact</div>
-                        <div style="font-size: 0.9rem; color: #8b949e; line-height: 1.5; margin-bottom: 14px;">
-                            Short-term structure remains bearish as price reacts from supply zones.</div>
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #8b949e;">
+                        <div style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #0f172a;">Don't rush to buy EURUSD – bearish trend intact</div>
+                        <div style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">Short-term structure remains bearish as price reacts from supply zones.</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
                             <span>by Paradise_Noir</span>
+                            <div style="display: flex; gap: 12px;">
+                                <span>💬 27</span>
+                                <span>🚀 224</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div style="border: 1px solid #30363d; border-radius: 14px; overflow: hidden; background: #161b22; transition: all 0.2s ease; cursor: pointer;"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='#ff6838'"
-                    onmouseout="this.style.transform=''; this.style.borderColor='#30363d'">
-                    <div
-                        style="height: 180px; background: linear-gradient(135deg, #1e2530, #2a3140); position: relative;">
-                        <img src="/images/forex-chart-3.jpg" alt="EUR/USD Chart"
-                            style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-                        <div
-                            style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(13, 17, 23, 0.9); color: #d1d4dc; padding: 4px 8px; border-radius: 999px; border: 1px solid #30363d;">
-                            EUR/USD</div>
+                
+                <div style="border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; background: white; transition: all 0.2s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 30px rgba(15, 23, 42, 0.08)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                    <div style="height: 180px; background: linear-gradient(135deg, #e2e8f0, #c7d2fe); position: relative;">
+                        <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=400&h=180&fit=crop&q=80" alt="EUR/USD Chart" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 12px; left: 12px; font-size: 0.75rem; background: rgba(15, 23, 42, 0.75); color: white; padding: 4px 8px; border-radius: 999px;">EUR/USD</div>
                     </div>
                     <div style="padding: 16px;">
-                        <div
-                            style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #ffffff;">
-                            EUR/USD at key level: expansion or reversal?</div>
-                        <div style="font-size: 0.9rem; color: #8b949e; line-height: 1.5; margin-bottom: 14px;">Price is
-                            consolidating after a strong impulse, setting up a decision point.</div>
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #8b949e;">
+                        <div style="font-size: 1rem; font-weight: 600; margin: 0 0 8px; line-height: 1.4; color: #0f172a;">EUR/USD at key level: expansion or reversal?</div>
+                        <div style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 14px;">Price is consolidating after a strong impulse, setting up a decision point.</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #64748b;">
                             <span>by EdgeTradingJourney</span>
+                            <div style="display: flex; gap: 12px;">
+                                <span>💬 11</span>
+                                <span>🚀 12</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1831,90 +1588,57 @@
     </section>
 
     <!-- Global Section -->
-    <section
-        style="padding: 0; background: #161b22; border-top: 1px solid #30363d; border-bottom: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin: 2rem 1.5rem; position: relative; min-height: 500px;">
+    <section style="padding: 0; background: #161b22; border-top: 1px solid #30363d; border-bottom: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin: 2rem 1.5rem; position: relative; min-height: 500px;">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <div id="globalMap" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></div>
-        <div
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(13, 17, 23, 0.7), rgba(22, 27, 34, 0.6)); z-index: 1; pointer-events: none;">
-        </div>
-        <div
-            style="max-width: 1280px; margin: 0 auto; text-align: center; position: relative; z-index: 2; padding: 7rem 1.5rem;">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(13, 17, 23, 0.7), rgba(22, 27, 34, 0.6)); z-index: 1; pointer-events: none;"></div>
+        <div style="max-width: 1280px; margin: 0 auto; text-align: center; position: relative; z-index: 2; padding: 7rem 1.5rem;">
             <h2 style="font-size: 2.75rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;">Trade Globally</h2>
-            <p style="font-size: 1.2rem; color: #d1d4dc; margin-bottom: 0;">Connect with traders from every corner of
-                the world</p>
+            <p style="font-size: 1.2rem; color: #d1d4dc; margin-bottom: 0;">Connect with traders from every corner of the world</p>
         </div>
     </section>
 
     <!-- Bot Containers Section -->
-    <section
-        style="padding: 7rem 1.5rem; background: radial-gradient(circle at top, #020617, #000); border-radius: 12px; margin: 2rem 1.5rem;">
+    <section style="padding: 7rem 1.5rem; background: radial-gradient(circle at top, #020617, #000); border-radius: 12px; margin: 2rem 1.5rem;">
         <div style="max-width: 1100px; margin: 0 auto; text-align: center;">
             <h2 style="font-size: 2.5rem; margin-bottom: 14px; color: #e5e7eb;">Autonomous Bot Containers</h2>
-            <p style="color: #94a3b8; max-width: 680px; margin: 0 auto 70px; line-height: 1.7;">Each Algocdk bot runs
-                inside an isolated container, continuously monitoring markets and executing strategies.</p>
-
+            <p style="color: #94a3b8; max-width: 680px; margin: 0 auto 70px; line-height: 1.7;">Each Algocdk bot runs inside an isolated container, continuously monitoring markets and executing strategies.</p>
+            
             <div style="position: relative; height: 520px; overflow: hidden;">
-                <div class="bot-slide active"
-                    style="position: absolute; inset: 0; opacity: 1; transform: scale(1); transition: opacity 1s ease, transform 1s ease;">
-                    <div
-                        style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
-                        <img src="/images/bot-momentum.jpg" alt="Momentum Bot"
-                            style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
-                        <div
-                            style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
+                <div class="bot-slide active" style="position: absolute; inset: 0; opacity: 1; transform: scale(1); transition: opacity 1s ease, transform 1s ease;">
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
+                        <img src="https://images.unsplash.com/photo-1581091870627-3d5b28d47d8b?auto=format&fit=crop&w=1600&q=80" alt="Momentum Bot" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
                             <div style="padding: 36px; text-align: left; max-width: 520px;">
-                                <div
-                                    style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">
-                                    LIVE · MOMENTUM</div>
-                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">
-                                    Momentum Bot</div>
-                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Executes
-                                    high-confidence trend-following strategies with real-time signal validation and
-                                    low-latency routing.</div>
+                                <div style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">LIVE · MOMENTUM</div>
+                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">Momentum Bot</div>
+                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Executes high-confidence trend-following strategies with real-time signal validation and low-latency routing.</div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="bot-slide"
-                    style="position: absolute; inset: 0; opacity: 0; transform: scale(0.96); transition: opacity 1s ease, transform 1s ease;">
-                    <div
-                        style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
-                        <img src="/images/bot-breakout.jpg" alt="Breakout Bot"
-                            style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
-                        <div
-                            style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
+                
+                <div class="bot-slide" style="position: absolute; inset: 0; opacity: 0; transform: scale(0.96); transition: opacity 1s ease, transform 1s ease;">
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
+                        <img src="https://images.unsplash.com/photo-1603398938378-e54eab446dde?auto=format&fit=crop&w=1600&q=80" alt="Breakout Bot" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
                             <div style="padding: 36px; text-align: left; max-width: 520px;">
-                                <div
-                                    style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">
-                                    LIVE · BREAKOUT</div>
-                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">
-                                    Breakout Bot</div>
-                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Monitors volatility
-                                    expansions and enters breakouts using adaptive risk and event-driven execution.
-                                </div>
+                                <div style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">LIVE · BREAKOUT</div>
+                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">Breakout Bot</div>
+                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Monitors volatility expansions and enters breakouts using adaptive risk and event-driven execution.</div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="bot-slide"
-                    style="position: absolute; inset: 0; opacity: 0; transform: scale(0.96); transition: opacity 1s ease, transform 1s ease;">
-                    <div
-                        style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
-                        <img src="/images/bot-statistical.jpg" alt="Statistical Bot"
-                            style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
-                        <div
-                            style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
+                
+                <div class="bot-slide" style="position: absolute; inset: 0; opacity: 0; transform: scale(0.96); transition: opacity 1s ease, transform 1s ease;">
+                    <div style="position: relative; width: 100%; height: 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.65);">
+                        <img src="https://images.unsplash.com/photo-1593376893114-1aed528d80cf?auto=format&fit=crop&w=1600&q=80" alt="Statistical Bot" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75);">
+                        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.75)); display: flex; align-items: flex-end;">
                             <div style="padding: 36px; text-align: left; max-width: 520px;">
-                                <div
-                                    style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">
-                                    LIVE · STATISTICAL</div>
-                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">
-                                    Mean Reversion Bot</div>
-                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Applies statistical
-                                    models to exploit temporary price deviations across commodity markets.</div>
+                                <div style="display: inline-block; padding: 6px 14px; font-size: 0.7rem; letter-spacing: 0.08em; border-radius: 999px; background: rgba(56,189,248,0.15); color: #38bdf8; margin-bottom: 14px;">LIVE · STATISTICAL</div>
+                                <div style="font-size: 2rem; font-weight: 600; margin-bottom: 10px; color: #e5e7eb;">Mean Reversion Bot</div>
+                                <div style="font-size: 0.95rem; color: #94a3b8; line-height: 1.7;">Applies statistical models to exploit temporary price deviations across commodity markets.</div>
                             </div>
                         </div>
                     </div>
@@ -1930,16 +1654,11 @@
             <p>Join millions of traders using Algocdk for market analysis and trading</p>
             <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
                 <div style="display: flex; margin-left: -10px;">
-                    <img src="https://i.pravatar.cc/40?img=1" alt="User"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
-                    <img src="https://i.pravatar.cc/40?img=2" alt="User"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
-                    <img src="https://i.pravatar.cc/40?img=3" alt="User"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
-                    <img src="https://i.pravatar.cc/40?img=4" alt="User"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
-                    <img src="https://i.pravatar.cc/40?img=5" alt="User"
-                        style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=1" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=2" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=3" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=4" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
+                    <img src="https://i.pravatar.cc/40?img=5" alt="User" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #0d1117; margin-left: -10px;">
                 </div>
                 <p style="color: #8b949e; font-size: 0.95rem; margin: 0;">Join 50,000+ active traders worldwide</p>
             </div>
@@ -2009,65 +1728,65 @@
                 this.currentSlide = 0;
                 this.slideInterval = null;
                 this.autoSlideDuration = 8000; // 8 seconds
-
+                
                 this.initialize();
             }
-
+            
             initialize() {
                 this.setupEventListeners();
                 this.startAutoSlide();
                 this.updateMarketData();
             }
-
+            
             setupEventListeners() {
                 // Next/Prev buttons
                 document.querySelector('.slide-next').addEventListener('click', () => this.nextSlide());
                 document.querySelector('.slide-prev').addEventListener('click', () => this.prevSlide());
-
+                
                 // Indicators
                 this.indicators.forEach((indicator, index) => {
                     indicator.addEventListener('click', () => this.goToSlide(index));
                 });
-
+                
                 // Card clicks - go to trading platform
                 document.querySelectorAll('.stat-card').forEach(card => {
                     card.addEventListener('click', (e) => {
                         const symbol = e.currentTarget.dataset.symbol;
                         this.selectSymbol(symbol);
-
+                        
                         // Scroll to trading platform
-                        document.getElementById('trading-platform').scrollIntoView({
-                            behavior: 'smooth'
+                        document.getElementById('trading-platform').scrollIntoView({ 
+                            behavior: 'smooth' 
                         });
                     });
                 });
-
+                
                 // Pause auto-slide on hover
                 const slideshow = document.querySelector('.market-slideshow');
                 slideshow.addEventListener('mouseenter', () => this.pauseAutoSlide());
                 slideshow.addEventListener('mouseleave', () => this.startAutoSlide());
             }
-
+            
             nextSlide() {
                 this.currentSlide = (this.currentSlide + 1) % this.slides.length;
                 this.updateSlides();
             }
-
+            
             prevSlide() {
                 this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
                 this.updateSlides();
             }
-
+            
             goToSlide(index) {
                 this.currentSlide = index;
                 this.updateSlides();
             }
-
+            
             updateSlides() {
                 // Update slides
                 this.slides.forEach((slide, index) => {
                     slide.classList.remove('active', 'prev', 'next');
-
+                    
                     if (index === this.currentSlide) {
                         slide.classList.add('active');
                     } else if (index === (this.currentSlide + 1) % this.slides.length) {
@@ -2076,52 +1795,52 @@
                         slide.classList.add('prev');
                     }
                 });
-
+                
                 // Update indicators
                 this.indicators.forEach((indicator, index) => {
                     indicator.classList.toggle('active', index === this.currentSlide);
                 });
             }
-
+            
             startAutoSlide() {
                 this.pauseAutoSlide();
                 this.slideInterval = setInterval(() => this.nextSlide(), this.autoSlideDuration);
             }
-
+            
             pauseAutoSlide() {
                 if (this.slideInterval) {
                     clearInterval(this.slideInterval);
                     this.slideInterval = null;
                 }
             }
-
+            
             selectSymbol(symbol) {
                 if (window.tradingPlatform) {
                     window.tradingPlatform.selectSymbol(symbol);
                 }
             }
-
+            
             updateMarketData() {
                 // Simulate live price updates
                 setInterval(() => {
                     this.updateRandomPrices();
                 }, 3000);
             }
-
+            
             updateRandomPrices() {
                 // Update prices with small random changes
                 const priceElements = document.querySelectorAll('.stat-price');
                 const changeElements = document.querySelectorAll('.change-value');
-
+                
                 priceElements.forEach((element, index) => {
                     const currentPrice = parseFloat(element.textContent.replace(/[^0-9.-]+/g, ''));
                     const change = (Math.random() * 0.2 - 0.1); // -0.05% to +0.05%
                     const newPrice = currentPrice * (1 + change / 100);
-
+                    
                     // Format based on symbol
                     let formattedPrice;
                     const symbolId = element.id.replace('price-', '');
-
+                    
                     if (symbolId.includes('cryBTCUSD')) {
                         formattedPrice = `$${newPrice.toFixed(0)}`;
                     } else if (symbolId.includes('cryETHUSD')) {
@@ -2141,15 +1860,15 @@
                     } else {
                         formattedPrice = newPrice.toFixed(2);
                     }
-
+                    
                     element.textContent = formattedPrice;
-
+                    
                     // Update change indicator
                     if (changeElements[index]) {
                         const isPositive = change >= 0;
                         changeElements[index].textContent = `${isPositive ? '+' : ''}${change.toFixed(2)}%`;
                         changeElements[index].className = `change-value ${isPositive ? 'change-positive' : 'change-negative'}`;
-
+                        
                         // Update arrow
                         const arrow = changeElements[index].previousElementSibling;
                         if (arrow && arrow.classList.contains('change-arrow')) {
@@ -2157,11 +1876,11 @@
                         }
                     }
                 });
-
+                
                 // Update overview cards
                 this.updateOverviewCards();
             }
-
+            
             updateOverviewCards() {
                 // Update overview cards with random changes
                 const overviewValues = [
@@ -2170,19 +1889,19 @@
                     { id: 'yield10Y', min: 4.1, max: 4.3, suffix: '%' },
                     { id: 'dollarIndex', min: 97.5, max: 98.0, suffix: '' }
                 ];
-
+                
                 overviewValues.forEach(item => {
                     const element = document.getElementById(item.id);
                     if (element) {
                         const currentValue = parseFloat(element.textContent.replace(/[^0-9.-]+/g, ''));
                         const change = (Math.random() * 0.1 - 0.05); // -0.025% to +0.025%
                         let newValue = currentValue * (1 + change / 100);
-
+                        
                         // Keep within reasonable bounds
                         newValue = Math.max(item.min, Math.min(item.max, newValue));
-
+                        
                         element.textContent = `${newValue.toFixed(2)}${item.suffix}`;
-
+                        
                         // Update change
                         const changeElement = document.getElementById(`change${item.id.charAt(0).toUpperCase() + item.id.slice(1)}`);
                         if (changeElement) {
@@ -2219,7 +1938,7 @@
             const close = open + (Math.random() - 0.5) * 800;
             const high = Math.max(open, close) + Math.random() * 400;
             const low = Math.min(open, close) - Math.random() * 400;
-
+            
             candles.push({ open, high, low, close });
             basePrice = close;
         }
@@ -2229,7 +1948,7 @@
         function drawChart() {
             const width = canvas.offsetWidth;
             const height = canvas.offsetHeight;
-
+            
             ctx.clearRect(0, 0, width, height);
 
             // Draw grid
@@ -2254,11 +1973,11 @@
 
             // Draw candlesticks
             const visibleCandles = Math.floor(animationProgress * numCandles);
-
+            
             for (let i = 0; i < visibleCandles; i++) {
                 const candle = candles[i];
                 const x = i * (candleWidth + spacing) + spacing;
-
+                
                 const openY = height - ((candle.open - minPrice) / priceRange) * height;
                 const closeY = height - ((candle.close - minPrice) / priceRange) * height;
                 const highY = height - ((candle.high - minPrice) / priceRange) * height;
@@ -2278,7 +1997,7 @@
                 // Draw body
                 const bodyHeight = Math.abs(openY - closeY);
                 const bodyY = Math.min(openY, closeY);
-
+                
                 if (isGreen) {
                     ctx.fillRect(x, bodyY, candleWidth, bodyHeight || 1);
                 } else {
@@ -2297,10 +2016,10 @@
 
         // Trading Platform Application
         let ws;
-
+        
         function connectDerivWS() {
             ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
-
+            
             ws.onopen = () => {
                 if (window.tradingPlatform) {
                     window.tradingPlatform.subscribeToSymbols();
@@ -2317,7 +2036,7 @@
             ws.onerror = () => setTimeout(connectDerivWS, 3000);
             ws.onclose = () => setTimeout(connectDerivWS, 3000);
         }
-
+        
         class TradingPlatform {
             constructor() {
                 this.currentSymbol = 'cryBTCUSD';
@@ -2333,34 +2052,34 @@
                     { symbol: 'frxGBPUSD', name: 'GBP/USD', category: 'forex', description: 'British Pound vs US Dollar' },
                     { symbol: 'frxUSDJPY', name: 'USD/JPY', category: 'forex', description: 'US Dollar vs Japanese Yen' },
                     { symbol: 'frxAUDUSD', name: 'AUD/USD', category: 'forex', description: 'Australian Dollar vs US Dollar' },
-
+                    
                     // Crypto
                     { symbol: 'cryBTCUSD', name: 'BTC/USD', category: 'crypto', description: 'Bitcoin vs US Dollar' },
                     { symbol: 'cryETHUSD', name: 'ETH/USD', category: 'crypto', description: 'Ethereum vs US Dollar' },
                     { symbol: 'cryLTCUSD', name: 'LTC/USD', category: 'crypto', description: 'Litecoin vs US Dollar' },
                     { symbol: 'cryXRPUSD', name: 'XRP/USD', category: 'crypto', description: 'Ripple vs US Dollar' },
-
+                    
                     // Synthetic Indices
                     { symbol: 'R_10', name: 'Volatility 10', category: 'synthetic', description: 'Volatility 10 Index' },
                     { symbol: 'R_25', name: 'Volatility 25', category: 'synthetic', description: 'Volatility 25 Index' },
                     { symbol: 'R_50', name: 'Volatility 50', category: 'synthetic', description: 'Volatility 50 Index' },
                     { symbol: 'R_75', name: 'Volatility 75', category: 'synthetic', description: 'Volatility 75 Index' },
                     { symbol: 'R_100', name: 'Volatility 100', category: 'synthetic', description: 'Volatility 100 Index' },
-
+                    
                     // Boom & Crash
                     { symbol: 'BOOM1000', name: 'Boom 1000', category: 'synthetic', description: 'Boom 1000 Index' },
                     { symbol: 'CRASH1000', name: 'Crash 1000', category: 'synthetic', description: 'Crash 1000 Index' }
                 ];
-
+                
                 this.initialize();
             }
-
+            
             initialize() {
                 this.setupEventListeners();
                 this.renderSymbolsList();
                 this.initializeChart();
             }
-
+            
             setupEventListeners() {
                 const searchInput = document.getElementById('symbolSearch');
                 if (searchInput) {
@@ -2368,7 +2087,7 @@
                         this.filterSymbols(e.target.value);
                     });
                 }
-
+                
                 document.querySelectorAll('.timeframe-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
@@ -2377,7 +2096,7 @@
                         this.updateChart();
                     });
                 });
-
+                
                 document.querySelectorAll('.platform-tool-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.platform-tool-btn').forEach(b => b.classList.remove('active'));
@@ -2385,7 +2104,7 @@
                     });
                 });
             }
-
+            
             subscribeToSymbols() {
                 if (ws && ws.readyState === WebSocket.OPEN) {
                     this.symbols.forEach(symbolObj => {
@@ -2396,25 +2115,25 @@
                     });
                 }
             }
-
+            
             handleTickData(tick) {
                 const symbol = this.symbols.find(s => s.symbol === tick.symbol);
                 if (!symbol) return;
-
+                
                 const oldData = this.symbolsData.get(tick.symbol);
                 this.symbolsData.set(tick.symbol, {
                     quote: tick.quote,
                     epoch: tick.epoch,
                     pip: tick.pip || 0.00001
                 });
-
+                
                 const priceElement = document.getElementById(`platform-price-${tick.symbol}`);
                 const changeElement = document.getElementById(`platform-change-${tick.symbol}`);
-
+                
                 if (priceElement && changeElement) {
                     const formattedPrice = this.formatPrice(tick.quote, tick.pip);
                     priceElement.textContent = formattedPrice;
-
+                    
                     if (oldData && oldData.quote) {
                         const change = ((tick.quote - oldData.quote) / oldData.quote * 100).toFixed(2);
                         changeElement.textContent = `${change >= 0 ? '+' : ''}${change}%`;
@@ -2424,12 +2143,12 @@
                         changeElement.className = 'platform-symbol-item-change change-positive';
                     }
                 }
-
+                
                 if (tick.symbol === this.currentSymbol) {
                     this.updateCurrentSymbolPrice(tick.quote, tick.pip);
                 }
             }
-
+            
             formatPrice(price, pip) {
                 let decimalPlaces = 2;
                 if (pip && pip < 0.01) {
@@ -2439,35 +2158,35 @@
                 }
                 return price.toFixed(decimalPlaces);
             }
-
+            
             updateCurrentSymbolPrice(price, pip) {
                 const symbolData = this.symbolsData.get(this.currentSymbol);
                 if (!symbolData) return;
-
+                
                 const formattedPrice = this.formatPrice(price, pip);
                 document.getElementById('currentPrice').textContent = `$${formattedPrice}`;
-
+                
                 const oldPrice = symbolData.quote;
                 const change = ((price - oldPrice) / oldPrice * 100).toFixed(2);
                 const isPositive = change >= 0;
                 document.getElementById('currentChange').textContent = `${isPositive ? '+' : ''}${change}%`;
                 document.getElementById('currentChange').style.color = isPositive ? '#26a69a' : '#ef5350';
             }
-
+            
             renderSymbolsList() {
                 const container = document.getElementById('symbolsList');
                 if (!container) return;
-
+                
                 const groupedSymbols = this.groupSymbolsByCategory();
-
+                
                 let html = '';
-
+                
                 for (const [category, symbols] of Object.entries(groupedSymbols)) {
                     html += `
                         <div class="symbol-category">
                             <div class="category-title">${this.formatCategoryName(category)}</div>
                     `;
-
+                    
                     symbols.forEach(symbol => {
                         const isActive = symbol.symbol === this.currentSymbol;
                         html += `
@@ -2483,12 +2202,12 @@
                             </div>
                         `;
                     });
-
+                    
                     html += `</div>`;
                 }
-
+                
                 container.innerHTML = html;
-
+                
                 // Add click listeners to symbol items
                 document.querySelectorAll('.platform-symbol-item').forEach(item => {
                     item.addEventListener('click', (e) => {
@@ -2497,7 +2216,7 @@
                     });
                 });
             }
-
+            
             groupSymbolsByCategory() {
                 return this.symbols.reduce((groups, symbol) => {
                     if (!groups[symbol.category]) {
@@ -2507,7 +2226,7 @@
                     return groups;
                 }, {});
             }
-
+            
             formatCategoryName(category) {
                 const names = {
                     'forex': 'Forex',
@@ -2516,15 +2235,15 @@
                 };
                 return names[category] || category;
             }
-
+            
             filterSymbols(searchTerm) {
                 const items = document.querySelectorAll('.platform-symbol-item');
                 const searchLower = searchTerm.toLowerCase();
-
+                
                 items.forEach(item => {
                     const name = item.querySelector('.platform-symbol-item-name').textContent.toLowerCase();
                     const desc = item.querySelector('.platform-symbol-item-desc').textContent.toLowerCase();
-
+                    
                     if (name.includes(searchLower) || desc.includes(searchLower)) {
                         item.style.display = 'flex';
                     } else {
@@ -2532,7 +2251,7 @@
                     }
                 });
             }
-
+            
             selectSymbol(symbol) {
                 // Update active symbol
                 document.querySelectorAll('.platform-symbol-item').forEach(item => {
@@ -2540,48 +2259,48 @@
                 });
                 const activeItem = document.querySelector(`[data-symbol="${symbol}"]`);
                 if (activeItem) activeItem.classList.add('active');
-
+                
                 // Update current symbol
                 this.currentSymbol = symbol;
-
+                
                 // Update header
                 const symbolData = this.symbols.find(s => s.symbol === symbol);
                 if (symbolData) {
                     document.getElementById('currentSymbol').textContent = symbolData.name;
                 }
-
+                
                 // Update chart
                 this.updateChart();
             }
-
+            
             initializeChart() {
                 const canvas = document.getElementById('platformChart');
                 this.ctx = canvas.getContext('2d');
-
+                
                 // Set canvas dimensions
                 const resizeChart = () => {
                     const parent = canvas.parentElement;
                     canvas.width = parent.clientWidth * window.devicePixelRatio;
                     canvas.height = parent.clientHeight * window.devicePixelRatio;
                     this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
+                    
                     if (this.candles.length > 0) {
                         this.drawPlatformChart();
                     }
                 };
-
+                
                 resizeChart();
                 window.addEventListener('resize', resizeChart);
-
+                
                 // Generate initial candle data
                 this.generateSampleCandles();
                 this.drawPlatformChart();
             }
-
+            
             generateSampleCandles() {
                 this.candles = [];
                 let basePrice = 70000;
-
+                
                 // Generate 100 candles
                 for (let i = 0; i < 100; i++) {
                     const open = basePrice + (Math.random() - 0.5) * 1000;
@@ -2589,7 +2308,7 @@
                     const high = Math.max(open, close) + Math.random() * 400;
                     const low = Math.min(open, close) - Math.random() * 400;
                     const volume = 1000 + Math.random() * 5000;
-
+                    
                     this.candles.push({
                         time: Date.now() - (100 - i) * 3600000, // Last 100 hours
                         open,
@@ -2598,26 +2317,26 @@
                         close,
                         volume
                     });
-
+                    
                     basePrice = close;
                 }
             }
-
+            
             drawPlatformChart() {
                 const canvas = document.getElementById('platformChart');
                 const ctx = this.ctx;
                 const width = canvas.offsetWidth;
                 const height = canvas.offsetHeight;
-
+                
                 // Clear canvas
                 ctx.clearRect(0, 0, width, height);
-
+                
                 if (this.candles.length === 0) return;
-
+                
                 // Draw grid
                 ctx.strokeStyle = 'rgba(48, 54, 61, 0.5)';
                 ctx.lineWidth = 1;
-
+                
                 // Horizontal grid lines
                 for (let i = 0; i <= 10; i++) {
                     const y = (height / 10) * i;
@@ -2626,7 +2345,7 @@
                     ctx.lineTo(width, y);
                     ctx.stroke();
                 }
-
+                
                 // Vertical grid lines
                 for (let i = 0; i <= 20; i++) {
                     const x = (width / 20) * i;
@@ -2635,57 +2354,57 @@
                     ctx.lineTo(x, height);
                     ctx.stroke();
                 }
-
+                
                 // Calculate price range
                 const prices = this.candles.flatMap(c => [c.high, c.low]);
                 const maxPrice = Math.max(...prices);
                 const minPrice = Math.min(...prices);
                 const priceRange = maxPrice - minPrice;
-
+                
                 // Draw candlesticks
                 const candleWidth = width / (this.candles.length * 1.5);
                 const spacing = candleWidth * 0.3;
-
+                
                 this.candles.forEach((candle, i) => {
                     const x = i * (candleWidth + spacing) + spacing;
-
+                    
                     const openY = height - ((candle.open - minPrice) / priceRange) * height;
                     const closeY = height - ((candle.close - minPrice) / priceRange) * height;
                     const highY = height - ((candle.high - minPrice) / priceRange) * height;
                     const lowY = height - ((candle.low - minPrice) / priceRange) * height;
-
+                    
                     const isGreen = candle.close > candle.open;
                     ctx.strokeStyle = isGreen ? '#26a69a' : '#ef5350';
                     ctx.fillStyle = isGreen ? '#26a69a' : '#ef5350';
-
+                    
                     // Draw wick
                     ctx.lineWidth = 1;
                     ctx.beginPath();
                     ctx.moveTo(x + candleWidth / 2, highY);
                     ctx.lineTo(x + candleWidth / 2, lowY);
                     ctx.stroke();
-
+                    
                     // Draw body
                     const bodyHeight = Math.abs(openY - closeY);
                     const bodyY = Math.min(openY, closeY);
-
+                    
                     ctx.fillRect(x, bodyY, candleWidth, Math.max(bodyHeight, 1));
                 });
-
+                
                 // Hide loading overlay
                 const loadingOverlay = document.getElementById('chartLoading');
                 if (loadingOverlay) {
                     loadingOverlay.style.display = 'none';
                 }
             }
-
+            
             updateChart() {
                 // Show loading
                 const loadingOverlay = document.getElementById('chartLoading');
                 if (loadingOverlay) {
                     loadingOverlay.style.display = 'flex';
                 }
-
+                
                 // Simulate loading new data
                 setTimeout(() => {
                     this.generateSampleCandles();
@@ -2699,7 +2418,7 @@
             window.marketSlideshow = new MarketSlideshow();
             window.tradingPlatform = new TradingPlatform();
             connectDerivWS();
-
+            
             // Initialize Leaflet map for Trade Globally section
             const script = document.createElement('script');
             script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
@@ -2726,19 +2445,19 @@
                 L.marker([20, 0], { icon: signalIcon }).addTo(globalMap);
             };
             document.head.appendChild(script);
-
+            
             // Hero background slideshow
             const slides = document.querySelectorAll('.hero-bg-slide');
             let currentSlide = 0;
-
+            
             function nextSlide() {
                 slides[currentSlide].classList.remove('active');
                 currentSlide = (currentSlide + 1) % slides.length;
                 slides[currentSlide].classList.add('active');
             }
-
+            
             setInterval(nextSlide, 4000);
-
+            
             // Smooth scroll
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
@@ -2749,7 +2468,7 @@
                     }
                 });
             });
-
+            
             // Bot Containers Slideshow
             const botSlides = document.querySelectorAll('.bot-slide');
             let currentBotSlide = 0;
@@ -2765,5 +2484,4 @@
         });
     </script>
 </body>
-
 </html>

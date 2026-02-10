@@ -93,7 +93,6 @@ const api = {
     resetPassword: (data) => apiRequest('/user/reset-password', 'POST', data, {}, true),
     toggleFavorite: (botId) => apiRequest(`/user/favorite/${botId}`, 'POST', null, {}, true),
     getFavorites: () => apiRequest('/user/favorite', 'GET', null, {}, true),
-    getBots: () => apiRequest('/user/bots', 'GET', null, {}, true),
   },
 
   superadmin: {
@@ -116,7 +115,7 @@ const api = {
     updateAdminPassword: (data) => apiRequest('/superadmin/update_admin_password', 'POST', data, {}, true),
     getBots: () => apiRequest('/superadmin/bots', 'GET', null, {}, true),
     scanBots: () => apiRequest('/superadmin/scan_bots', 'GET', null, {}, true),
-
+    
     // Sales and Performance Analytics
     getSales: () => apiRequest('/superadmin/sales', 'GET', null, {}, true),
     getPerformance: () => apiRequest('/superadmin/performance', 'GET', null, {}, true),
@@ -162,18 +161,16 @@ const api = {
     getToken: () => apiRequest('/deriv/token', 'GET', null, {}, true),
     deleteToken: () => apiRequest('/deriv/token', 'DELETE', null, {}, true),
     updateAccountPreference: (data) => apiRequest('/deriv/account/preference', 'PUT', data, {}, true),
-
+    
     // Stored token endpoints
     getMyInfo: () => apiRequest('/deriv/me/info', 'GET', null, {}, true),
     getMyBalance: () => apiRequest('/deriv/me/balance', 'GET', null, {}, true),
     getMyAccounts: () => apiRequest('/deriv/me/accounts', 'GET', null, {}, true),
   },
 
-  // Bot serving and control endpoints
+  // Bot serving endpoint
   bots: {
     serve: (id) => apiRequest(`/bots/${id}`, 'GET'),
-    start: (id) => apiRequest(`/bots/${id}/start`, 'POST', null, {}, true),
-    stop: (id) => apiRequest(`/bots/${id}/stop`, 'POST', null, {}, true),
   },
 };
 
